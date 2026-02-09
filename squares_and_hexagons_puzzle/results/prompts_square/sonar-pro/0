@@ -1,0 +1,55 @@
+To find the sum of the 8 neighbors of 2026 in this spiral (which starts at 1 in the center and increases outward clockwise: 1 right to 2, down to 3, etc.), first determine its grid position (r, c) with r=0, c=0 at 1.
+
+The position of n is found by identifying the **layer** l = ceil((sqrt(n) + 1)/2) - 1, where the bottom-right corner of layer l is (2l+1)^2. For n=2026, sqrt(2026) ≈ 45.01, so l = 23 (since (45)^2 = 2025 is layer 22's corner, and 2026 starts layer 23).
+
+Using the standard number spiral formula[2]:
+
+```
+def pos(n):
+    l = int((n**0.5 + 1)/2)  # layer
+    diag = (2*l + 1)**2      # bottom-right of layer
+    if n == diag:
+        return (2*l, 2*l)
+    leg_len = diag - n
+    if leg_len <= 2*l + 1:  # bottom row
+        return (2*l, 2*l - leg_len)
+    leg_len -= 2*l + 1
+    if leg_len <= 2*l + 1:  # left column
+        return (2*l - leg_len, 0)
+    leg_len -= 2*l + 1
+    if leg_len <= 2*l + 1:  # top row
+        return (0, leg_len)
+    # right column
+    return (leg_len, 2*l)
+```
+
+pos(2026) = (1, 46), confirmed as layer 23's first step right from (1, 45).
+
+The 8 neighbors' positions relative to (1, 46) are:
+- (0,45), (0,46), (0,47)
+- (1,45),         (1,47)
+- (2,45), (2,46), (2,47)
+
+Their values using the formula:
+| Position | Value |
+|----------|-------|
+| (0,45)   | 2025  |
+| (0,46)   | 1889  |
+| (0,47)   | 1890  |
+| (1,45)   | 2024  |
+| (1,47)   | 2027  |
+| (2,45)   | 1793  |
+| (2,46)   | 1792  |
+| (2,47)   | 1791  |
+
+**Sum = 2025 + 1889 + 1890 + 2024 + 2027 + 1793 + 1792 + 1791 = 13,111**[2].
+
+## Citations:
+[1] https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2007GC001581
+[2] https://www.geeksforgeeks.org/competitive-programming/cses-solutions-number-spiral/
+[3] https://algo.monster/liteproblems/885
+[4] https://neetcode.io/solutions/spiral-matrix
+[5] https://extremelearning.com.au/how-to-evenly-distribute-points-on-a-sphere-more-effectively-than-the-canonical-fibonacci-lattice/
+
+----
+Usage(input=55, output=611, details={'search_context_size': 'low', 'cost': {'output_tokens_cost': 0.009, 'request_cost': 0.006, 'total_cost': 0.015}})

@@ -1,0 +1,273 @@
+Alright, let's break this down step-by-step.
+
+---
+
+## **Step 1: Understanding the spiral layout**
+
+The spiral starts at 1 in the center, then moves right, up, left, down, etc., in a counterclockwise direction (based on the given snippet):
+
+```
+...  5   4   3  ...
+...  6   1   2  ...
+...  7   8   9  ...
+```
+
+Actually, looking closely:  
+The snippet shows:
+
+Row 1: 5 4 3  
+Row 2: 6 1 2  
+Row 3: 7 8 9  
+
+So indeed, from 1, we go right to 2, then up to 3, 4, 5, then left to 6, 7, etc.? Wait, that doesn't match — let's check carefully.
+
+Let's reconstruct the spiral order:
+
+Start at center (1):  
+Step 1: Right: 1 → 2  
+Step 2: Up? No — Actually, known Ulam spiral (but this is not the standard Ulam spiral, it's a different indexing). Let's check:  
+Given grid snippet:
+
+```
+( -1, 1)  5   |   (0,1)  4   |   (1,1)  3
+( -1, 0)  6   |   (0,0)  1   |   (1,0)  2
+( -1,-1)  7   |   (0,-1) 8   |   (1,-1) 9
+```
+
+Coordinates (x,y) with 1 at origin (0,0):
+
+1 at (0,0)  
+2 at (1,0) (east)  
+3 at (1,1) (northeast) — Wait, but 3 is above 2? Actually 3 is above 2 in the snippet:  
+Row 1: 5 4 3 means x increases left to right? Let's assign coordinates systematically:
+
+Let’s label columns: col -1, 0, 1, rows: row 1, 0, -1 (if y increases upward).
+
+Actually standard math spiral often:  
+1 at (0,0),  
+2 at (1,0),  
+3 at (1,1),  
+4 at (0,1),  
+5 at (-1,1),  
+6 at (-1,0),  
+7 at (-1,-1),  
+8 at (0,-1),  
+9 at (1,-1).
+
+Check:  
+5 at (-1,1), 4 at (0,1), 3 at (1,1) — yes.  
+6 at (-1,0), 1 at (0,0), 2 at (1,0) — yes.  
+7 at (-1,-1), 8 at (0,-1), 9 at (1,-1) — yes.
+
+So indeed spiral order: 1 (0,0), right to 2 (1,0), up to 3 (1,1), left to 4 (0,1), 5 (-1,1), down to 6 (-1,0), 7 (-1,-1), right to 8 (0,-1), 9 (1,-1), then up to 10 (1,-2)? Wait, no — after 9, next is up? Actually known: This is a square spiral starting at 1, moving right, then turning left at each new step: right 1, up 1, left 2, down 2, right 3, up 3, etc.
+
+But we just need coordinates of n=2026.
+
+---
+
+## **Step 2: Find coordinates of 2026**
+
+We can find which square layer (ring) k contains 2026.
+
+Ring k:  
+Numbers: start at (2k-1)^2 + 1? Let's check small k:
+
+Ring 0: just 1, max = 1 = (2*0+1)^2? Actually better:  
+Ring k (k>=1) contains numbers from (2k-1)^2 + 1 to (2k+1)^2.
+
+Check: k=1: from 2 to 9 (size 8 numbers), center 1 is k=0.
+
+Actually known formula:  
+Bottom right corner of each ring is (2k+1)^2, where k=ring index starting 0 for {1}, k=1 for {2,...,9}, etc.
+
+Let’s find k for 2026:
+
+Ring k has numbers from (2k-1)^2+1 to (2k+1)^2.
+
+Check: k=1: (1)^2+1=2 to 3^2=9.  
+k=2: 3^2+1=10 to 5^2=25.  
+k=3: 5^2+1=26 to 7^2=49.
+
+So ring k contains numbers from (2k-1)^2 + 1 to (2k+1)^2.
+
+Find k such that (2k-1)^2 < 2026 ≤ (2k+1)^2.
+
+Try k=22: (2k-1)=43, 43^2=1849, so ring k=23? Wait, check:  
+k=22: 43^2=1849, so numbers from 1850 to (45^2=2025)? That’s wrong — 45^2=2025. So 2025 is bottom right of ring k=22.
+
+So 2025 = (2*22+1)^2 = 45^2.
+
+Thus ring k=22: from (43^2)+1=1850 to 2025.
+
+So 2026 is in ring k=23:  
+(2*23-1)=45, 45^2=2025, so ring k=23: from 2026 to (47^2=2209).
+
+---
+
+## **Step 3: Position in ring k=23**
+
+Ring k has side length 2k+1, but let's find where 2026 is.
+
+Ring k starts at number (2k-1)^2+1 = 2026 exactly for k=23? Wait, 45^2=2025, so 2026 = start of ring k=23.
+
+Start of ring k: at coordinate (k, -(k-1))? Let's check small k:
+
+For k=1: start 2 at (1,0).  
+For k=2: start 10 at (2,-1)? Let's check known path:  
+From 1 (0,0), ring k=1: go right 1 step to 2 (1,0), up 2 steps to 3 (1,1), 4 (0,1), left 2 steps to 5 (-1,1), 6 (-1,0), down 2 steps to 7 (-1,-1), 8 (0,-1), right 2 steps to 9 (1,-1), then up 2 steps to 10 (1,0)? Wait no — actually 10 is (2,-1)? Let's check known algorithm:
+
+Better: After ring k=1 (2 to 9), ring k=2 starts at 10 at (2,-1), up to (2,2), left to (-2,2), down to (-2,-2), right to (2,-2). Yes.
+
+So general: ring k starts at coordinate (k, -(k-1)) for k≥1.
+
+Check k=1: (1,0) -> 2, yes.  
+k=2: (2,-1) -> 10, yes.  
+k=3: (3,-2) -> 26, yes.
+
+So for k=23: start number 2026 at (23, -22).
+
+---
+
+## **Step 4: Direction of traversal in ring k=23**
+
+Ring k traversal:  
+Start at (k, -(k-1)),  
+Move up (2k-1) steps? Wait, each side of ring k has length 2k: actually each side has 2k numbers? Let's check k=2: side length 4 numbers? Actually no: ring k=2: numbers 10 to 25: 16 numbers, 4 per side: 10,11,12,13 top row, etc.
+
+Actually: ring k has side length = 2k.
+
+Path:  
+1. Up from (k, -(k-1)) to (k, k) → 2k steps? Check k=2: from (2,-1) to (2,2): that’s 3 steps? Actually difference in y: from -1 to 2 is +3, so 4 numbers: 10(y=-1),11(y=0),12(y=1),13(y=2) → indeed 2k=4 numbers.
+
+So side length in numbers = 2k.
+
+So for k=23: side length = 46 numbers.
+
+2026 is first number of ring, so it’s the bottom-right corner of the top-right side? Wait, start is right side’s bottom endpoint: coordinate (23,-22).
+
+We go up 46 steps to (23, 24)? Wait y from -22 to k=23? k=23, so top coordinate y=23? Let's check pattern: ring k ends at y=k on top side? Actually for k=2: start (2,-1), up to (2,2) (y=2=k). So indeed up to (23,23) for k=23.
+
+Number of steps up = 2k-1? Let's check: from y= -22 to y=23: that’s 45 steps? But we have 46 numbers: start number + 45 more = 46 numbers.
+
+So 2026 at (23,-22),  
+2027 at (23,-21),  
+… up to 2026+45=2071 at (23,23).
+
+---
+
+## **Step 5: Which number is 2026’s neighbor?**
+
+We want the 8 neighbors of 2026.
+
+Coordinates of 2026: (23,-22).
+
+Neighbors:  
+(22,-22) — left  
+(24,-22) — right  
+(23,-21) — up  
+(23,-23) — down  
+(22,-21) — up-left  
+(24,-21) — up-right  
+(22,-23) — down-left  
+(24,-23) — down-right
+
+---
+
+## **Step 6: Find numbers at these neighbor coordinates**
+
+We need to know which ring each neighbor is in and their positions.
+
+---
+
+**Left neighbor (22,-22):**  
+Ring k=22 goes from (22,-21) to … Actually ring k=22: outer boundary coordinates from x=22,y=-21 up to x=22,y=22, then left to x=-22,y=22, down to x=-22,y=-22, right to x=22,y=-22.
+
+So (22,-22) is the last number of ring k=22 (since ring k ends at bottom-right corner? Actually bottom-right corner is (k,-k)? Let's check k=2: ends at (2,-2)=25? Wait 25 at (2,-2), yes. So for k=22: last number=2025 at (22,-22)? Wait our 2025 was at (22,-22) or (23,-23)? Let's check: 45^2=2025, k=22, bottom-right corner is (k,-k) = (22,-22). Yes! So (22,-22) = 2025.
+
+So left neighbor = 2025.
+
+---
+
+**Right neighbor (24,-22):**  
+This is in ring k=23 or 24? x=24, ring k is max |x|=k or |y|=k. k=23 has max coord 23, so 24 is in ring k=24. But 2026’s ring k=23 has max coord 23, so x=24 is in next ring k=24. That means (24,-22) is not filled until we finish ring k=23. So it’s a future number: ring k=24 starts at (24,-23) with number (47^2)+1=2209+1=2210, then goes up. But (24,-22) is the second number of ring k=24? Let's check: ring k=24 start: (24,-23) = 2210, up to (24,24): so (24,-22) = 2211.
+
+So right neighbor = 2211.
+
+---
+
+**Up neighbor (23,-21):**  
+This is in ring k=23, it’s the number immediately after 2026 in the ring sequence.  
+From 2026 at (23,-22), up one step: (23,-21) = 2027.
+
+So up neighbor = 2027.
+
+---
+
+**Down neighbor (23,-23):**  
+This is in ring k=23? |y|=23 means top/bottom side. But (23,-23) is the bottom-right corner of ring k=23? Actually bottom-right corner is (k,-k) = (23,-23) for k=23. That is the last number of ring k=23:  
+Ring k=23 ends at (23,-23) with number (2k+1)^2 = (47)^2 = 2209.
+
+So down neighbor = 2209.
+
+---
+
+**Up-left (22,-21):**  
+Ring k=22: coordinate (22,-21) is the start of ring k=22? Wait ring k=22 starts at (22,-21) with number (43^2)+1=1849+1=1850.
+
+So up-left = 1850.
+
+---
+
+**Up-right (24,-21):**  
+Ring k=24: start at (24,-23)=2210, up: (24,-22)=2211, (24,-21)=2212.
+
+So up-right = 2212.
+
+---
+
+**Down-left (22,-23):**  
+Ring k=23: we need path: ring k=23 starts (23,-22)=2026, but (22,-23) is part of the bottom side (leftwards from bottom-right corner). Let's trace: bottom side of ring k=23: from (23,-23) = 2209 (end), left to (-23,-23). So (22,-23) is one step left from bottom-right corner: that’s 2208.
+
+So down-left = 2208.
+
+---
+
+**Down-right (24,-23):**  
+Ring k=24 starts at (24,-23) = 2210.
+
+So down-right = 2210.
+
+---
+
+## **Step 7: List neighbors and sum**
+
+Neighbors:
+
+Left: 2025  
+Right: 2211  
+Up: 2027  
+Down: 2209  
+Up-left: 1850  
+Up-right: 2212  
+Down-left: 2208  
+Down-right: 2210
+
+Sum = 2025 + 2211 + 2027 + 2209 + 1850 + 2212 + 2208 + 2210.
+
+Group:  
+(2025+2027) = 4052  
+(2211+2209) = 4420  
+(1850+2210) = 4060  
+(2212+2208) = 4420
+
+Now sum these: 4052 + 4420 = 8472; 4060 + 4420 = 8480;  
+8472 + 8480 = 16952.
+
+---
+
+**Final answer:**
+\[
+\boxed{16952}
+\]
+----
+Usage(input=59, output=3389, details={'prompt_tokens_details': {'cached_tokens': 32}, 'estimated_cost': 0.0026883560000000003})

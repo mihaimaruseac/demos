@@ -1,0 +1,441 @@
+Let's analyze the problem step by step.
+
+---
+
+**Problem Summary:**
+
+- Natural numbers are arranged on a hexagonal grid in a spiral pattern.
+- Example provided:
+
+\[
+\begin{array}{cccccc}
+ \cdots & 14 & 4 & 3 & 10 & \cdots \\
+ \cdots & 15 & 5 & 1 & 2 & 9 & \cdots \\
+ \cdots & 16 & 6 & 7 & 8 & \cdots \\
+\end{array}
+\]
+
+- We want: **sum of all 6 neighbors of the number 2026.**
+
+---
+
+### Step 1: Understand the Spiral Pattern on the Hex Grid
+
+- The number 1 is at the center.
+- Around 1, numbers 2 to 7 form the first "ring" or "shell".
+- Then numbers 8 to 19 form the second ring, then 20 to ... the third ring, etc.
+
+---
+
+### Step 2: Determine the ring/layer of a number on a hex spiral
+
+Formula for the number of cells in a hex spiral:
+
+- The center ring (ring 0) has 1 cell (number 1).
+- Ring 1 has 6 cells (numbers 2 to 7).
+- Ring \( n \) has \( 6n \) cells.
+- Total cells up to ring \( n \) is:
+
+\[
+1 + 6 \times (1 + 2 + \cdots + n) = 1 + 6 \times \frac{n(n+1)}{2} = 1 + 3n(n+1)
+\]
+
+We want to find the ring number \( r \) such that:
+
+\[
+1 + 3r(r+1) \geq 2026 > 1 + 3(r-1)r
+\]
+
+Let's solve for \( r \):
+
+\[
+3r^2 + 3r + 1 \geq 2026
+\]
+\[
+3r^2 + 3r \geq 2025
+\]
+\[
+r^2 + r \geq 675
+\]
+
+Solve quadratic inequality:
+
+\[
+r^2 + r - 675 \geq 0
+\]
+
+Roots of \( r^2 + r - 675=0 \):
+
+\[
+r = \frac{-1 \pm \sqrt{1 + 4 \times 675}}{2} = \frac{-1 \pm \sqrt{2701}}{2}
+\]
+
+\[
+\sqrt{2701} \approx 51.97
+\]
+
+Positive root:
+
+\[
+r \approx \frac{-1 + 51.97}{2} = \frac{50.97}{2} = 25.485
+\]
+
+So \( r = 26 \) since ring is an integer (ring numbering starts at 0).
+
+Therefore:
+
+- Ring 25 contains numbers up to:
+
+\[
+1 + 3 \times 25 \times 26 = 1 + 3 \times 650 = 1 + 1950 = 1951
+\]
+
+- Ring 26 contains numbers up to:
+
+\[
+1 + 3 \times 26 \times 27 = 1 + 3 \times 702 = 1 + 2106 = 2107
+\]
+
+So:
+
+- Numbers 1952 to 2107 are in ring 26.
+- 2026 is in ring 26.
+
+---
+
+### Step 3: Find the position of 2026 within ring 26
+
+Ring 26 starts with number:
+
+\[
+\text{start}_r = 1952
+\]
+
+We want the offset of 2026 in ring 26:
+
+\[
+\text{offset} = 2026 - 1952 = 74 \quad (\text{0-based})
+\]
+
+Ring 26 has \( 6 \times 26 = 156 \) numbers, number 0 to 155 in this ring.
+
+---
+
+### Step 4: Geometry of hexagonal spiral neighbors
+
+Each hexagonal ring has \(6r\) cells, arranged in 6 segments of length \(r\).
+
+Indexing cells:
+
+- Cell 0: start of ring at some fixed direction (e.g., the cell right of center).
+- Cells 0 to 25: segment 0.
+- 26 to 51: segment 1.
+- 52 to 77: segment 2.
+- 78 to 103: segment 3.
+- 104 to 129: segment 4.
+- 130 to 155: segment 5.
+
+The number 2026 is offset 74 in ring 26.
+
+Which segment?
+
+\[
+74 / 26 = 2.846
+\]
+
+So segment is 2 (0-based). The index within segment:
+
+\[
+74 - 2 \times 26 = 74 - 52 = 22
+\]
+
+---
+
+### Step 5: Identify the neighbors of a cell in ring \(r\)
+
+Each cell has (up to) 6 neighbors:
+
+- 2 neighbors in the same ring \(r\): previous and next cell in ring \(r\).
+- 1 neighbor in ring \(r-1\).
+- 1 neighbor in ring \(r+1\).
+- The cell inside ring \(r-1\) is adjacent.
+- The cell outside ring \(r+1\) is adjacent.
+- Two additional neighbors may be the corresponding neighbors adjacent diagonally.
+
+**Depending on their position in the segment, the neighbors follow a pattern.**
+
+---
+
+### Step 6: Companion cells in rings \(r-1\) and \(r+1\)
+
+- Ring \(r-1\) has \(6(r-1)\) cells.
+- Ring \(r+1\) has \(6(r+1)\) cells.
+
+We need the formula for indices of neighbors in these rings.
+
+Reference from known hex ring neighbors (numbered similarly):
+
+- We label the cells in ring \(r\) from 0 to \(6r-1\).
+- For a cell \(i\) in ring \(r\), neighbors are:
+
+  - In ring \(r\): \(i-1\) and \(i+1\) (mod \(6r\))
+  
+  - In ring \(r-1\):
+    \[
+    \left\lfloor \frac{i}{r} \right\rfloor \times (r-1) + (i \mod r)
+    \]
+   
+  - and
+  
+    \[
+    \left\lfloor \frac{i-1}{r} \right\rfloor \times (r-1) + (i-1 \mod r)
+    \]
+    
+  (one or two neighbors depending on \(i \mod r\))
+
+  - In ring \(r+1\):
+    \[
+    \left\lfloor \frac{i}{r} \right\rfloor \times (r+1) + (i \mod r)
+    \]
+    
+  - and
+  
+    \[
+    \left\lfloor \frac{i+1}{r} \right\rfloor \times (r+1) + ((i+1) \mod r)
+    \]
+
+---
+
+### Step 7: Calculate the neighbors of 2026
+
+Given:
+
+- \(r = 26\)
+- \(i = 74\)
+- \(6r = 156\)
+
+---
+
+**Neighbors inside ring 26**:
+
+- \(i-1 = 73\)
+- \(i+1 = 75\)
+
+Modulo if necessary (since \(0 \leq i < 156\), no modulo needed here).
+
+---
+
+**Neighbors in ring 25 (r-1 = 25):**
+
+- \(6 \times 25 = 150\) cells in ring 25.
+
+Calculate:
+
+- \(i // r = 74 // 26 = 2\)
+- \(i \% r = 74 \% 26 = 22\)
+
+Neighbor 1:
+
+\[
+N_1 = 2 \times 25 + 22 = 50 + 22 = 72
+\]
+
+Neighbor 2:
+
+- \(i-1 = 73\)
+- \((i-1) // r = 73 // 26 = 2\)
+- \((i-1) \% r = 73 \% 26 = 21\)
+
+\[
+N_2 = 2 \times 25 + 21 = 50 + 21 = 71
+\]
+
+---
+
+**Neighbors in ring 27 (r+1 = 27):**
+
+- \(6 \times 27 = 162\) cells.
+
+Calculate:
+
+- \(i // r = 2\) (same as above)
+- \(i \% r = 22\)
+
+Neighbor 1:
+
+\[
+M_1 = 2 \times 27 + 22 = 54 + 22 = 76
+\]
+
+Neighbor 2:
+
+- \(i+1 = 75\)
+- \((i+1) // r = 75 // 26 = 2\)
+- \((i+1) \% r = 75 \% 26 = 23\)
+
+\[
+M_2 = 2 \times 27 + 23 = 54 + 23 = 77
+\]
+
+---
+
+### Step 8: Convert ring index + offset back to absolute number
+
+Recall:
+
+- Start of ring \(r\) is:
+
+\[
+\text{start}(r) = 2 \quad \text{if} \quad r=1 \quad \text{(for example?)} 
+\]
+
+Check from previous:
+
+\[
+\text{start}(r) = 1 + 3(r-1)r + 1 = 2 + 3(r-1)r
+\]
+
+Wait, to clarify:
+
+\[
+\text{max in ring } r-1 = 1 + 3 \times (r-1) \times r
+\]
+
+Ring \(r\) starts at \( \text{max in ring } r-1 + 1 \):
+
+\[
+\text{start}(r) = 1 + 3 \times (r-1) \times r + 1 = 2 + 3(r-1)r
+\]
+
+Check with \(r=26\):
+
+\[
+\text{start}(26) = 2 + 3 \times 25 \times 26 = 2 + 1950 = 1952
+\]
+
+Consistent with previous.
+
+Thus absolute number is:
+
+\[
+\text{absolute}(r, i) = \text{start}(r) + i
+\]
+
+---
+
+### Step 9: Calculate absolute numbers of neighbors
+
+#### Same ring neighbors:
+
+- \(r=26\)
+- \(i=74\) (the original number 2026)
+- Neighbors indices: \(73, 75\)
+- Start ring 26: 1952
+
+\[
+N_{\text{same}} = 1952 + 73 = 2025
+\]
+\[
+N_{\text{same}} = 1952 + 75 = 2027
+\]
+
+#### Ring 25 neighbors:
+
+- \(r-1 = 25\)
+- Neighbors indices: 71, 72
+- Start ring 25:
+
+\[
+\text{start}(25) = 2 + 3 \times 24 \times 25 = 2 + 3 \times 600 = 2 + 1800 = 1802
+\]
+
+Neighbors:
+
+\[
+N_{25,1} = 1802 + 71 = 1873
+\]
+
+\[
+N_{25,2} = 1802 + 72 = 1874
+\]
+
+#### Ring 27 neighbors:
+
+- \(r+1 = 27\)
+- Neighbors indices: 76, 77
+- Start ring 27:
+
+\[
+\text{start}(27) = 2 + 3 \times 26 \times 27 = 2 + 3 \times 702 = 2 + 2106 = 2108
+\]
+
+Neighbors:
+
+\[
+N_{27,1} = 2108 + 76 = 2184
+\]
+
+\[
+N_{27,2} = 2108 + 77 = 2185
+\]
+
+---
+
+### Step 10: Sum all 6 neighbors
+
+Neighbors are:
+
+- Ring 26 (same ring): 2025, 2027
+- Ring 25: 1873, 1874
+- Ring 27: 2184, 2185
+
+Sum:
+
+\[
+2025 + 2027 + 1873 + 1874 + 2184 + 2185
+\]
+
+Calculate step-by-step:
+
+\[
+2025 + 2027 = 4052
+\]
+\[
+1873 + 1874 = 3747
+\]
+\[
+2184 + 2185 = 4369
+\]
+
+Sum total:
+
+\[
+4052 + 3747 = 7799
+\]
+\[
+7799 + 4369 = 12168
+\]
+
+---
+
+### **Final answer:**
+
+\[
+\boxed{12168}
+\]
+
+---
+
+# **Summary:**
+
+- Found ring of 2026: ring 26.
+- Found offset in ring.
+- Calculated indices of neighbors in rings \(r, r-1, r+1\).
+- Converted indices to absolute numbers.
+- Added them to get 12168.
+
+---
+
+**So, the sum of all 6 neighbors of number 2026 is 12168.**
+----
+Usage(input=71, output=2883, details={})

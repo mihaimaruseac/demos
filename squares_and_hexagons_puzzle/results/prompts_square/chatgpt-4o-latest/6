@@ -1,0 +1,294 @@
+We are told that natural numbers are placed on a square spiral, like the one shown:
+
+```
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+```
+
+This spiral goes counter-clockwise starting at 1 in the center:
+
+```
+Layer 0: 1
+Layer 1:
+   9  8  7
+   2  1  6
+   3  4  5
+```
+
+We are to find the sum of the 8 neighbors of **2026** in this spiral pattern.
+
+---
+
+### Step 1: Understand the Spiral Pattern
+
+This pattern can also be thought of as a square spiral starting from 1 and going counterclockwise:
+
+- Center is 1 at (0, 0)
+- Then it spirals: right → up → left → down → right → up ... (counterclockwise spiral)
+
+We can think of the spiral as being in layers (like onion layers), where layer 0 has just 1, layer 1 goes from 2 to 9, layer 2 goes from 10 to 25, etc.
+
+The numbers at the bottom right corners of each square layer are perfect squares:
+- Layer 0 ends at \(1 = 1^2\)
+- Layer 1 ends at \(9 = 3^2\)
+- Layer 2 ends at \(25 = 5^2\)
+- Layer 3 ends at \(49 = 7^2\)
+- Layer n ends at \((2n + 1)^2\)
+
+So for number 2026, we try to find which layer it is in.
+
+---
+
+### Step 2: Find the Layer of 2026
+
+We are looking for the smallest \( n \) such that:
+\[
+(2n+1)^2 \geq 2026
+\]
+
+Try a few values:
+
+- \( \sqrt{2026} \approx 45 \), so \( 45^2 = 2025 < 2026 \)
+- \( 46^2 = 2116 > 2026 \)
+
+So 2026 is in layer \( n \) where \( 2n + 1 = 45 \Rightarrow n = 22 \)
+
+That means it's located in the 22nd layer.
+
+Layer 22:
+- Starts just after layer 21, which ends at \( (2 \cdot 21 + 1)^2 = 43^2 = 1849 \)
+- So layer 22 starts at 1850
+- Ends at \( (2 \cdot 22 + 1)^2 = 45^2 = 2025 \)
+
+But 2026 is actually in **layer 23**!
+
+Check:
+- \( 46^2 = 2116 \) → Layer 23 ends at 2116
+- \( 44^2 = 1936 \), \( 45^2 = 2025 \)
+
+So:
+
+- 2026 is **just after 2025**, which is the bottom-right corner of layer 22
+- So **2026 is the first number in layer 23**
+
+Since 2025 is at corner, 2026 comes right after that — that is, it starts the next layer (Layer 23).
+
+---
+
+### Step 3: Find the coordinates of 2026
+
+We now attempt to determine coordinate positions of numbers in spiral.
+
+Let’s define the spiral with coordinates:
+
+- The center (number 1) is at (0, 0)
+- The movement is: right → up → left → down → right → up ... and so on.
+
+Let’s try to find the coordinates of number 2026.
+
+Because it's the **first number** in Layer 23, and each layer goes around as a square border of thickness 1, we can find the length of the side of layer 23:
+
+- Side length = \( 2n + 1 = 47 \) for layer 23
+- The total number of numbers in the spiral up to layer 23: \(47^2 = 2209\)
+- The count of numbers before it: \(45^2 = 2025\)
+- So numbers 2026 to 2209 are in layer 23
+- Total numbers in the layer: \(2209 - 2025 = 184\)
+
+On the spiral, the movement of the outer layer goes as:
+
+- Start at position (n, -n+1) [just after bottom-right]
+- Move left along bottom side: side_len - 1 = 46 steps
+- Move up: 46 steps
+- Move right: 46 steps
+- Move down: 46 steps
+
+Let’s determine initial position.
+
+In layer 23 (n = 23):
+
+- Bottom-right corner (ending number of layer 22) is at position (23, -23)
+- Next number 2026 will be to the left ⇒ at (22, -23)
+
+So 2026 is at position (22, -23)
+
+---
+
+### Step 4: Find Neighbors of 2026
+
+Now that we know the coordinate of 2026 is (22, -23), its 8 neighbors are the points:
+
+- (21, -24), (22, -24), (23, -24)
+- (21, -23),          (23, -23)
+- (21, -22), (22, -22), (23, -22)
+
+So we must find the numbers at each of these positions.
+
+We can define a function that returns the number at (x, y).
+
+---
+
+### Step 5: Build Formula to Get Number at (x, y)
+
+Let’s find a systematic way to determine the number at coordinate (x, y)
+
+Idea: For any coordinate (x, y), we can determine the "layer" it's in: this is:
+
+\[
+n = \max(|x|, |y|)
+\]
+
+- Then determine the spiral traversal to get to that point
+
+We use the formula (based on known square spiral formulas):
+
+Let’s define a function f(x, y) that gives the number at (x, y)
+
+For a given n = max(|x|,|y|):
+
+- The maximum number in the layer is: \( M = (2n+1)^2 \)
+- The 4 sides of the square are (each of length 2n):
+
+Starting from the bottom-right corner and going counter-clockwise:
+
+- Right edge from (n, -n) up to (n, n): 2n steps
+- Top edge from (n, n) to (-n, n): 2n steps
+- Left edge from (-n, n) to (-n, -n): 2n steps
+- Bottom edge from (-n, -n) to (n, -n): 2n steps
+
+So the traversal is:
+
+- Bottom-right corner (n, -n) → Number: M = (2n+1)^2
+- Then decrease by 1 as you go counter-clockwise
+
+Now reverse mapping (x, y) to number:
+
+Depending on which side (x, y) lies on:
+
+- If x = n (right edge): y from -n to n  
+\[
+\text{Number} = M - (n - y)
+\]
+- If y = n (top edge): x from n-1 to -n  
+\[
+\text{Number} = M - (2n) - (n - x)
+\]
+- If x = -n (left edge): y from n-1 to -n  
+\[
+\text{Number} = M - (4n) - (n + y)
+\]
+- If y = -n (bottom edge): x from -n+1 to n  
+\[
+\text{Number} = M - (6n) - (n + x)
+\]
+
+Let’s compute M and values for our 8 neighbors
+
+---
+
+### Step 6: Compute Neighbors of (22, -23)
+
+First, for all 8 neighbors, get their (x, y), n = max(|x|, |y|), and then compute their value.
+
+We’ll compute f(x, y) as per the side-based formula.
+
+#### Neighbor 1: (21, -24)
+
+n = max(21, 24) = 24  
+M = (2·24 + 1)² = 49² = 2401  
+This point is on the **bottom edge**: y = -n = -24
+
+Then:
+
+- x = 21
+- Position along bottom edge: index = n + x = 24 + 21 = 45
+
+Value = M - 6n - (n + x) = 2401 - 6·24 - 45 = 2401 - 144 - 45 = 2212
+
+#### Neighbor 2: (22, -24)
+
+Still n = 24  
+x = 22
+
+x + n = 46  
+
+Value = 2401 - 144 - 46 = 2211
+
+#### Neighbor 3: (23, -24)
+
+x = 23 ⇒ x + n = 47  
+Value = 2401 - 144 - 47 = 2210
+
+#### Neighbor 4: (21, -23)
+
+n = max(21, 23) = 23  
+M = 47² = 2209  
+x=21, y=-23 ⇒ y = -n ⇒ bottom edge
+
+x + n = 21 + 23 = 44  
+Value = 2209 - 6·23 - 44 = 2209 - 138 - 44 = 2027
+
+#### Neighbor 5: (23, -23)
+
+n = 23  
+x=23, y=-23 ⇒ x=n and y = -n ⇒ corner ⇒ number = M = 2209
+
+#### Neighbor 6: (21, -22)
+
+n = max(21, 22) = 22  
+M = 45² = 2025  
+x=21, y=-22 ⇒ y = -n ⇒ bottom edge
+
+x + n = 21 + 22 = 43  
+Value = 2025 - 6·22 - 43 = 2025 - 132 - 43 = 1850
+
+#### Neighbor 7: (22, -22)
+
+n=22  
+x=22, y=-22 ⇒ bottom edge  
+x + n = 22 + 22 = 44  
+Value = 2025 - 132 - 44 = 1849
+
+#### Neighbor 8: (23, -22)
+
+x=23, y=-22 ⇒ bottom edge still  
+x + n = 45  
+Value = 2025 - 132 - 45 = 1848
+
+---
+
+### Step 7: Sum of Neighbors
+
+Now list the 8 neighbor values:
+
+- 2212
+- 2211
+- 2210
+- 2027
+- 2209
+- 1850
+- 1849
+- 1848
+
+Total sum:
+
+\[
+2212 + 2211 + 2210 = 6633  
+2027 + 2209 = 4236  
+1850 + 1849 + 1848 = 5547
+\]
+
+Now sum all:
+
+- 6633 + 4236 = 10869  
+- 10869 + 5547 = **16416**
+
+---
+
+### ✅ Final Answer:
+
+\[
+\boxed{16416}
+\]
+----
+Usage(input=62, output=2426, details={})

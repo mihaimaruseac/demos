@@ -1,0 +1,79 @@
+The problem asks for the sum of the 8 neighbors of the number $N=2026$ in the spiral grid.
+
+### 1. Locate $N=2026$
+
+The spiral arranges numbers in concentric shells $k$, where the $k$-th shell runs along coordinates $x, y$ such that $\max(|x|, |y|) = k$.
+The largest number in shell $k$ is $S_k = (2k+1)^2$. This number is located at the Bottom Right corner $(k, -k)$.
+
+We find $k$ such that $S_{k-1} < 2026 \le S_k$.
+Since $40^2 = 1600$ and $50^2 = 2500$, we check odd squares nearby.
+$45^2 = 2025$.
+This means $S_{22} = (2 \cdot 22 + 1)^2 = 45^2 = 2025$.
+$S_{22}=2025$ is located at $(k, -k) = (22, -22)$.
+
+The number $N=2026$ starts the $k=23$ shell expansion.
+The standard sequence starts with one step Right (R) from $S_{k-1}$ to reach the coordinate $x=k$.
+$P_{2026} = P_{2025} + R = (22, -22) + (1, 0) = (23, -22)$.
+
+Let $C = (23, -22)$ be the coordinates of 2026. We need to find $N(x, y)$ for its 8 neighbors.
+
+### 2. Identify Neighbor Coordinates and Shells
+
+The neighbors of $C(23, -22)$ are:
+| Direction | Coordinates $(x, y)$ | Shell $k$ | Spiral Segment |
+|-----------|----------------------|-----------|----------------|
+| W (West)  | $(22, -22)$          | $k=22$    | BR corner, $S_{22}$ |
+| NW        | $(22, -21)$          | $k=22$    | R $\to$ U start |
+| SW        | $(22, -23)$          | $k=23$    | R segment |
+| D (Down)  | $(23, -23)$          | $k=23$    | BR corner, $S_{23}$ |
+| N (North) | $(23, -21)$          | $k=23$    | U segment start |
+| SE        | $(24, -23)$          | $k=24$    | R segment start |
+| E (East)  | $(24, -22)$          | $k=24$    | U segment |
+| NE        | $(24, -21)$          | $k=24$    | U segment |
+
+### 3. Calculate Neighbor Values
+
+**Neighbors in Shell $k=22$ (Max extent 22):**
+1. **W (22, -22):** This is $S_{22}$.
+$$N_{22, -22} = 2025$$
+
+2. **NW (22, -21):** $S_{21} = 43^2 = 1849$ is at $(21, -21)$. The next step starts the $k=22$ expansion segment R:
+$$N_{22, -21} = 1849 + 1 = 1850$$
+
+**Neighbors in Shell $k=23$ (Max extent 23):**
+$N_{start} = 2026$ at $(23, -22)$. $L_{23} = 2k = 46$.
+3. **N (23, -21):** This is the next step of the spiral (U segment):
+$$N_{23, -21} = 2026 + 1 = 2027$$
+
+4. **D (23, -23):** This is the BR corner $S_{23}$.
+$$N_{23, -23} = S_{23} = 47^2 = 2209$$
+
+5. **SW (22, -23):** This coordinate is one step before $S_{23}$ along the final R segment of shell 23 ($y=-23$).
+$$N_{22, -23} = S_{23} - 1 = 2209 - 1 = 2208$$
+
+**Neighbors in Shell $k=24$ (Max extent 24):**
+$S_{23} = 2209$ at $(23, -23)$. The spiral starts $k=24$ expansion.
+6. **SE (24, -23):** This is the R segment start of shell 24:
+$$N_{24, -23} = 2209 + 1 = 2210$$
+
+7. **E (24, -22):** This is the second step of the U segment of shell 24:
+$$N_{24, -22} = 2210 + 1 = 2211$$
+
+8. **NE (24, -21):** This is the third step of the U segment of shell 24:
+$$N_{24, -21} = 2211 + 1 = 2212$$
+
+### 4. Calculate the Sum
+
+The 8 neighbor values are:
+2025, 1850, 2208, 2209, 2027, 2210, 2211, 2212.
+
+Sum $S = 2025 + 1850 + 2208 + 2209 + 2027 + 2210 + 2211 + 2212$.
+
+We can group the terms:
+$S = (2025 + 2027) + 1850 + (2208 + 2209 + 2210 + 2211 + 2212)$
+$S = 4052 + 1850 + 11050$
+$S = 5902 + 11050 = 16952$.
+
+The sum of all 8 neighbors of 2026 is 16952.
+----
+Usage(input=62, output=12508, details={'candidatesTokenCount': 1541, 'promptTokensDetails': [{'modality': 'TEXT', 'tokenCount': 62}], 'thoughtsTokenCount': 10967})

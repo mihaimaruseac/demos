@@ -1,0 +1,267 @@
+We are given a hexagonal spiral numbering of natural numbers where the numbers are placed on a hexagonal grid in a spiral pattern starting from 1 at the center.
+
+The partial spiral given:
+
+```
+... 14  4  3 10 ...
+.. 15  5  1  2  9 ...
+...16  6  7  8 ...
+```
+
+We want to find the sum of the 6 neighbors of the number 2026 on this hexagonal spiral.
+
+---
+
+### Step 1: Understand the hexagonal spiral structure and coordinate system
+
+The hexagonal spiral places numbers starting with 1 at the center, then proceeds in rings around the center:
+
+- Ring 0: 1 (the center)
+- Ring 1: numbers 2 to 7 (6 numbers)
+- Ring 2: numbers 8 to 19 (12 numbers)
+- Ring 3: numbers 20 to 37 (18 numbers)
+- Ring \( n \): numbers from \( 3n(n-1)+2 \) to \( 3n(n+1)+1 \)
+  - Number of elements in ring \( n \) is \( 6n \)
+  - Total numbers up to ring \( n \) is \( 1 + 6(1 + 2 + \dots + n) = 1 + 3n(n+1) \)
+  
+---
+
+### Step 2: Determine which ring number 2026 lies in
+
+The total count of numbers from rings 0 through \( n \) is
+
+\[
+T(n) = 1 + 3n(n+1)
+\]
+
+We want to find \( n \) such that
+
+\[
+T(n-1) < 2026 \le T(n)
+\]
+
+Evaluate \( T(n) \) for some values:
+
+- \( T(25) = 1 + 3 \times 25 \times 26 = 1 + 3 \times 650 = 1 + 1950 = 1951 \)
+- \( T(26) = 1 + 3 \times 26 \times 27 = 1 + 3 \times 702 = 1 + 2106 = 2107 \)
+
+Since \( 1951 < 2026 \le 2107 \), 2026 lies on ring 26.
+
+---
+
+### Step 3: Find the position of 2026 in ring 26
+
+The first number of ring 26 is
+
+\[
+F_{26} = 1 + 3 \times 25 \times 26 = 1951
+\]
+
+The last number of ring 26 is
+
+\[
+T(26) = 2107
+\]
+
+Positions in ring 26 go from 1 to \(6 \times 26 = 156\). The position of 2026 in ring 26 is:
+
+\[
+p = 2026 - 1951 + 1 = 76
+\]
+
+---
+
+### Step 4: Find the neighbors of 2026 in the hexagonal spiral
+
+On each ring \( n \), the 6 neighbors of a number \( x \) consist of:
+
+- 2 neighbors in the same ring \( n \) (the preceding and succeeding numbers modulo ring length)
+- 2 neighbors in the inner ring \( n - 1 \) (closest to \( x \))
+- 2 neighbors in the outer ring \( n + 1 \)
+
+---
+
+### Step 5: Detail the hexagonal coordinate system and indexing neighbors
+
+Vertices on ring \( n \), indexed from 1 to \( 6n \).
+
+- Each ring has \( 6n \) elements.
+- The six vertices dividing the ring into six segments of length \( n \) are at positions:
+  
+  \[
+  k n, \quad k = 1, 2, \dots, 6
+  \]
+
+---
+
+### Step 6: Important indexing formulas for neighbors of element \( p \) on ring \( n \)
+
+- Same ring neighbors:
+
+\[
+p_{prev} = (p - 2) \mod 6n + 1
+\]
+\[
+p_{next} = p \mod 6n + 1
+\]
+
+- Inner ring neighbors:
+
+For ring \( n-1 \), size \( 6(n-1) \), neighbors are approximately at positions
+
+\[
+\lceil \frac{p}{n} (n-1) \rceil \text{ and } \lceil \frac{p}{n} (n-1) \rceil + 1
+\]
+
+- Outer ring neighbors:
+
+For ring \( n+1 \), size \( 6(n+1) \), neighbors are approximately at positions
+
+\[
+\lfloor \frac{p}{n} (n+1) \rfloor \text{ and } \lfloor \frac{p}{n} (n+1) \rfloor + 1
+\]
+
+---
+
+### Step 7: Compute the neighbors indices for \( p=76 \), \( n=26 \)
+
+- Ring 26 has \( 6 \times 26 = 156 \) elements
+
+--- Same ring neighbors ---
+
+\[
+p_{prev} = (76 - 2) \mod 156 + 1 = 74 + 1 = 75
+\]
+\[
+p_{next} = 76 \mod 156 + 1 = 76 + 1 = 77
+\]
+
+Neighbors in ring 26: 75 and 77
+
+---
+
+### Step 8: Inner ring neighbors for \( n-1 = 25 \)
+
+Ring 25 has \( 6 \times 25 = 150 \) elements.
+
+Compute:
+
+\[
+q = \left\lceil \frac{p}{n} (n-1) \right\rceil = \left\lceil \frac{76}{26} \times 25 \right\rceil
+\]
+
+Calculate the fraction:
+
+\[
+\frac{76}{26} \times 25 = \frac{76 \times 25}{26} = \frac{1900}{26} \approx 73.08
+\]
+
+So inner neighbors are at positions 73 and 74 on ring 25.
+
+---
+
+### Step 9: Outer ring neighbors for \( n+1 = 27 \)
+
+Ring 27 has \( 6 \times 27 = 162 \) elements.
+
+Compute:
+
+\[
+r = \left\lfloor \frac{p}{n} (n+1) \right\rfloor = \left\lfloor \frac{76}{26} \times 27 \right\rfloor
+\]
+
+Calculate:
+
+\[
+\frac{76}{26} \times 27 = \frac{76 \times 27}{26} = \frac{2052}{26} = 78.92
+\]
+
+So outer neighbors are at positions 78 and 79 on ring 27.
+
+---
+
+### Step 10: Find the actual numbers of those neighbors
+
+General formula for first number of ring \( m \):
+
+\[
+F_m = 1 + 3 (m-1) m
+\]
+
+We can use this to find exact numbers at given positions:
+
+\[
+\text{Number at ring } m, \text{ position } s = F_m + s - 1
+\]
+
+For each ring:
+
+- Ring 25: \( F_{25} = 1 + 3 \times 24 \times 25 = 1 + 1800 = 1801 \)
+- Ring 26: \( F_{26} = 1951 \) (already calculated)
+- Ring 27: \( F_{27} = 1 + 3 \times 26 \times 27 = 1 + 2106 = 2107 \)
+
+Compute neighbors:
+
+- Same ring neighbors (ring 26, positions 75, 77):
+
+\[
+N_{75} = 1951 + 75 - 1 = 1951 + 74 = 2025
+\]
+
+\[
+N_{77} = 1951 + 77 - 1 = 1951 + 76 = 2027
+\]
+
+- Inner ring neighbors (ring 25, positions 73, 74):
+
+\[
+N_{73} = 1801 + 73 - 1 = 1801 + 72 = 1873
+\]
+
+\[
+N_{74} = 1801 + 74 - 1 = 1801 + 73 = 1874
+\]
+
+- Outer ring neighbors (ring 27, positions 78, 79):
+
+\[
+N_{78} = 2107 + 78 - 1 = 2107 + 77 = 2184
+\]
+
+\[
+N_{79} = 2107 + 79 - 1 = 2107 + 78 = 2185
+\]
+
+---
+
+### Step 11: Sum all 6 neighbors
+
+Sum:
+
+\[
+2025 + 2027 + 1873 + 1874 + 2184 + 2185
+\]
+
+Group and sum:
+
+- \(2025 + 2027 = 4052\)
+- \(1873 + 1874 = 3747\)
+- \(2184 + 2185 = 4369\)
+
+Total sum:
+
+\[
+4052 + 3747 + 4369 = (4052 + 3747) + 4369 = 7799 + 4369 = 12168
+\]
+
+---
+
+### **Final answer:**
+
+\[
+\boxed{12168}
+\]
+
+The sum of all 6 neighbors of the number 2026 is **12168**.
+----
+Usage(input=71, output=2040, details={})

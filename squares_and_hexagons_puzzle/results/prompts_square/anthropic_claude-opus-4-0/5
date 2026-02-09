@@ -1,0 +1,115 @@
+I need to find the position of 2026 in the spiral and then sum its 8 neighbors.
+
+First, let me understand the spiral pattern. Starting from 1 at the center:
+- 1 is at position (0, 0)
+- 2 is at position (1, 0) - one step right
+- 3 is at position (1, 1) - one step up
+- 4 is at position (0, 1) - one step left
+- 5 is at position (-1, 1) - one step left
+- 6 is at position (-1, 0) - one step down
+- 7 is at position (-1, -1) - one step down
+- 8 is at position (0, -1) - one step right
+- 9 is at position (1, -1) - one step right
+
+The spiral moves: right, up, left-left, down-down, right-right-right, up-up-up, etc.
+
+Let me find which "ring" 2026 is in. The spiral forms square rings:
+- Ring 0: just 1 (1 number)
+- Ring 1: 2-9 (8 numbers)
+- Ring 2: 10-25 (16 numbers)
+- Ring 3: 26-49 (24 numbers)
+- Ring n: (2n-1)² + 1 to (2n+1)²
+
+The last number in ring n is (2n+1)².
+
+I need to find n such that (2n-1)² < 2026 ≤ (2n+1)².
+
+Testing values:
+- n = 22: (2×22+1)² = 45² = 2025
+- n = 23: (2×23+1)² = 47² = 2209
+
+So 2026 is in ring 23, just after 2025.
+
+In each ring, starting from the bottom-right corner:
+- First side goes up (2n numbers)
+- Second side goes left (2n numbers)  
+- Third side goes down (2n numbers)
+- Fourth side goes right (2n numbers)
+
+2025 = 45² is at position (23, -23) (bottom-right of ring 22).
+2026 is the first number of ring 23, so it moves right from (23, -23) to (24, -23).
+
+No wait, let me reconsider. After completing ring n at position (n, -n), the spiral moves right to start ring n+1 at position (n+1, -n).
+
+So 2025 is at (22, -22) and 2026 is at (23, -22).
+
+Actually, I need to trace more carefully. Let me verify with smaller numbers:
+- 9 = 3² is at (1, -1)
+- 10 starts ring 2, moving right to (2, -1)
+- 25 = 5² is at (2, -2)
+- 26 starts ring 3, moving right to (3, -2)
+
+So the pattern is: n² is at position (n/2, -n/2) for even n.
+Since 45² = 2025, position 2025 is at (22, -22) (since 45 = 2×22 + 1).
+Position 2026 is at (23, -22).
+
+The 8 neighbors of position (23, -22) are:
+- (22, -21), (23, -21), (24, -21)
+- (22, -22), [2026], (24, -22)
+- (22, -23), (23, -23), (24, -23)
+
+Now I need to find which numbers are at these positions.
+
+Since we're in ring 23, and 2026 is the first number going up the right side:
+- (24, -22): 2026 is at (23, -22), so this is empty (outside current ring)
+- (24, -21): also empty
+- (23, -21): 2027 (next in sequence, going up)
+- (22, -21): this is in ring 22
+
+Let me think systematically. 2026 just started going up the right edge of ring 23. 
+- Below (23, -23): 2025 + 46 + 46 + 46 + some = 2025 + 138 + k
+- Actually, going around ring 22 from 2025 backwards: we need to go 3×44 + 1 = 133 steps to reach (22, -23), so that's 2025 - 133 = 1892
+- (22, -22): 1893
+- (22, -21): 1894
+
+Working out all positions:
+- (22, -21): 1894
+- (23, -21): 2027
+- (24, -21): will be filled later in ring 23
+- (22, -22): 1893
+- (23, -22): 2026
+- (24, -22): will be filled later
+- (22, -23): 1892
+- (23, -23): 2025
+- (24, -23): will be filled later
+
+For the positions in ring 23:
+- (24, -22): This will be filled when going down the top side. From 2026, we go up 45 steps to (23, 23), then left 46 steps to (-23, 23), then down to (24, -22). That's 45 + 46 + 45 = 136 steps, so 2026 + 136 = 2162
+- Wait, that's not right. Let me recalculate.
+
+Actually, from (23, -22), the spiral goes up to (23, 23), which is 45 steps (2026 to 2071).
+Then left to (-23, 23), which is 46 steps (2072 to 2117).
+Then down to (-23, -23), which is 46 steps (2118 to 2163).
+Then right...
+
+Position (24, -22) won't be filled in this ring. It's in ring 24.
+
+So the filled neighbors are:
+- (22, -21): 1894
+- (23, -21): 2027  
+- (22, -22): 1893
+- (22, -23): 1892
+- (23, -23): 2025
+
+Sum = 1894 + 2027 + 1893 + 1892 + 2025 = 9731
+
+But we still need the three positions in ring 24. When ring 24 starts:
+- 47² = 2209 ends ring 23 at position (23, -23)
+- 2210 starts ring 24 at position (24, -23)
+- 2211 is at (24, -22)
+- 2212 is at (24, -21)
+
+So the complete sum is:
+1892 + 1893 + 1894 + 2025 + 2027 + 2210 + 2211 + 2212 = 16164
+----
+Usage(input=70, output=1709, details=None)

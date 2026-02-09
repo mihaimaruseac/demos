@@ -1,0 +1,704 @@
+<think>
+Okay, so I need to find the sum of all six neighbors of the number 2026 on this hexagonal spiral grid. Let me try to understand the structure of the spiral first. The example given shows the numbers arranged in a hexagonal grid, which is a bit different from the usual square spiral. In a hexagonal grid, each cell has six neighbors, so the spiral should be expanding in six directions. Let me visualize how numbers are placed here.
+
+Looking at the example:
+
+... 14  4  3  10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+
+It seems like the center is 1, then going clockwise, numbers are added layer by layer. Each layer (or ring) adds more numbers around the previous layer. For example, the first ring (center) is just 1. The next ring (let's call it ring 1) would have numbers from 2 to 7? Wait, in the example, moving from 1 to 2, then 3, 4, 5, 6, 7, 8, 9, 10, etc. Let me try to see the pattern.
+
+But maybe it's better to figure out how the hexagonal spiral progresses. In a hexagonal grid, each ring expands outward. For square spirals, each ring adds a layer with a certain number of elements. For hexagons, each ring n (starting from 0) has 6n numbers? Wait, let me think. The first layer (ring 0) is just 1. Then ring 1 would be the numbers surrounding it. In a hexagonal grid, each ring adds a hexagon around the previous one. The total number of numbers up to ring n is 1 + 6*(1 + 2 + ... + n) = 1 + 6*(n(n+1)/2) = 1 + 3n(n+1). For example, ring 0: 1 + 3*0*(0+1) = 1, ring 1: 1 + 3*1*2 = 7, ring 2: 1 + 3*2*3 = 19, etc. Therefore, the numbers on ring n would be from (previous total) + 1 to current total. For example, ring 1 (numbers from 2 to 7), ring 2 numbers from 8 to 19, ring 3 numbers from 20 to 37, and so on. 
+
+So if I can figure out which ring 2026 is in, and its position on that ring, I can figure out its neighbors.
+
+First, let's find out which ring 2026 is in. Let me define the total numbers up to ring r as T(r) = 1 + 3*r*(r + 1). We need to find the smallest r such that T(r) >= 2026. Then, the ring would be r, or maybe r-1? Let's compute T(r):
+
+We can solve 3r(r + 1) + 1 >= 2026 => 3r² + 3r + 1 - 2026 ≥ 0 => 3r² + 3r - 2025 ≥ 0 => r² + r - 675 ≥ 0. Solving quadratic equation r² + r - 675 = 0. Discriminant D = 1 + 2700 = 2701. Square root of 2701 is approx 51.97. So r = [ -1 ± 51.97 ] / 2. Taking positive root: ( -1 + 51.97 ) / 2 ≈ 25.48. Therefore, r is approximately 25.48. Therefore, the ring number is 25? Because ring 25 would have T(25) = 1 + 3*25*26 = 1 + 3*650 = 1 + 1950 = 1951. Then ring 26 is T(26) = 1 + 3*26*27 = 1 + 2106 = 2107. Therefore, number 2026 is in ring 26, since 2026 is between 1951 + 1 = 1952 and 2107. Therefore, ring 26. 
+
+Now, each ring has 6*r numbers, where r is the ring number. Wait, earlier we had total numbers up to ring r is 1 + 3r(r+1). Therefore, each ring r (starting from 1?) has T(r) - T(r-1) numbers. Let me check that. For example, ring 1 (r=1) would be T(1) - T(0) = 7 - 1 = 6 numbers. Which matches 6*1. Ring 2: T(2) - T(1) = 19 - 7 = 12 = 6*2. Ring 3: T(3) - T(2) = 37 - 19 = 18 = 6*3. Yes, so general formula: each ring r has 6*r numbers. Therefore, for ring 26, there are 6*26=156 numbers. 
+
+Therefore, the numbers on ring 26 start from T(25) + 1 = 1951 + 1 = 1952 and end at T(26) = 2107. So 2026 is somewhere in this ring. Let me find its position on the ring. The position is 2026 - 1951 = 75th number in ring 26. Wait, because starting from 1952 as the first number, so 2026 - 1952 + 1 = 75. Hmm, 2026 - 1951 = 75? Wait, T(25) = 1951, so starting from T(25) +1 = 1952. Therefore, the position is 2026 - T(25) = 2026 - 1951 = 75. So it's the 75th number in ring 26. 
+
+Now, each ring is divided into six "sides" or "edges", each with r numbers. Since ring 26 has 6*26=156 numbers, each side has 26 numbers. Therefore, each side has 26 numbers. Therefore, to find which side the 75th number is on, we can divide 75 by 26. 
+
+First side: positions 1-26, second side: 27-52, third: 53-78, fourth: 79-104, fifth: 105-130, sixth: 131-156.
+
+Since 75 is between 53 and 78, it's on the third side. Let's calculate how far along the third side it is: 75 - 52 = 23. So it's the 23rd number on the third side. 
+
+Now, I need to figure out how the numbers are arranged on each side of the hexagonal ring. In a hexagonal spiral, each ring is built by moving in a straight line for r steps in each of the six directions. For example, on ring 1 (r=1), each side has 1 step. 
+
+To generalize, each side of the ring is a straight line of numbers. In a hexagonal spiral, moving from one side to another changes direction. But to find the neighbors of 2026, I need to know the relative positions of numbers adjacent to it. 
+
+But perhaps there's a coordinate system that can help. In hexagonal grids, coordinates can be represented using axial coordinates, which are two coordinates (q, r) such that q + r + s = 0 for axial coordinates (q, r, s). But maybe there's another way. Alternatively, maybe we can model the movement in the spiral. 
+
+Alternatively, maybe think about how numbers progress along each side of the ring. Let me think. Let's consider that each ring has six sides, and each side is a straight line. For example, on ring 26, moving along one side, each step increments the number by a certain value? Maybe not. Wait, maybe need to figure out the direction of each side. 
+
+Alternatively, think of the hexagonal grid as layers. For example, in square spirals, each ring increases by even numbers, but here with hexagons it's different.
+
+Alternatively, think about the coordinates. Suppose the center is at (0,0). Each step outward increases a coordinate. But perhaps axial coordinates would be complex. Alternatively, maybe use a coordinate system where each ring is defined by a distance from the center. Here, ring 0 is distance 0, ring 1 is distance 1, etc. 
+
+Another approach: for each ring, the starting number is T(r-1) + 1. For example, ring 26 starts at 1952. The starting number of ring r is 1 + 3*(r-1)*r + 1 = 1 + 3(r² - r)? Wait no, T(r) = 1 + 3r(r + 1). Therefore, T(r - 1) = 1 + 3(r - 1)r. Therefore, the starting number of ring r is T(r - 1) + 1 = 1 + 3(r - 1)r + 1 = 2 + 3r(r - 1). Wait, no, let me recompute:
+
+Actually, T(r) is total numbers up to and including ring r. Therefore, starting number of ring r is T(r - 1) + 1. Since T(r - 1) = 1 + 3*(r - 1)*r. Therefore, starting number is 1 + 3*(r - 1)*r + 1? No, total numbers up to ring (r -1) is T(r - 1) = 1 + 3*(r -1)*(r). Therefore, starting number for ring r is T(r -1) + 1 = [1 + 3*(r -1)*r] + 1 = 2 + 3*(r -1)*r. Wait, but for example, when r=1, starting number is 2 + 3*(0)*1 = 2, which is correct. When r=2, starting number is 2 + 3*(1)*2 = 2 + 6 = 8, which matches the example (since ring 2 starts at 8). So yes, starting number of ring r is 2 + 3r(r - 1). Let me confirm for r=3: 2 + 3*3*2= 2 + 18= 20, which is correct as T(2) is 19, so starting number is 20. Correct.
+
+Therefore, for our case, the starting number of ring 26 is 2 + 3*26*25 = 2 + 3*650 = 2 + 1950 = 1952. Which matches our previous result. Therefore, 2026 is the 75th number on ring 26, which is on the third side (positions 53-78). The third side, 23rd position on that side. 
+
+Now, to figure out the neighbors, we need to know how the numbers progress along each side. For a hexagonal spiral, each side of a ring is a straight line of numbers, and each step along the side is moving in a certain direction. The numbers along the side could increase or decrease depending on the direction. However, to find the neighbors of 2026, we need to know its immediate neighbors: three from the same ring (axially along the sides) and three from inner/outer rings (radially).
+
+But perhaps there is a formula or pattern. Let me think.
+
+First, for a number on a ring, its neighbors can be categorized into two types: those in the same ring (along the ring's direction) and those in adjacent rings (radially inward or outward). However, given that all numbers are part of the spiral, each neighbor is part of the same or adjacent rings.
+
+But maybe there's a better way. Since the problem is in a hexagonal spiral, perhaps similar to square spiral, but with different calculations. 
+
+Alternatively, maybe we can define for a given ring r, each side is a sequence of numbers going in a direction. For example, moving along the first side, the numbers increase by a certain step. But how?
+
+Alternatively, perhaps think about each side of the ring. For each side, moving along it, the numbers can be calculated based on their position.
+
+Alternatively, maybe use a coordinate system. For example, in axial coordinates, each ring is at a certain distance from the center. But perhaps too abstract.
+
+Alternatively, think of the ring as a sequence of numbers. For example, for ring r, starting number S = 1 + 3r(r-1) as above. Then, each side has r numbers. Let me think about how numbers change along each side.
+
+In the square spiral, each side has numbers that increase linearly, but with hexagons... Maybe similar?
+
+Alternatively, think of the direction of each side. For example, moving from the starting point of the ring, let's say moving in direction 0°, then 60°, 120°, etc. For each side, the numbers either increase or decrease depending on the movement direction.
+
+But perhaps here's a way to think. Let me consider the example given. Let's take ring 1 (numbers 2-7). The starting number is 2. How are they arranged? Looking at the example:
+
+... 14 4 3 10 ...
+.. 15 5 1 2 9 ...
+... 16 6 7 8 ...
+
+So starting from 1, moving to the right is 2, then up-right to 3, then up-left to 4, left to 5, down-left to 6, down-right to 7, then back? Wait, maybe the spiral goes clockwise or counter-clockwise. It's a bit confusing from the example. Let me see. The number 1 is in the center. Then 2 is next to it. Looking at the example: the second line is .. 15 5 1 2 9 ... so going from 1 to 2 is to the right? Then 2 is followed by 3, which is ... 3 10 ... above it? The first line has ...14 4 3 10... so 3 is above 2? Then moving from 2 (center right) to 3 (above center), then maybe 10 is further up? Hmm.
+
+Alternatively, perhaps each ring is built by moving in six directions. For example, the first ring around 1 is built by moving in direction 1, then direction 2, etc. But without a clear diagram, it's hard, but maybe we can figure out a pattern.
+
+Alternatively, note that on each ring, the first side starts at S and ends at S + r - 1. Wait, but how? Let me take ring 1 (r=1), starting number 2, ends at 2 + 1 -1 = 2? No, but ring 1 has 6 numbers from 2 to 7. So maybe each side has r numbers (for ring r), so starting from S, each side ends at S + r -1, then next side starts at that number +1? 
+
+Wait, let's think about ring 2 (r=2), starting at 8. Each side has 2 numbers. So first side: 8, 9; second: 10, 11; third: 12,13; fourth:14,15; fifth: 16,17; sixth: 18,19. Which totals 12 numbers, which is correct. And total numbers up to ring 2 is 19. Which matches. 
+
+Looking at the example given for the first few numbers. Let me check the numbers:
+
+Looking at the example given, the center is 1. Then going clockwise, first ring numbers 2-7:
+
+But in the given example, ... 14 4 3 10 ... and ... 15 5 1 2 9 ... and ... 16 6 7 8 ... So maybe the arrangement is that from the center 1, 2 is east, then going northeast to 3, northwest to 4, west to 5, southwest to 6, southeast to 7, and then back? Not sure. But numbers 8-? are on the next ring. 
+
+But regardless, for our case, the important thing is to figure out for a given position on a ring, what are the numbers adjacent to it.
+
+But perhaps there's a way to model this. Let's consider that in each ring, each side has numbers that increase or decrease depending on direction, but perhaps we can find a formula for neighbors.
+
+First, for a number in ring r, which is the k-th number in the ring (from 1 to 6r). Let me denote that. Our number is in ring r=26, position k=75. Which is on the third side (positions 53-78), position 23 along that side. 
+
+Now, in order to find neighbors, we need to find:
+
+- The previous and next numbers on the same side (if any), 
+
+- The numbers at the corners where sides meet,
+
+- And the numbers on adjacent rings (either inner or outer ring).
+
+But depending on the position on the side (whether it's on the middle, the beginning, or the end of a side), the neighbors will vary. 
+
+Alternatively, since all numbers are on a hexagonal grid, each number has six neighbors. For our number on ring r, depending on whether it's on a side or a corner, its neighbors will be in particular positions.
+
+But given that our position is the 23rd number on the third side of ring 26, and the third side has 26 numbers (positions 53 to 78). So 23rd position is somewhere in the middle of the side. Therefore, on the same side, the previous number is 2026 - 1, next number is 2026 + 1. However, depending on the direction of movement along the side, numbers could be increasing or decreasing. So need to figure out the direction.
+
+Wait, for example, in ring 2 (numbers 8-19). Let me take the first side, numbers 8,9. Let's suppose moving from 8 to 9 is in some direction. Then moving to the next side, numbers 10, 11. How do these numbers relate spatially?
+
+Looking at the example given. In the example, number 2 is next to 1 (center). Then moving to the next side (second side), which in ring 1 (r=1) would be only one number. But since the example is a bit limited. Maybe there's another way.
+
+Alternatively, think of the numbers on each side. For ring r, each side is associated with a "direction". If we can figure out for each side the direction of increase (i.e., whether moving along the side increases or decreases the number), then we can compute neighbors. 
+
+Alternatively, think about how numbers on adjacent rings relate. For example, the starting number of ring r is T(r-1) + 1, which is adjacent to the end of the previous ring's last side. Wait, for example, in ring 1, ends with 7, then ring 2 starts with 8.
+
+But how is 8 placed relative to 7? If we imagine the spiral, after completing a ring, you turn and start the next ring. So maybe direction of sides alternates between moving outward and inward? Not sure.
+
+Alternatively, perhaps there is a formula for the neighbors. 
+
+Another idea: For any number n in the spiral, the six neighbors can be determined by considering the six directions in the hexagonal grid. If we can assign coordinate changes to each direction, we can model the positions. But to do that, we need a coordinate system. 
+
+But how can we map numbers to coordinates? Maybe similar to how square spirals can be analyzed by layers and coordinates. 
+
+Alternatively, since we know the ring number (r=26) and position on the ring (k=75, third side, 23rd position), perhaps we can find coordinates relative to the ring's center. 
+
+In a hexagonal grid, coordinates can be represented in axial coordinates (q, r), where q and r are integers, and the third coordinate is -q - r. The distance from the origin is (|q| + |r| + |q + r|)/2, but maybe there's a simpler way. 
+
+Alternatively, think of each ring as being at distance d from the center. The rings in our numbering are numbered as d=0,1,2,... Each ring d has 6*d numbers. Wait, actually our ring numbering earlier was different. Wait in our case, ring r corresponds to distance r. Because ring 0 is distance 0 (center), ring 1 is distance 1, etc.
+
+Therefore, the distance from the center is d=r. 
+
+In axial coordinates, each ring d corresponds to points where the distance from the origin is d. In axial coordinates, distance is (|q| + |r| + |q + r|)/ something, but actually, the standard distance in axial coordinates is (|q| + |r| + |q + r|)/2, but for our purposes, maybe another method is better. 
+
+Alternatively, in offset coordinates, but perhaps too complicated. 
+
+Alternatively, since we have a spiral, maybe the numbers on each side of the ring are related to their distance from the "corner" numbers.
+
+Wait, another idea. For any number on a ring, depending on which side it's on, we can determine its coordinates. For example, let's consider that each side of the ring corresponds to one of the six directions. For instance, directions: 0°, 60°, ..., 300°. Each side moves in one direction. For example, if we imagine starting at a point on the ring and moving in a straight line for r steps, that's one side of the ring.
+
+If we can figure out the starting coordinate of each ring and then progress along the directions, we can find coordinates of any number. But to do this, we need to know the coordinate changes per step in each direction. 
+
+Let me recall that in axial coordinates, the six directions correspond to increments in the coordinates:
+
+(1, 0), (1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1)
+
+But I need to confirm. In axial coordinates, each direction can be represented as a change in two coordinates. For example, moving in the easterly direction might be (q+1, r, s-1), but axial coordinates use two coordinates. Let me check.
+
+Actually, in axial coordinates, the six directions are:
+
+( +1,  0  )
+( +1, -1  )
+(  0, -1  )
+( -1,  0  )
+( -1, +1  )
+(  0, +1  )
+
+Yes, these are the six directions. So each direction is a change in axial coordinates.
+
+Now, if we can assign each side of the ring to one of these directions, and know the starting coordinate of the ring, we can model the positions of numbers. 
+
+But how to find the starting coordinate? Well, starting from the center (0,0). The first ring (distance 1) starts at coordinate (1,0). Then moving in the six directions. But the exact path of the spiral depends on the direction sequence.
+
+But the spiral is laid out such that it starts at center 1, then goes to 2, 3, etc. The exact path is important. In square spirals, the direction changes as you go up, right, down, left, etc., but in hexagonal spirals, the direction might change clockwise every certain steps.
+
+Assuming the spiral goes in a clockwise direction. For example, starting at center, going east, then northeast, then northwest, then west, then southwest, then southeast, and repeat.
+
+But actually, the direction sequence could be different depending on the spiral's design. Since the example given shows numbers increasing to the right (1 to 2, then up and to the left? Maybe it's better to define the direction sequence.
+
+Alternatively, let's try to model based on how numbers are added. 
+
+Starting at center (1). Then going to 2. Then the next number, 3, is placed northeast of 2? Or northwest? In the given example, the numbers 2, 3, 4, 5, 6, 7 are placed around 1. Looking at the example:
+
+The center is 1. Then 2 is to the right. Then 3 is above right (northeast), then 4 is above left (northwest), 5 is to the left, 6 is below left (southwest), 7 is below right (southeast). Then next ring starts at 8. Following the example's top part:
+
+... 14 4  3  10 ...
+.. 15 5  1  2  9 ...
+... 16 6  7  8 ...
+
+So 10 is northeast of 3? Continuing the pattern. Then 9 is to the right of 2. Then 8 is southeast of 7? Let's see: 8 is at the end of ring 1. Then ring 2 starts. 
+
+Assuming the numbering continues clockwise. From 7, moving southeast to 8? Then moving south? Let me check the next numbers. The example shows ... 16 6 7 8 ... so 8 is to the right of 7. So from 7 (bottom left of center), 8 is to the right (east). Then next numbers go up to the example's ... 14 4 3 10 ... where 10 is above 3. So 3 is northeast of 1, 4 is northwest of 1? Then 14 is southwest of 4? 
+
+This is getting confusing without a diagram, but maybe we can define the direction sequence for the spiral as follows:
+
+Assume the spiral starts by going east, then each side proceeds in the following order of directions:
+
+East, Northeast, Northwest, West, Southwest, Southeast, and repeat. 
+
+So the direction sequence for the sides of each ring is [East, NE, NW, West, SW, SE]. This seems plausible for a clockwise spiral.
+
+Therefore, for each ring, when building the ring, we move in each of these directions, adding numbers along each direction.
+
+Therefore, for each side of the ring, moving in a given direction. 
+
+Given that, if we can figure out for a given number's position on the ring, which direction it's on, and where it is on that side, we can compute its neighbors. 
+
+For example, our number is on the third side of ring 26, which would be Northwest direction? Wait, if the first side is East, second side is Northeast, third is Northwest, fourth is West, fifth Southwest, sixth Southeast. 
+
+Therefore, side 1: East, side 2: NE, side 3: NW, side 4: West, side 5: SW, side 6: SE.
+
+Therefore, the third side is Northwest direction. Therefore, our number is on the third side (Northwest) of ring r=26, 23rd position on that side.
+
+Now, moving along the third side (Northwest direction), numbers are added in that direction. So each step along that side increases the number by 1? Or decreases? 
+
+Well, if the spiral is moving in a clockwise direction, then after completing a side, you turn clockwise to the next direction. Therefore, if the direction is Northwest, then the next direction is West. However, the exact orientation of how the numbers increase depends on the movement.
+
+But perhaps we can figure out that when moving along a side, the numbers are increasing. Because you're going outward, but perhaps not. Wait, in the example, starting from 1, moving East to 2, then moving Northeast to 3, then Northwest to 4, then West to 5, then Southwest to 6, then Southeast to 7, then back to start the next ring. So when moving along a side, numbers increase. For example, on the first side (East), numbers go from 2 (start of ring 1) to 2 + r numbers. So yes, numbers increase as you move along the side. 
+
+Therefore, if that's the case, moving along a side in a particular direction, numbers are increasing. Therefore, for our number, which is the 23rd on the third side (Northwest direction), its neighbors along the same side are 2026 -1 and 2026 +1. However, there are also neighbors on adjacent sides (if it's at a corner, but since it's 23rd on the 26-number side, it's not at the end). Also, there are neighbors from the previous ring (radially inward) and the next ring (radially outward). 
+
+But how to compute those? For example, if we are on a position moving Northwest on ring 26, then one of its neighbors is in the direction opposite to Northwest, i.e., Southeast, which would be on the previous ring (ring 25). Another neighbor is in the direction of the previous side's movement, maybe? Or depends on the local geometry.
+
+Alternatively, for each of the six directions around the number, determine which ring they are on and the number.
+
+This seems complex, but maybe there's a systematic way.
+
+Let me consider the number N=2026 in ring r=26, on side 3 (NW), position p=23 along that side (with each side having length s=r=26). 
+
+First, let me find the coordinates of N. 
+
+But how? For that, we need to know how to translate ring, side, position into coordinates. 
+
+Let me try to define the coordinate system. Let's use axial coordinates (q, r). Starting from the center (0, 0). 
+
+The first ring, ring 1, starts at (1, 0) and goes around. 
+
+For any ring r, each side has length r. 
+
+Let me recall that when moving along a side in direction d, the coordinates change accordingly. 
+
+Let me try to build the coordinates step by step. 
+
+Starting at ring 0: (0, 0). 
+
+Starting ring 1 (r=1): starts at (1, 0) [direction East]. Then moves NE for one step to side 2, then NW for one step (side 3), etc. 
+
+For ring r, to find the starting coordinate of each side:
+
+Assume the starting coordinate of the ring is the first position of side 1. For ring r, what is the starting coordinate?
+
+Well, for ring 1, starting at (1, 0). 
+
+For ring 2, how to find starting coordinate? 
+
+Well, after completing ring 1 (ending at position 6), which ends at 7. Then the next ring starts by moving in direction East. Where is position 7? It should be adjacent to position 6. 
+
+Position 6 is on the sixth side of ring 1 (direction SE). Therefore, moving East from position 7 starts ring 2. 
+
+To figure out where position 7 is located. Let's try to model it. 
+
+Ring 1 side 1: East direction, from (1,0) to ... moving East for 1 step. Wait, but since it's length 1, only position 2 is at (1, 0) + East? Wait, direction East in axial coordinates corresponds to adding (1, 0). Wait earlier we had axial directions as ( +1, 0 ), ( +1, -1 ), etc. 
+
+Let me take the axial directions:
+
+1. East: ( +1, 0 )
+2. Northeast: ( +1, -1 )
+3. Northwest: ( 0, -1 )
+4. West: ( -1, 0 )
+5. Southwest: ( -1, +1 )
+6. Southeast: ( 0, +1 )
+
+Therefore, moving in direction East adds (1, 0) to current coordinates. 
+
+So for example:
+
+Starting at (0, 0). 
+
+Ring 1 starts at (1, 0) [East direction, side 1]. Then moving in direction Northeast (side 2) for 1 step: coordinate becomes (1,0) + (1,-1) = (2, -1). Then side 3, Northwest direction (add (0,-1)): (2, -1) + (0, -1) = (2, -2). Then side 4, West: add (-1, 0): (1, -2). Side 5, Southwest: add (-1, +1): (0, -1). Side 6, Southeast: add (0, +1): (0, 0). Wait, returning to center? But that can't be because position 7 is on ring 1. Wait something is wrong here. 
+
+Wait positions 2-7 are on ring 1, but according to this calculation, after six steps, we return to the center. That suggests that the starting coordinate for ring 1 is not (1, 0). Maybe my assumption is wrong. 
+
+Alternatively, maybe the starting coordinate is different. Let me check for ring 1: if someone is at position 1 (center), position 2 is adjacent to it. Let's suppose position 2 is at axial coordinate (1, 0). Then moving NE for one step to position 3: (1, 0) + (1, -1) = (2, -1). Then position 3 is at (2, -1). Then moving NW one step: (2, -1) + (0, -1) = (2, -2). Position 4. Then moving West one step: (2 -1, -2) = (1, -2). Position 5. Then moving SW one step: (1 -1, -2 +1) = (0, -1). Position 6. Then moving SE one step: (0, -1 +1) = (0, 0). Position 7 at the center? But that's not possible because position 7 should be on ring 1. 
+
+Ah, that's a problem. It seems like this calculation leads us back to the center. But according to our previous count, ring 1 has numbers 2-7, but position 7 is at the center? Which is number 1. That doesn't make sense. Therefore, my assumption about the directions or starting coordinates must be wrong.
+
+Perhaps the starting direction is different. Maybe the first side is not East? Maybe the spiral is constructed differently. 
+
+Alternatively, maybe I made a miscalculation in the movement. Let me recall that in axial coordinates, moving in the six directions corresponds to different steps. If we start at some point and move in six directions, we return to the original position? 
+
+Actually, yes. In a hexagonal grid, moving in each of the six directions in sequence would return you to your starting position. Therefore, if each side of the ring is of length equal to the ring number, then to form a closed ring, the total displacement after six sides should be zero. However, in our case, the starting position of the ring must be offset so that after moving along six sides, you end up one step away from the starting position to begin the next ring. Wait, this is getting too abstract.
+
+Perhaps another approach is needed. Let me refer back to the example given.
+
+In the example, numbers around the center are:
+
+... 14  4  3  10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+
+Let me try to assign axial coordinates to these numbers. Let me assume the center is (0, 0). Then number 1 is at (0, 0). Number 2 is to the right, which we might consider as axial coordinate (1, 0). Then number 3 is northeast of 2, which would be adding (1, -1) to (1, 0), giving (2, -1). Number 4 is northwest of 3, adding (0, -1), giving (2, -2). Number 5 is west of 4, adding (-1, 0), giving (1, -2). Number 6 is southwest of 5, adding (-1, +1), giving (0, -1). Number 7 is southeast of 6, adding (0, +1), giving (0, 0). Wait, again, back to center? But number 7 is supposed to be on the first ring. This indicates that the example's number 7 is at (0, 0), but number 1 is already at (0, 0). Contradiction. Hence, my coordinate system assignment is wrong. 
+
+Alternatively, maybe the movement continues from 7 to start the next ring. Instead of returning to the center. Maybe the movement actually turns before completing the loop? 
+
+Wait, in the example, after 7, the numbers continue to 8. In the example, 7 is followed by 8 to the east. So from 7, moving east to 8. If 7 is at (0, 0), moving east would be to (1, 0). But there's already a 2 at (1, 0). That suggests something is wrong.
+
+This implies that my way of assigning coordinates or the movement directions is incorrect. Let me check another resource or think differently.
+
+Perhaps the hexagonal spiral is constructed differently. In some sources, the hexagonal spiral is constructed by starting at 1, then adding layers around it, each layer having six more numbers than the previous. However, in terms of coordinates, it might be easier to use an offset grid.
+
+Alternatively, perhaps it's better to think in terms of the spiral's grid layout and how numbers are placed. For instance, in the given example:
+
+... 14  4  3  10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+
+If we imagine writing numbers in a hexagonal spiral, after the first ring (numbers 2-7), the next ring would start with 8, going clockwise. From 7, which is presumably at the bottom-right of the center, moving east to place 8, then moving north-east to add numbers until the next side, etc. 
+
+But the problem comes when trying to assign coordinates. Perhaps instead of axial coordinates, use cube coordinates (q, r, s) with q + r + s = 0. In that system, moving in directions corresponds to specific changes. For example:
+
+Directions in cube coordinates:
+East: (1, -1, 0)
+Northeast: (1, 0, -1)
+Northwest: (0, 1, -1)
+West: (-1, 1, 0)
+Southwest: (-1, 0, 1)
+Southeast: (0, -1, 1)
+
+But I'm not sure. Whatever the case, mapping numbers to coordinates is non-trivial without a clear pattern.
+
+Alternatively, let's try to find a pattern for neighbors based on ring positions.
+
+Let's suppose that for any number on a ring, the neighbors on the same ring are the previous and next number, and the neighbors on other rings are related to the starting/ending numbers of the sides.
+
+But given that the number is on ring r, side s, position p, and we need to find its six neighbors:
+
+1. The previous number on the same side.
+2. The next number on the same side.
+3. The number at the beginning of the current side (if p > 1).
+4. The number at the end of the current side (if p < r).
+5. The number at the end of the previous side (which would connect to the start of current side? Or not?).
+6. The number from the adjacent ring.
+
+But I'm getting confused. Maybe another way: for any position on a ring, two of its neighbors are on the same ring, and four are on adjacent rings? No, in a hexagonal grid, each cell has six neighbors, which can be on the same ring or different rings. 
+
+Let me think of the center: number 1. It has six neighbors on ring 1: 2, 3, 4, 5, 6, 7. Now take number 2 on ring 1, which has neighbors 1 (center), 3, 8, and possibly others?
+
+Looking at the example: number 2 is next to 1, and in the example, above it is 3 and below it is 9. To the east of 2 is 9? Or in the next ring. Wait from the example:
+
+.. 15 5 1 2 9...
+... 16 6 7 8...
+
+So number 2 is next to 1 (center), 3 (above), and 9 (to the east, next ring). Then neighbors of 2: 1, 3, 9, and also what about the numbers on the same ring? Number 2 is on ring 1, side 1 (East). Its neighbors on the same ring would be the previous and next on the side. Since side 1 has length 1 (for ring 1), number 2 is the only number on side 1. So its next on the side is nothing? Wait no, each side has length equal to the ring number. Wait for ring 1, length is 1, so there are no previous or next on the side, but there are neighbors on adjacent sides.
+
+Wait this is getting too tangled. Maybe I need to find formulas or relationships.
+
+Another idea: For any number N in ring r, the numbers adjacent in the spiral can be determined by knowing where it is in the ring. For instance, when moving along a side, the number before and after it are on the same ring. At the corners (start/end of a side), the number will have neighbors from the adjacent sides. Additionally, there are neighbors from the inner ring and outer ring.
+
+Let me look for a formula or derivation. 
+
+For example, in square spirals, the neighbors can be calculated by knowing the side and position, but here for hexagonal...
+
+Wait here's an idea from similar problems: in a hexagonal spiral, each number has neighbors that can be calculated using a formula based on the ring number and position. 
+
+Let me look for general patterns. 
+
+First, note that each ring r has numbers from S to S + 6r - 1, where S = 1 + 3r(r -1). Wait no, earlier we had starting number is 1 + 3(r-1)r? No, earlier we found starting number for ring r is T(r-1) +1 = 1 + 3(r-1)r +1 = 2 + 3r(r -1). Wait earlier computations said for ring r, starting number S = 2 + 3r(r -1). For example, ring 1: 2 + 3*1*0 = 2, correct. Ring 2: 2 + 3*2*1= 8, correct.
+
+Therefore, for a given ring r, S = 2 + 3r(r -1). Let's define this.
+
+Now, for a number N in ring r, its position in the ring is pos = N - S + 1. For our N=2026, ring r=26, pos = 2026 - [2 + 3*26*25] +1 = 2026 - [2 + 1950] +1 = 2026 - 1952 +1 = 75, which matches what we had earlier. So pos=75, side = ceil(pos / r). Since r=26, side = ceil(75 / 26) = ceil(2.884) = 3, so side 3. Position on the side: pos_on_side = pos - (side -1)*r = 75 - (3-1)*26 = 75 - 52 = 23, as before.
+
+Now, each side is direction[side]. For our case, side 3 is Northwest.
+
+Now, to find neighbors:
+
+Case 1: Neighbors on the same ring.
+
+If the number is not at the start or end of a side, it has a predecessor and successor on the same side. For example, if pos_on_side is between 1 and r, then predecessor is N-1 and successor is N+1. But whether N-1 and N+1 are on the same side depends if we're in the middle of the side. Since our pos_on_side is 23, which is between 1 and r=26, it has neighbors on same side: 2026 -1 = 2025 and 2026 +1 = 2027. 
+
+Case 2: Neighbors at the junctions between sides. If the number is at the start or end of a side, then its neighbors will include the last or first number of the previous/next side.
+
+But since our number is not at the start or end of the side, we don't need to worry about that here.
+
+Case 3: Neighbors from inner and outer rings. Each number has neighbors from the ring inside (r -1) and outside (r +1). 
+
+To find these, we need to determine what numbers are directly adjacent to our number from the inner and outer rings. 
+
+For that, we need to determine the "direction" of our number on the ring. Since it's on side 3 (Northwest direction), the neighbor from the inner ring would be in the opposite direction, which is Southeast. Similarly, the neighbor from the outer ring would be in the direction of side 3, continuing further out. 
+
+But how to calculate those numbers?
+
+Let me think. For a given position on a ring, the number directly "inward" (towards the center) is on ring r-1, and the number directly "outward" is on ring r+1. 
+
+Additionally, there are two more neighbors from the adjacent sides on the inner and outer rings. 
+
+Wait, maybe for each number on a ring, there are four neighbors on adjacent rings: one inward along the current direction, one outward along current direction, one inward along previous direction, and one inward along next direction? This is getting too vague.
+
+Maybe there's a formula. 
+
+In some research, for hexagonal numbers, there are formulas for neighbors, but since this is a spiral, it might relate to the ring number and position.
+
+Let me try to find the inward and outward neighbors.
+
+For any number on ring r, moving inward toward the center in the direction opposite to the current side direction would reach a number on ring r-1. Similarly, moving outward would reach a number on ring r+1.
+
+For example, our number is on side 3 (Northwest direction). The opposite direction is Southeast. So the inward neighbor is on ring r-1 in the Southeast direction relative to our number. How to find its value?
+
+Similarly, the outward neighbor would be on ring r+1 in the Northwest direction.
+
+But how to calculate the value?
+
+Let me try to derive formulas.
+
+First, for any side, when you are at position p on the side, the number inward is on ring r-1, at a specific position on that ring. Similarly for outward.
+
+To find this, we need to know how the inward number relates to the current position.
+
+Let me consider a general position on side s of ring r. The direction of the side is d. The inward direction is opposite of d. The inward neighbor is one step inward from the current position.
+
+For a regular hexagonal grid, moving inward from a side would mean moving to the adjacent ring.
+
+But to translate this to our numbering, we need to know which number on ring r-1 or r+1 corresponds to that inward/outward step.
+
+Let me think of it as follows: for any position on a side of a ring, there is a specific number on the adjacent ring that is directly in the inward/outward direction.
+
+For example, take the beginning of a side: let's say the first number on side 1 (East direction) of ring r is S. Its inward neighbor is the last number of the previous ring (ring r-1). Because when you build the spiral, moving from one ring to the next, the starting position is adjacent to the end of the previous ring.
+
+Similarly, the first number on ring r is adjacent to the last number on ring r-1.
+
+Therefore, for the first number on side 1 of ring r, its inward neighbor is the last number of ring r-1. 
+
+Similarly, for any position on side s of ring r, the inward neighbor can be determined based on the position.
+
+But how?
+
+Maybe there's a relationship between the position on the current ring and the corresponding position on the inward/outward ring.
+
+Let me consider that when you move inward from a position on a side, you land on a specific position on the inward ring. This specific position is related to the side and the position on the side.
+
+Let me try to find a formula.
+
+Consider that each side s of ring r has a corresponding inward direction. When moving inward from any position on that side, you land on the same side of ring r-1. Wait, is that true? 
+
+Suppose we're on side 3 (Northwest) of ring r=26. Moving inward in the direction opposite to Northwest (which is Southeast) would land us on a position on ring r-1=25, but which side of ring r-1?
+
+Since the original side is Northwest, moving inward would be going towards the Southeast, so it would land on the side directly opposite to side 3. Since the sides are 1 to 6, opposite side to side 3 is side 3 + 3 = 6? No, since there are six sides, opposite side is side + 3 (mod 6). So side 3 opposite is side 0 or 6. 
+
+Therefore, moving inward from side 3 would land on side 6 of ring r-1. 
+
+Therefore, for any position on side s of ring r, moving inward would land on side s+3 (mod 6) of ring r-1. Similarly, moving outward would land on side s of ring r+1.
+
+Therefore, to find the inward neighbor, we need to find the corresponding position on side s+3 (mod 6) of ring r-1.
+
+But how to compute the number? 
+
+For that, we need to know what position on ring r-1 corresponds to this inward neighbor. For a general position on side s of ring r, what is the position on ring r-1?
+
+Let's suppose that for a position p on side s of ring r, the inward neighbor is at a specific position on side s+3 (mod 6) of ring r-1. 
+
+But how to determine p' on ring r-1?
+
+Let me think of the geometry. If you imagine being on a side of a ring, then the inward neighbor is offset by one step from the current side. But since the rings are concentric, the inward neighbor is directly adjacent to the current position, so it would be at a specific position on the inward ring.
+
+Let me consider an example. Take ring 2 (r=2), side 1 (East), starting at 8. The inward neighbor of 8 would be the number on ring 1, side 1+3=4 (West), which is side 4 of ring 1. Ring 1 has numbers 2-7. Side 4 (West) of ring 1 is the fourth side, which is numbers 5 and 6 (since each side has length r=1, so only 1 number? Wait no, ring 1 has 6 numbers, each side has length r=1, so each side has 1 number. Wait for ring r=1, each side is 1 number. So for ring r=1, side 1 (East) is 2, side 2 (Northeast) is 3, side 3 (Northwest) is 4, side 4 (West) is 5, side 5 (Southwest) is 6, side 6 (Southeast) is 7. 
+
+Now, take number 8, which is on ring 2, side 1 (East). Its inward neighbor should be on ring 1, side 1+3=4 (West), which is number 5. Let's check if number 8 is adjacent to 5. According to the example, number 8 is next to 7 and 9 and 5? In the given example, 8 is next to 7 and 9, and looking at ... 16 6 7 8 ..., it's next to 7 and above it is ... 10...? Not sure. But according to the previous logic, the inward neighbor from 8 would be 5. If that is correct, then neighbor of 8 includes 5. 
+
+Alternatively, maybe there's another neighbor. But this is getting too vague without a clear diagram. 
+
+However, if we can assume that for a position on side s of ring r, the inward neighbor is at the corresponding position on the opposite side of ring r-1, then perhaps we can find a formula for the inward number.
+
+Assuming that, for a position p on side s of ring r, the inward neighbor is on side s+3 of ring r-1 at position p. Because the geometry would align such that stepping inward from p on side s would correspond to position p on side s+3 of the inner ring. 
+
+Wait, for example, take ring 2, side 1 (East), position 1 (number 8). The inward neighbor is on side 4 (West) of ring 1, position 1 (number 5). Yes, which matches. Similarly, for position 2 on side 1 of ring 2 (which would be out of range since side 1 of ring 2 has length 2), but if we take position 1, it works. 
+
+If this pattern holds, then for any position p on side s of ring r, the inward neighbor is the number at side (s+3) of ring r-1, at position p. Similarly, the outward neighbor is at side s of ring r+1, at position p.
+
+Let's test this. For position p=1, side s=1 on ring r=2, inward neighbor is side 4 of ring 1, position 1: number 5. If we look at number 8 on ring 2, is it adjacent to 5? In the example, number 8 is next to 7 and 9, and possibly 5. Assuming yes, this seems plausible. 
+
+Therefore, generalizing:
+
+Inward neighbor = number on ring r-1, side (s + 3) mod 6, position p.
+
+Outward neighbor = number on ring r+1, side s, position p.
+
+Therefore, to find the inward and outward numbers, we can calculate them using the ring and position.
+
+Now, applying this to our number 2026:
+
+Our number is on ring r=26, side s=3 (Northwest), position p=23. 
+
+Inward neighbor is on ring r-1=25, side s'= (3+3)=6 mod 6=6. So side 6 (Southeast) of ring 25, position p=23.
+
+Outward neighbor is on ring r+1=27, side s=3, position p=23.
+
+Therefore, we need to calculate these numbers.
+
+Let's calculate inward neighbor first.
+
+For ring r=25, side s=6, position p=23. 
+
+First, find the starting number of ring 25: S25 = 2 + 3*25*24 = 2 + 3*600 = 2 + 1800 = 1802.
+
+Each side has r=25 numbers, so side 6 starts at position 1 + 5*25 = 1 + 125 = 126th number on the ring. Therefore, the starting number of side 6 is S25 + 125 - 1 = 1802 + 125 - 1 = 1926. 
+
+Wait let me explain: ring r=25 has starting number S25=1802. Each side has 25 numbers. Side 1: positions 1-25, starts at 1802. Side 2: positions 26-50, starts at 1802 +25= 1827. Side 3: 51-75, starts at 1827 +25= 1852. Side 4: 76-100, starts at 1852+25=1877. Side 5: 101-125, starts at 1877+25= 1902. Side 6: 126-150, starts at 1902+25= 1927. Wait, position 126 is side 6, first position: 1927. Therefore, position p=23 on side 6 is 1927 + 23 - 1 = 1927 + 22 = 1949. 
+
+Therefore, inward neighbor is 1949.
+
+Similarly, outward neighbor is on ring r+1=27, side 3, position p=23.
+
+Calculate starting number of ring 27: S27 = 2 + 3*27*26 = 2 + 3*702 = 2 + 2106 = 2108.
+
+Each side of ring 27 has 27 numbers. Side 3 is the third side, which starts at position 1 + 2*27 = 1 + 54 = 55th position on the ring. Starting number of side 3 is S27 + 54 - 1 = 2108 + 53 = 2161. Therefore, position p=23 on side 3 is 2161 + 23 -1 = 2161 +22= 2183. 
+
+Therefore, outward neighbor is 2183.
+
+Now, besides the inward and outward neighbors, there are other neighbors from the adjacent sides? 
+
+Wait, in a hexagonal grid, each cell has 6 neighbors. So far, we have accounted for:
+
+1. Previous on same side: 2025
+
+2. Next on same side: 2027
+
+3. Inward neighbor: 1949
+
+4. Outward neighbor: 2183
+
+That's four neighbors. We need two more.
+
+These would be the neighbors from the two adjacent sides on the same ring. For example, since our number is on side 3, the two other neighbors would be at the junction between side 3 and side 2, and between side 3 and side 4, but only if our position is at the end of side 3 or start. Since our position is at 23rd on side 3 (which has 26 numbers), it's not at the end or start. However, the two adjacent sides could contribute neighbors via the adjacent positions on those sides. 
+
+Wait no, in a hexagonal grid, if a cell is in the middle of a side, it still has six neighbors: the two adjacent numbers on the same ring (previous and next), one inward, one outward, and two others which are on the adjacent sides of the same ring. How?
+
+Let me visualize. Imagine a straight line side on the ring. Each cell in the middle has two neighbors on the same line (previous and next), one inward, one outward, and two more neighbors from the adjacent sides of the ring. For example, imagine a hexagon with a horizontal side: each cell on the middle of the side has neighbors on the same side, and neighbors on the adjacent top and bottom sides of the hexagon.
+
+Wait, perhaps for each position on a side, there are two more neighbors on the adjacent sides of the same ring, one from the previous side and one from the next side.
+
+Since our number is on side 3, the previous side is 2, next side is 4. Let's call them side_prev = 2 and side_next = 4.
+
+To find these neighbors, we need to find the number on side_prev at a position relative to our position, and similarly for side_next.
+
+How to determine that? In a hexagonal grid, when you are on a side, the cells adjacent to it (from the adjacent sides) are at the same distance from the corners.
+
+Since our position is on side 3, 23rd out of 26, it is 26 - 23 = 3 steps away from the end of side 3, and 23 - 1 = 22 steps away from the start of side 3.
+
+The two neighbors from adjacent sides would likely be related to these distances.
+
+For example, if you are p steps from the start of your side, then the neighbor from the previous side is p steps into that previous side, or something like that.
+
+Let me look for a pattern or derive it.
+
+Consider building the ring. The sides are connected at their ends. For example, the end of side s is connected to the start of side s+1. 
+
+If we imagine standing on a position on side s, not at the end, there are two adjacent cells from the adjacent sides: one from side_prev and one from side_next. These would be located such that if you move from the end of side_prev into our position, or from the end of side_next into our position. 
+
+Actually, this is complex. Perhaps it's easier to think of the following: the two neighbors from the adjacent sides would be the number that is on side_prev at position p_prev = p + adjustment, and similarly for side_next.
+
+But how?
+
+Let me think of an example. Take ring 2, side 1 (positions 1-2: numbers 8, 9). Take position 1 (number 8). Its neighbors on the same ring are previous: none (since it's the start), next: 9, inward: 5, outward: ?, and two more from adjacent sides: likely the end of side 6 (previous side) and the start of side 2? 
+
+Wait, for number 8 on ring 2, side 1 (East), its neighbors on the ring would be 9 (next), and from the previous side (side 6, which is Southeast). Since it's at the start of side 1, the adjacent from previous side is the end of side 6. For ring 2, side 6 has positions 126-150? No, for r=2, each side has 2 numbers. Ring r=2 has 6 sides, each with 2 numbers. For ring 2, side 1: numbers 8,9; side 2: 10,11; side 3: 12,13; side 4:14,15; side 5:16,17; side 6:18,19. 
+
+Therefore, the end of side 6 is 19, start of side 1 is 8. So number 8 is adjacent to 19? Not directly, because they are on adjacent sides but at the junction. Wait, in the hexagonal grid, the end of side 6 is adjacent to start of side 1. So number 19 is adjacent to 8. Similarly, number 8 is also adjacent to number 9 and inward number 5, and outward number...?
+
+But how about other neighbors? For example, if number 8 has neighbors 5 (inward), 9 (next), 19 (previous junction), and what else? In a hexagonal grid, a cell has 6 neighbors. For number 8, we have three: 5, 9, 19. Need three more. 
+
+Wait maybe also inward from another direction? Or neighbors on adjacent sides? Maybe this approach isn't working.
+
+Another idea: for any number on side s, the two other neighbors on the same ring are the numbers that are diagonally adjacent from the previous and next sides.
+
+But without a clear coordinate system, it's hard. Perhaps I need to use the formula from earlier for inward and outward, and assume that the two missing neighbors are from the adjacent sides on the same ring. 
+
+Alternatively, recall that each number has six neighbors, and we've accounted for four: prev, next, inward, outward. The other two are from the adjacent sides. To find them, perhaps they are the numbers at positions p-1 and p on the previous and next sides? 
+
+Alternatively, here's a method from a similar problem: 
+
+For a number on side s of ring r at position p (1-based), the two additional neighbors from adjacent sides are:
+
+- On the previous side (s-1), position p.
+
+- On the next side (s+1), position p-1.
+
+But need to verify.
+
+Let me test this with an example. Take ring 2, side 1, position 1 (number 8). Previous side is 6, next side is 2.
+
+According to formula, neighbors would be on side 6, position 1 (number 18) and on side 2, position 1-1=0, which doesn't exist. Not correct. 
+
+Another example: take position p=1 on side s=2. Previous side is 1, next side is 3. Neighbors would be side 1, position 1 (number 8) and side 3, position 0: invalid. Still no good.
+
+Maybe the formula is: on previous side, position p, and on next side, position p-1 if p > 1, or p+1 if p < r? 
+
+Alternatively, consider that at each junction between sides, the numbers from the ends of one side are adjacent to the starts of the next. So for a number not at a junction, the two adjacent neighbors from the adjacent sides would be offset by the distance from the start/end of the current side.
+
+Since our number is on side 3, position 23, which is 23 from the start of side 3, and 26 - 23 +1 = 4 from the end of side 3. 
+
+In a hexagonal grid, these would correspond to distances along the adjacent sides. So the neighbor from the previous side (side 2) would be 23 steps from the start of side 2, and the neighbor from the next side (side 4) would be (distance from end of side 3) steps from the end of side 4.
+
+Since side 3 has length r=26, and our position is 23 from start, it is 4 from end. Therefore, the neighbor from side 4 would be 4 steps from the start of side 4? Or 4 steps from the end of side 4?
+
+Wait, if it's 4 from the end of side 3, then the adjacent cell on side 4 would be 4 steps from the start of side 4? Because when you turn at the corner, the first step on the new side corresponds to moving away from the previous side.
+
+Let me visualize: when you complete side s, you turn to side s+1. The last step of side s is adjacent to the first step of side s+1. So if you're not at the end, but 4 steps away from the end on side s, then the corresponding neighbor on side s+1 is 4 steps before the end of side s+1, i.e., 4 steps from the start of side s+1?
+
+No, if side s has length L, then the distance from the end is D = L - p +1. For side s+1, the neighbor would be D steps from the start. 
+
+Yes, because moving from side s to s+1, the adjacency progresses similarly. For example, if you are 1 step away from the end on side s, the adjacent cell on side s+1 is 1 step from the start. Hence, general formula: neighbor on side_next is distance_from_end steps from the start of side_next, and neighbor on side_prev is distance_from_start steps from the end of side_prev.
+
+Therefore, for our number:
+
+On side s=3, position p=23, length L=26.
+
+distance_from_end = L - p +1 = 26 -23 +1 = 4.
+
+distance_from_start = p = 23.
+
+Therefore, the neighbor from side_prev (side 2) is distance_from_start steps from the end of side_prev. Since side_prev is side 2, but wait: if we're on side s=3, the previous side is s_prev=2, and the neighbor from side_prev would be at distance_from_start=23 from the end of side_prev. 
+
+Wait, but side_prev has length r=26. Therefore, position on side_prev = L - distance_from_start +1 = 26 -23 +1 = 4. 
+
+Wait, this is getting confusing. Let me rephrase.
+
+For a number on side s, the two additional neighbors are:
+
+- On the previous side s_prev=s-1: at position p_prev = L - p +1, where L is the side length.
+
+- On the next side s_next=s+1: at position p_next = p.
+
+Wait, let's test this with an example.
+
+Take ring 2, side 2 (positions 1-2: numbers 10, 11). Let's take position p=1 (number 10). L=2. 
+
+distance_from_end = L - p +1 = 2 - 1 +1 = 2. 
+
+previous side is side_prev=1 (positions 1-2: 8, 9). The neighbor from side_prev would be at position p_prev = L - p +1 = 2 - 1 +1 = 2. Which is the last position on side_prev: number 9. Is number 10 adjacent to 9? Yes, since they are at the junction of side 1 and side 2. 
+
+neighbor from next side s_next=s+1=3, p_next=p=1: position 1 on side 3: number 12. Is 10 adjacent to 12? In the hexagonal grid, yes. Each side is adjacent to the next side, so the first number of side 3 would be adjacent to the first number of side 2. 
+
+Therefore, this seems to work! 
+
+Therefore, the general formula is:
+
+For a number on side s of ring r, at position p (1-based), with side length L=r:
+
+- The neighbor from the previous side (s_prev=s-1) is at position p_prev = L - p +1 on side_prev.
+
+- The neighbor from the next side (s_next=s+1) is at position p_next=p on side_next.
+
+Therefore, applying this to our case:
+
+Our number is on side s=3, position p=23, L=26.
+
+- previous side is s_prev=2. p_prev = L - p +1 = 26 -23 +1 = 4. So the neighbor is at side 2, position 4.
+
+- next side is s_next=4. p_next = p=23. So the neighbor is at side 4, position 23.
+
+Now we need to calculate these two numbers.
+
+First, calculate the number on side_prev=s_prev=2, position p_prev=4, on ring r=26.
+
+Ring r=26, side 2, position 4.
+
+Starting number of ring 26 is S=1952. Each side has L=26 numbers. 
+
+Side 1 (positions 1-26): start at 1952.
+
+Side 2 starts at position 27, which is 1952 + 26 = 1978.
+
+Position 4 on side 2 is 1978 + 4 -1 = 1978 +3 = 1981.
+
+Second, number on side_next=s_next=4, position p_next=23, on ring r=26.
+
+Side 4 starts at position 1 + 3*26 = 1 +78 = 79th position. 
+
+Starting number of side 4 is S + 79 -1 = 1952 + 78 = 2030. 
+
+Position 23 on side 4 is 2030 + 23 -1 = 2030 +22 = 2052.
+
+Therefore, the two additional neighbors are 1981 and 2052.
+
+So now, compiling all six neighbors of 2026:
+
+1. Previous on same side: 2025
+
+2. Next on same side: 2027
+
+3. Inward neighbor: 1949
+
+4. Outward neighbor: 2183
+
+5. From previous side: 1981
+
+6. From next side: 2052
+
+Therefore, the six neighbors are 2025, 2027, 1949, 2183, 1981, 2052.
+
+Now, we need to confirm that these numbers are correct and then sum them.
+
+Let me verify if I've calculated all neighbors correctly.
+
+Starting with the previous on same side: 2026 -1 = 2025. Next on same side: 2026 +1 = 2027. These are straightforward.
+
+Inward neighbor was calculated as 1949. Outward neighbor as 2183. Previous side neighbor as 1981, next side neighbor as 2052.
+
+Let me verify one of these calculations. Let's verify the inward neighbor: ring 25, side 6, position 23.
+
+For ring r=25, starting number S25 = 2 + 3*25*24 = 2 + 3*600 = 1802.
+
+Each side has 25 numbers. Side 6 starts at position 1 + 5*25 = 1 +
+----
+Usage(input=78, output=16384, details={'estimated_cost': 0.00459376})

@@ -1,0 +1,272 @@
+Alright, let's break this down step-by-step.
+
+---
+
+## **1. Understanding the spiral**
+
+The spiral given is:
+
+```
+... 5  4  3 ...
+... 6  1  2 ...
+... 7  8  9 ...
+```
+
+This is the standard Ulam spiral (counterclockwise starting with 1 at the center, going right first).
+
+Let's label coordinates:  
+Let’s set **1** at coordinates \((0,0)\).
+
+Movement pattern:  
+Start at 1, go **right** (east) to 2, then **up** (north) to 3, then **left** (west) to 4,5, then **down** (south) to 6,7, then **right** to 8,9,10, etc.
+
+Actually, let's check carefully.
+
+---
+
+**Step-by-step coordinates:**
+
+1 at (0,0)  
+2 at (1,0)  
+3 at (1,1)  
+4 at (0,1)  
+5 at (-1,1)  
+6 at (-1,0)  
+7 at (-1,-1)  
+8 at (0,-1)  
+9 at (1,-1)  
+10 at (2,-1)  
+11 at (2,0)  
+12 at (2,1)  
+13 at (2,2)  
+14 at (1,2)  
+15 at (0,2)  
+16 at (-1,2)  
+17 at (-2,2)  
+18 at (-2,1)  
+19 at (-2,0)  
+20 at (-2,-1)  
+21 at (-2,-2)  
+22 at (-1,-2)  
+23 at (0,-2)  
+24 at (1,-2)  
+25 at (2,-2)  
+26 at (3,-2)  
+...
+
+---
+
+## **2. Locating 2026**
+
+We need the coordinates of 2026.
+
+Let’s find which square ring (layer) it’s in.
+
+**Ring k** (k=0 is just {1}, k=1 is numbers 2..9, k=2 is 10..25, etc.)  
+Ring k has numbers from \((2k-1)^2 + 1\) to \((2k+1)^2\), but careful:
+
+Actually:  
+Ring 0: center 1  
+Ring 1: numbers 2 to 9 (max 3x3 square, side length 3)  
+Ring 2: numbers 10 to 25 (side length 5)  
+Ring 3: numbers 26 to 49 (side length 7)  
+Ring n: side length = 2n+1, numbers from \((2n-1)^2+1\) to \((2n+1)^2\).
+
+Check:  
+n=1: from 2 to 9 ( (1)^2+1=2 to 3^2=9)  
+n=2: from 10 to 25 (3^2+1=10 to 5^2=25)  
+n=3: from 26 to 49 (5^2+1=26 to 7^2=49)  
+n=4: from 50 to 81 (7^2+1=50 to 9^2=81)  
+n=5: from 82 to 121 (9^2+1=82 to 11^2=121)  
+...
+
+So ring index n has numbers: start = \((2n-1)^2+1\), end = \((2n+1)^2\).
+
+---
+
+We find n such that \((2n-1)^2+1 \le 2026 \le (2n+1)^2\).
+
+Try n=22:  
+(2n-1)=43, 43^2=1849, start=1850, end=(45)^2=2025 → 2025 is in ring 22? Wait, 2025=45^2 is the last number of ring 22? Let’s check:
+
+n=22: side length=2n+1=45, numbers from (43)^2+1=1849+1=1850 to (45)^2=2025. Yes.
+
+So 2025 is the last number of ring n=22.
+
+Thus 2026 is the first number of ring n=23.
+
+---
+
+**Ring n=23**: start=2026, end=(47)^2=2209, side length=47.
+
+---
+
+## **3. Coordinates for first number of a ring**
+
+First number of ring n is at coordinates: starting position after completing ring n-1.
+
+Ring n-1 ends at number (2n-1)^2 at position (n-1, -(n-1))? Let's check pattern:
+
+End of ring n:  
+Ring 1 ends at 9 at (1,-1)  
+Ring 2 ends at 25 at (2,-2)  
+Ring 3 ends at 49 at (3,-3)  
+So ring n ends at (n,-n).
+
+So ring 22 ends at 2025 at (22,-22).
+
+---
+
+Now, first number of ring n is 1 step to the right from the end of ring n-1? Wait, no: After finishing ring n-1, we are at (n-1,-(n-1)), then we take 1 step right to start ring n.
+
+But careful: Actually, the spiral goes:  
+From end of ring n-1 at (n-1,-(n-1)), step right to (n,-(n-1)), that’s the first number of ring n.
+
+So for n=23:  
+End of ring 22: (22,-22)  
+Step right: (23,-22) is the coordinate of 2026.
+
+---
+
+## **4. Neighbors of 2026**
+
+Coordinates of 2026: (23,-22).
+
+Neighbors:  
+N: (23,-21)  
+NE: (24,-21)  
+E: (24,-22)  
+SE: (24,-23)  
+S: (23,-23)  
+SW: (22,-23)  
+W: (22,-22)  
+NW: (22,-21)
+
+---
+
+## **5. Which numbers are these?**
+
+We need to find numbers at these coordinates in the spiral.
+
+We can use: In ring n, side length L=2n+1.
+
+Ring n=23: L=47, numbers 2026..2209.
+
+We can locate by which side the coordinate lies on.
+
+---
+
+**Coordinate (23,-22)**: This is on the **right side** of ring n=23? Let’s check orientation:
+
+Ring n layout:  
+Bottom side: y=-n, x from n-1 down to -(n-1)? Wait, let's recall:
+
+For ring n:  
+Right side: x=n, y from -(n-1) up to n (but not including corner? Actually corners belong to one side each uniquely except starting corner).
+
+Better: Let’s trace path for ring n=23:
+
+Start: (23,-22) is the first number (2026). Then go up to (23,-21) (2027), etc., up to top-right corner (23,23)? That’s too many steps.
+
+Actually:  
+Ring n: start at (n, -(n-1)), go up to (n,n) [top-right corner], then left to (-n,n) [top-left], then down to (-n,-n) [bottom-left], then right to (n,-n) [bottom-right], then up to (n,-(n-1)) but stop before reaching start because that’s the next ring’s start.
+
+Wait, that’s wrong: The start is bottom-right corner? Let’s check small n:
+
+n=2: start 10 at (2,-1) [right side], go up to (2,2) [top-right], left to (-2,2), down to (-2,-2), right to (2,-2), up to (2,-1) (but 10 already used). Actually 10 is at (2,-1), then 11 at (2,0), 12 at (2,1), 13 at (2,2), 14 at (1,2), etc. So indeed start is on the right side, y from -(n-1) to n.
+
+So for n=23: start at (23,-22), numbers increase going up along x=23 from y=-22 to y=23.
+
+Thus:  
+2026 at (23,-22)  
+2027 at (23,-21)  
+… up to 2026 + (22+23) = 2026+45 = 2071 at (23,23)? Wait: from y=-22 to y=23 is 23-(-22)+1=46 steps? Actually count: -22 to 23 inclusive: 46 numbers. So 2026..2071 are on right side.
+
+So neighbor N: (23,-21) is **2027**.
+
+NE: (24,-21) — that’s outside ring 23, so part of ring 24? No, 24 is bigger ring, but 2026’s NE is not yet present in spiral? Wait, but 2026’s neighbors: some are in ring 22 (previous ring), some in ring 23 (same ring), some in ring 24 (next ring)? Actually no — NE of (23,-22) is (24,-21) which is in next ring (n=24) but next ring starts at (24,-23) maybe? Let’s check: ring 24 starts at (24,-23) (number 2210). So (24,-21) is above that start point, so it’s a later number in ring 24.
+
+But easier: We can find numbers by using the fact that corners are squares of odd integers.
+
+Better approach: Use closed-form coordinate-to-number mapping.
+
+---
+
+## **6. Coordinate-to-number formula**
+
+There’s a known formula for this spiral (counterclockwise, starting right):
+
+If max(|x|,|y|) = k, then:
+
+For right side (x=k): number = (2k-1)^2 + (k+y)  
+For top side (y=k): number = (2k-1)^2 + 3k - x  
+For left side (x=-k): number = (2k-1)^2 + 5k - y  
+For bottom side (y=-k): number = (2k-1)^2 + 7k + x  
+
+Wait, check small k: Let’s test k=2, coordinate (2,0):  
+(2*2-1)^2=9, plus (2+0)=2, total 11 — correct.
+
+Let’s test top side: (0,2): 9 + 3*2 - 0 = 15 — correct.
+
+So formula works.
+
+---
+
+## **7. Apply to neighbors**
+
+We know 2026 is at (23,-22), k=23 (since max(|23|,|-22|)=23).
+
+So 2026 = (2*23-1)^2 + (23 + (-22)) = 45^2 + 1 = 2025+1=2026. Good.
+
+---
+
+**Neighbors:**
+
+1. N: (23,-21): k=23, x=23 → formula: 2025 + (23 + (-21)) = 2025 + 2 = 2027.
+2. NE: (24,-21): k=max(24,21)=24. Which side? x=24=k → right side: number = (2*24-1)^2 + (24 + (-21)) = 47^2 + 3 = 2209 + 3 = 2212.
+3. E: (24,-22): k=24, x=24 → right side: 2209 + (24 + (-22)) = 2209 + 2 = 2211.
+4. SE: (24,-23): k=24, x=24 → right side: 2209 + (24 + (-23)) = 2209 + 1 = 2210 (start of ring 24).
+5. S: (23,-23): k=23, y=-23 → bottom side: formula for bottom: (2k-1)^2 + 7k + x = 2025 + 7*23 + 23 = 2025 + 161 + 23 = 2025 + 184 = 2209? Wait check: 7*23=161, +23=184, plus 2025=2209. That’s the last number of ring 23.
+6. SW: (22,-23): k=23, y=-23 → bottom side: 2025 + 7*23 + x = 2025 + 161 + 22 = 2025 + 183 = 2208.
+7. W: (22,-22): k=23, x=22<23 → not on k=23 boundary, so it’s in ring 23 but left side? Wait, x=22, y=-22, max(22,22)=22, so k=22 actually! So it’s in ring 22.
+
+For k=22, which side? x=22, but k=22 means x=22 is right side? But our coordinate (22,-22) has max(22,22)=22, so indeed k=22. But ring 22’s right side is x=22, y from -21 to 22. Our y=-22 is not on right side, so maybe bottom side? y=-22=k? Actually k=22, y=-22 is bottom side.
+
+Bottom side formula: (2k-1)^2 + 7k + x = (43)^2 + 7*22 + 22 = 1849 + 154 + 22 = 1849+176=2025. That’s the last number of ring 22! Yes: 2025 at (22,-22). Good.
+
+So W neighbor is 2025.
+
+8. NW: (22,-21): k=22 (max(22,21)=22), coordinate (22,-21) is on right side of ring 22: formula: (43)^2 + (22 + (-21)) = 1849 + 1 = 1850.
+
+---
+
+## **8. List neighbors and sum**
+
+N: 2027  
+NE: 2212  
+E: 2211  
+SE: 2210  
+S: 2209  
+SW: 2208  
+W: 2025  
+NW: 1850
+
+Sum = add them.
+
+Pair them:  
+2027+2025=4052  
+2212+1850=4062  
+2211+2209=4420  
+2210+2208=4418
+
+Sum of pairs: 4052+4062=8114, 4420+4418=8838  
+Total=8114+8838=16952.
+
+---
+
+**Final answer:**
+\[
+\boxed{16952}
+\]
+----
+Usage(input=59, output=3241, details={'prompt_tokens_details': {'cached_tokens': 32}, 'estimated_cost': 0.002571436})

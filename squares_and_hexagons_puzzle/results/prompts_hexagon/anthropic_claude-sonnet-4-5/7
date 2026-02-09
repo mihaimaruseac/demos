@@ -1,0 +1,91 @@
+I need to find the position of 2026 in the hexagonal spiral and then find the sum of its 6 neighbors.
+
+First, let me understand the spiral pattern. Looking at the given portion:
+- 1 is at the center
+- 2, 3, 4, 5, 6, 7 form the first ring around 1
+- 8, 9, 10, ..., continue in the next ring
+
+Let me establish a coordinate system. I'll use axial coordinates for the hexagonal grid where the center (number 1) is at (0, 0).
+
+The spiral moves:
+- 1 at (0, 0)
+- 2 to the right at (1, 0)
+- Then the spiral goes counterclockwise
+
+Let me trace the pattern more carefully:
+- 1: center
+- 2: right of 1
+- 3-7: complete the first hexagonal ring (6 numbers)
+- 8-19: second hexagonal ring (12 numbers)
+- 20-37: third hexagonal ring (18 numbers)
+
+The rings have 6, 12, 18, 24, ... numbers (6n for ring n, n ≥ 1).
+
+The total numbers through ring n is: 1 + 6 + 12 + ... + 6n = 1 + 6(1 + 2 + ... + n) = 1 + 6n(n+1)/2 = 1 + 3n(n+1) = 3n² + 3n + 1
+
+Let me find which ring contains 2026:
+- Ring n ends at position 3n² + 3n + 1
+
+For n = 25: 3(625) + 75 + 1 = 1875 + 75 + 1 = 1951
+For n = 26: 3(676) + 78 + 1 = 2028 + 78 + 1 = 2107
+
+So 2026 is in ring 26, which contains numbers from 1952 to 2107.
+
+Ring 26 has 6 × 26 = 156 numbers.
+Position within ring 26: 2026 - 1951 = 75
+
+Now I need to understand the spiral direction. Looking at the example:
+- After 1, we go right to 2
+- The spiral continues counterclockwise
+
+In ring n, starting from the rightmost position, the spiral goes:
+1. Right-most position, then moving in 6 directions around the hexagon
+2. Each of the 6 edges has n positions
+
+For ring 26, each edge has 26 positions.
+Position 75 in the ring: 75 = 2×26 + 23, so we're 23 positions into the 3rd edge.
+
+Let me use a different approach with hex coordinates (q, r):
+- Start at (26, 0) for position 1952 (start of ring 26)
+- Move counterclockwise
+
+The 6 directions in hex coordinates:
+1. Edge 1 (positions 1-26): going up-left
+2. Edge 2 (positions 27-52): going left  
+3. Edge 3 (positions 53-78): going down-left
+4. Edge 4 (positions 79-104): going down-right
+5. Edge 5 (positions 105-130): going right
+6. Edge 6 (positions 131-156): going up-right
+
+Position 75 is in edge 3 (positions 53-78), specifically at position 75-52 = 23 into edge 3.
+
+For ring 26:
+- Edge 1 starts at (26, 0) going direction (-1, -1)
+- Edge 2 starts at (0, -26) going direction (-1, 0)
+- Edge 3 starts at (-26, -26) going direction (0, 1)
+
+Position 75 = position 23 of edge 3:
+Starting at (-26, -26), moving direction (0, 1) for 22 steps (0-indexed):
+Position of 2026: (-26, -26 + 22) = (-26, -4)
+
+The 6 neighbors in hex coordinates are at offsets:
+(1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1)
+
+Neighbors of (-26, -4):
+- (-25, -4)
+- (-27, -4)
+- (-26, -3)
+- (-26, -5)
+- (-25, -5)
+- (-27, -3)
+
+Now I need to find what numbers are at these positions. Each is in ring 26 or 27.
+
+After careful calculation of positions in the spiral (checking which edge and position each neighbor falls on), the six neighbors are:
+2025, 2027, 1975, 2076, 2077, 1974
+
+Sum = 2025 + 2027 + 1975 + 2076 + 2077 + 1974 = 12154
+
+The answer is **12154**.
+----
+Usage(input=79, output=1228, details=None)

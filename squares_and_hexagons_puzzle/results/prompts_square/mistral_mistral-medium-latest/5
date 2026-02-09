@@ -1,0 +1,294 @@
+Alright, let's tackle this problem step by step. I'm going to approach it methodically to ensure I understand the spiral layout and how to find the neighbors of the number 2026.
+
+### Understanding the Spiral Layout
+
+First, let's visualize the given spiral to understand how the numbers are arranged:
+
+```
+... 5  4  3
+... 6  1  2
+... 7  8  9
+...
+```
+
+From this, we can see that the number `1` is at the center. The numbers spiral outwards in a counterclockwise direction:
+
+- `1` is at the center.
+- `2` is to the right of `1`.
+- `3` is above `2`.
+- `4` is to the left of `3`.
+- `5` is above `4`.
+- `6` is to the left of `5`.
+- `7` is below `6`.
+- `8` is below `7`.
+- `9` is to the right of `8`.
+- And so on...
+
+This forms a square spiral where each "layer" or "ring" around the center increases the size of the square by 2 in both dimensions.
+
+### Determining the Position of a Number in the Spiral
+
+To find the neighbors of `2026`, we first need to determine its position in the spiral. This involves finding out which "ring" or "layer" it's in and its exact coordinates within that ring.
+
+**Rings in the Spiral:**
+- The center is `1` (Ring 0).
+- The first ring around `1` contains numbers `2` to `9` (Ring 1).
+- The second ring contains numbers `10` to `25` (Ring 2).
+- Generally, Ring `n` contains numbers from `(2n-1)^2 + 1` to `(2n+1)^2`.
+
+The number of numbers in Ring `n` is `(2n+1)^2 - (2n-1)^2 = 8n`.
+
+**Finding the Ring for 2026:**
+We need to find the smallest `n` such that `(2n+1)^2 >= 2026`.
+
+Let's calculate:
+
+- `(2n+1)^2 = 4n^2 + 4n + 1 >= 2026`
+- `4n^2 + 4n - 2025 >= 0`
+
+Solving the quadratic equation `4n^2 + 4n - 2025 = 0`:
+
+Using the quadratic formula: `n = [-b ± sqrt(b^2 - 4ac)] / (2a)`
+
+Here, `a = 4`, `b = 4`, `c = -2025`:
+
+`n = [-4 ± sqrt(16 + 32400)] / 8 = [-4 ± sqrt(32416)] / 8`
+
+`sqrt(32416) ≈ 180.04`
+
+So, `n ≈ (-4 + 180.04)/8 ≈ 176.04 / 8 ≈ 22.005`
+
+Thus, `n ≈ 22`. Let's check:
+
+For `n = 22`:
+`(2*22 + 1)^2 = 45^2 = 2025`
+`(2*21 + 1)^2 = 43^2 = 1849`
+
+So, Ring 22 starts at `1849 + 1 = 1850` and ends at `2025`.
+Ring 23 starts at `2026`.
+
+Wait, this seems off because `2026` is the first number of Ring 23, not in Ring 22.
+
+Wait, let's re-examine the ring numbering.
+
+Actually, the center is Ring 0 (`1`), Ring 1 is `2` to `9`, Ring 2 is `10` to `25`, etc.
+
+So, Ring `n` starts at `(2n-1)^2 + 1` and ends at `(2n+1)^2`.
+
+For `n=22`:
+Start: `(2*22 -1)^2 +1 = 43^2 +1 = 1849 +1 = 1850`
+End: `(2*22 +1)^2 = 45^2 = 2025`
+
+So Ring 22: 1850 to 2025
+Ring 23: 2026 to ?
+
+`(2*23 +1)^2 = 47^2 = 2209`
+
+So Ring 23: 2026 to 2209
+
+Thus, `2026` is the first number in Ring 23.
+
+### Structure of a Ring
+
+Each ring `n` (for `n >= 1`) has:
+
+- Bottom right corner: `(2n+1)^2`
+- Bottom left corner: `(2n+1)^2 - 2n`
+- Top left corner: `(2n+1)^2 - 4n`
+- Top right corner: `(2n+1)^2 - 6n`
+- The numbers increase as we go right, up, left, down.
+
+For Ring 23 (`n=23`):
+
+- Bottom right: `47^2 = 2209`
+- Bottom left: `2209 - 46 = 2163`
+- Top left: `2209 - 92 = 2117`
+- Top right: `2209 - 138 = 2071`
+
+The numbers in Ring 23 go from `2026` to `2209`.
+
+The sequence is:
+
+- Right side (from top right to bottom right): `2071 + 1` to `2209` (139 numbers)
+Wait, no.
+
+Actually, the first number in Ring `n` is `(2n-1)^2 + 1`.
+
+For `n=23`: `(2*23 -1)^2 +1 = 45^2 +1 = 2025 +1 = 2026`
+
+The numbers in Ring `n` are from `(2n-1)^2 +1` to `(2n+1)^2`.
+
+The sides are:
+
+1. Right side: `(2n-1)^2 +1` to `(2n-1)^2 + 2n` (top right to bottom right)
+2. Top side: `(2n-1)^2 + 2n +1` to `(2n-1)^2 + 4n` (right to left)
+3. Left side: `(2n-1)^2 + 4n +1` to `(2n-1)^2 + 6n` (top left to bottom left)
+4. Bottom side: `(2n-1)^2 + 6n +1` to `(2n+1)^2` (left to right)
+
+For `n=23`:
+
+1. Right: `2026` to `2026 + 46 = 2072` (47 numbers)
+Wait, no, `(2n-1)^2 +1` to `(2n-1)^2 + 2n` is `2026` to `2026 + 46 = 2072` (47 numbers, but the side length is `2n` for the outer square, but the count is `2n` numbers per side, but the first side is `2n` numbers starting from `(2n-1)^2 +1` to `(2n-1)^2 + 2n`).
+
+Wait, the side length is `2n + 1` for the outer square, but the numbers per side are `2n` for the first side, then `2n-1` for the next, etc., but actually, each side has `2n` numbers except the first side which has `2n` numbers starting from `(2n-1)^2 +1` to `(2n-1)^2 + 2n`.
+
+Wait, perhaps it's better to think in terms of coordinates.
+
+### Assigning Coordinates to Numbers
+
+Let's assign coordinates to the numbers where `1` is at `(0,0)`.
+
+The spiral moves in the order: right, up, left, down, right, etc.
+
+The number at position `(x,y)` can be determined by the ring it's in and its position within the ring.
+
+For Ring `n` (`n >= 1`):
+
+- The bottom right corner is at `(n, -n)` with value `(2n+1)^2`.
+- The bottom left corner is at `(-n, -n)` with value `(2n+1)^2 - 2n`.
+- The top left corner is at `(-n, n)` with value `(2n+1)^2 - 4n`.
+- The top right corner is at `(n, n)` with value `(2n+1)^2 - 6n`.
+
+The numbers decrease as we go counterclockwise from the bottom right corner.
+
+But `2026` is the first number in Ring 23, which is at the position just to the right of the bottom right corner of Ring 22.
+
+The bottom right corner of Ring 22 is at `(22, -22)` with value `45^2 = 2025`.
+
+So, `2026` is at `(23, -22)` (one step right from `(22, -22)`).
+
+Now, let's find the coordinates of `2026` and its neighbors.
+
+### Coordinates of 2026
+
+From above, `2026` is at `(23, -22)`.
+
+### Finding the 8 Neighbors
+
+The 8 neighbors of `(x,y)` are:
+
+- `(x-1, y-1)`, `(x, y-1)`, `(x+1, y-1)`
+- `(x-1, y)`, `(x+1, y)`
+- `(x-1, y+1)`, `(x, y+1)`, `(x+1, y+1)`
+
+So, for `(23, -22)`:
+
+1. `(22, -23)`
+2. `(23, -23)`
+3. `(24, -23)`
+4. `(22, -22)`
+5. `(24, -22)`
+6. `(22, -21)`
+7. `(23, -21)`
+8. `(24, -21)`
+
+Now, we need to find the numbers at these coordinates.
+
+### Determining Numbers at Given Coordinates
+
+To find the number at a given `(x,y)`, we can determine which ring it's in and its position within the ring.
+
+The ring number `n` is `max(|x|, |y|)`.
+
+For each neighbor:
+
+1. `(22, -23)`: `n = 23`
+   - This is on the left side of Ring 23.
+   - The left side goes from `(-23, -22)` to `(-23, 22)`.
+   - `(22, -23)` is not on the left side; actually, the left side is `x = -n`.
+   - Wait, no, the left side is `x = -n`, `y` from `-n+1` to `n`.
+   - `(22, -23)`: `x=22`, `y=-23`, `n=23`.
+   - This is on the bottom side of Ring 23, where `y = -n`, `x` from `-n+1` to `n`.
+   - Bottom side: `(x, -23)` from `x=-22` to `x=23`.
+   - The number at `(x, -n)` is `(2n+1)^2 - (n - x)` for `x` from `-n` to `n`.
+   - Wait, no, the bottom side starts at `(n, -n)` with value `(2n+1)^2`, and decreases as `x` decreases.
+   - So, `(x, -n)` has value `(2n+1)^2 - (n - x)`.
+   - For `(22, -23)`: `n=23`, `x=22`.
+   - Value = `47^2 - (23 - 22) = 2209 - 1 = 2208`.
+
+2. `(23, -23)`: `n=23`
+   - Bottom side: `(x, -23)`, `x=23` is the end.
+   - Value = `(2n+1)^2 - (n - x) = 2209 - (23 - 23) = 2209 - 0 = 2209`.
+
+3. `(24, -23)`: `n=24` (since `max(24,23)=24`)
+   - This is outside Ring 23, so it's in Ring 24.
+   - The first number in Ring 24 is `(2*24-1)^2 +1 = 47^2 +1 = 2209 +1 = 2210`.
+   - `(24, -23)` is the first number in Ring 24, so `2210`.
+
+4. `(22, -22)`: `n=22`
+   - This is the bottom right corner of Ring 22: `(22, -22)` with value `(2*22+1)^2 = 45^2 = 2025`.
+
+5. `(24, -22)`: `n=24`
+   - This is in Ring 24, on the right side.
+   - The right side of Ring 24 goes from `(23, -24)` to `(24, -24)` to `(24, -23)` to `(24, 24)`.
+   - Wait, no, the right side is `(n, y)` from `y=-n` to `y=n`.
+   - `(24, -22)` is on the right side of Ring 24.
+   - The first number on the right side is `(n, -n)` with value `(2n-1)^2 +1`.
+   - For `n=24`: `(2*24-1)^2 +1 = 47^2 +1 = 2209 +1 = 2210`.
+   - Then, `(24, -23)` is `2210 +1 = 2211`.
+   - `(24, -22)` is `2210 + ( -22 - (-24) ) = 2210 + 2 = 2212`.
+
+6. `(22, -21)`: `n=22`
+   - This is on the right side of Ring 22.
+   - Right side: `(22, y)` from `y=-21` to `y=22`.
+   - The first number is `(22, -21)` with value `(2*22-1)^2 +1 = 43^2 +1 = 1849 +1 = 1850`.
+   - So, `(22, -21)` is `1850`.
+
+7. `(23, -21)`: `n=23`
+   - This is on the right side of Ring 23.
+   - Right side: `(23, y)` from `y=-22` to `y=23`.
+   - The first number is `(23, -22)` with value `(2*23-1)^2 +1 = 45^2 +1 = 2025 +1 = 2026`.
+   - Then, `(23, -21)` is `2026 + ( -21 - (-22) ) = 2026 +1 = 2027`.
+
+8. `(24, -21)`: `n=24`
+   - This is on the right side of Ring 24.
+   - As before, `(24, -24)` is `2210`, `(24, -23)` is `2211`, ..., `(24, -21)` is `2210 + ( -21 - (-24) ) = 2210 +3 = 2213`.
+
+### Listing the Neighbors and Their Values
+
+Now, let's list all 8 neighbors with their values:
+
+1. `(22, -23)`: `2208`
+2. `(23, -23)`: `2209`
+3. `(24, -23)`: `2210`
+4. `(22, -22)`: `2025`
+5. `(24, -22)`: `2212`
+6. `(22, -21)`: `1850`
+7. `(23, -21)`: `2027`
+8. `(24, -21)`: `2213`
+
+### Calculating the Sum of the Neighbors
+
+Now, sum all these values:
+
+`2208 + 2209 + 2210 + 2025 + 2212 + 1850 + 2027 + 2213`
+
+Let's add them step by step:
+
+- `2208 + 2209 = 4417`
+- `4417 + 2210 = 6627`
+- `6627 + 2025 = 8652`
+- `8652 + 2212 = 10864`
+- `10864 + 1850 = 12714`
+- `12714 + 2027 = 14741`
+- `14741 + 2213 = 16954`
+
+### Verifying the Calculations
+
+Let me double-check the addition to ensure no mistakes:
+
+`2208 + 2209 = 4417`
+`4417 + 2210 = 6627`
+`6627 + 2025 = 8652`
+`8652 + 2212 = 10864`
+`10864 + 1850 = 12714`
+`12714 + 2027 = 14741`
+`14741 + 2213 = 16954`
+
+The addition seems correct.
+
+### Final Answer
+
+The sum of all 8 neighbors of the number `2026` is **16954**.
+----
+Usage(input=60, output=4256, details=None)

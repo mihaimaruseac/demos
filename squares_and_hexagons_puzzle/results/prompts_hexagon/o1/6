@@ -1,0 +1,138 @@
+A convenient way to handle this problem is to place the spiral onto a “hex‐coordinate system” so that we can systematically locate each number’s cell and its six neighbors.  One consistent choice (sometimes called “axial coordinates” in a pointy‐topped hex layout) is:
+
+•  Let the center, where 1 is located, be (0,0).  
+•  The six “step” directions around any hex cell can be taken as  
+  (−1,+1), (−1,0), (0,−1), (+1,−1), (+1,0), (0,+1).
+
+-------------------------------------------------------------------------------
+1)  Identifying which “ring” a number n is on
+-------------------------------------------------------------------------------
+It is known that the numbers form concentric “rings” around 1, where ring 0 = {1} and ring k has 6k elements (numbers).  A closed‐form for the largest number on ring k is  
+  3k² + 3k + 1.  
+Hence  
+  –  Ring 0   has just the number 1.  
+  –  Ring 1   has numbers 2 through 7,  
+  –  Ring 2   has numbers 8 through 19, and so on.
+
+Since 3⋅25² + 3⋅25 + 1 = 1951 is the largest number on ring 25,  
+and 3⋅26² + 3⋅26 + 1 = 2107 is the largest on ring 26,  
+we see that 2026 lies in ring 26 (because 1952 ≤ 2026 ≤ 2107).
+
+-------------------------------------------------------------------------------
+2)  Finding coordinates of 2026
+-------------------------------------------------------------------------------
+Within ring 26, the smallest ring‐26 number is 1952, so 2026 is  
+  2026 − 1952 = 74  
+steps into that ring.  
+
+To assign coordinates, one consistent convention is:
+
+•  Corner0(k) of ring k is taken to be  (k, 0).  
+•  Then one “walks” around ring k in six segments of length k each,  
+   using the six step‐vectors  
+     d₀ = (−1, +1),   d₁ = (−1, 0),   d₂ = ( 0, −1),  
+     d₃ = (+1, −1),  d₄ = (+1,  0),  d₅ = ( 0, +1).  
+
+Hence for ring 26,  
+  – Corner0(26) = (26,0)  is labeled 1952,  
+  – then we move 26 steps in direction d₀, another 26 in d₁, etc.,  
+  – for a total of 6×26 = 156 cells on that ring.
+
+Index the cells 0 through 155 around ring 26.  Cell 0 is (26,0) = 1952, cell 1 is one step of d₀ from that, etc.  Each side is 26 cells:
+
+•  side 0  = indices 0..25  
+•  side 1  = indices 26..51  
+•  side 2  = indices 52..77  
+•  side 3  = indices 78..103  
+•  side 4  = indices 104..129  
+•  side 5  = indices 130..155.
+
+Since 74 ≥ 52 but < 78, index 74 lies on side 2 (the third side).  Side 2 starts at index 52 = corner2(26), whose coordinate is (−26, 26), and uses direction (0, −1).  Thus:
+
+  index 52  →  (−26, 26)  
+  index 53  →  (−26, 25)  
+  …  
+  index 74  →  (−26,  26 − (74−52)) = (−26,  4).
+
+So 2026 has coordinate (−26, 4) in this hex‐system.
+
+-------------------------------------------------------------------------------
+3)  Neighbors of 2026
+-------------------------------------------------------------------------------
+In these axial coordinates (with our chosen directions), the six neighbors of (q,r) are obtained by adding each of  
+  (−1,+1), (−1,0), (0,−1), (+1,−1), (+1,0), (0,+1).  
+
+Hence the neighbors of (−26, 4) are:
+
+  N₁ = (−27, 5),  
+  N₂ = (−27, 4),  
+  N₃ = (−26, 3),  
+  N₄ = (−25, 3),  
+  N₅ = (−25, 4),  
+  N₆ = (−26, 5).
+
+We must find which rings these six coordinates lie on and what numbers they label.
+
+-------------------------------------------------------------------------------
+4)  Ring‐membership formula
+-------------------------------------------------------------------------------
+In axial coordinates (q,r), one can show the ring number is  
+  max(|q|, |r|, |q+r|).  
+
+Then to locate the number at (q,r), we:  
+(a)  determine n = ring((q,r)) = max(|q|,|r|,|q+r|),  
+(b)  note that ring n runs from  
+       3(n−1)² + 3(n−1) + 2  
+     through  
+       3n² + 3n + 1,  
+(c)  find the index of (q,r) within ring n by walking around ring n’s “corners” as above,  
+(d)  add that index to the ring’s start number.
+
+Let us do this for each neighbor:
+
+•  N₁ = (−27, 5).  
+   –  ring = max(27, 5, |−22|) = 27.  
+   –  Ring 27 runs 2108..2269.  
+   –  Corner2(27) = (−27,27), side‐2 direction = (0,−1).  
+   –  (−27,27 − k) = (−27,5) gives k=22, so index in ring 27 is 54 + 22 = 76.  
+   –  Hence its label = 2108 + 76 = 2184.
+
+•  N₂ = (−27, 4).  Also in ring 27.  
+   –  Similarly, (−27,27 − k) = (−27,4) ⇒ k=23 ⇒ index=54+23=77 ⇒ label=2108+77=2185.
+
+•  N₃ = (−26, 3).  
+   –  ring = max(26,3,|−23|)=26 (same ring as 2026).  
+   –  Corner2(26)=(−26,26), direction=(0,−1).  
+   –  (−26,26−k)=(−26,3) ⇒ k=23 ⇒ index=52+23=75 ⇒ label=1952+75=2027.
+
+•  N₄ = (−25, 3).  
+   –  ring = max(25,3,|−22|)=25.  
+   –  Ring 25 is 1802..1951.  Corner2(25)=(−25,25), direction=(0,−1).  
+   –  (−25,25−k)=(−25,3) ⇒ k=22 ⇒ index=50+22=72 ⇒ label=1802+72=1874.
+
+•  N₅ = (−25, 4).  
+   –  ring=25 as well.  
+   –  (−25,25−k)=(−25,4) ⇒ k=21 ⇒ index=50+21=71 ⇒ label=1802+71=1873.
+
+•  N₆ = (−26, 5).  
+   –  ring = max(26,5,|−21|)=26.  
+   –  Corner2(26)=(−26,26), direction=(0,−1).  
+   –  (−26,26−k)=(−26,5) ⇒ k=21 ⇒ index=52+21=73 ⇒ label=1952+73=2025.
+
+-------------------------------------------------------------------------------
+5)  Summing the neighbors
+-------------------------------------------------------------------------------
+Their labels are  
+   N₁ = 2184,  
+   N₂ = 2185,  
+   N₃ = 2027,  
+   N₄ = 1874,  
+   N₅ = 1873,  
+   N₆ = 2025.  
+
+The sum is:  
+   2184 + 2185 + 2027 + 1874 + 1873 + 2025 = 12168.
+
+Hence the required sum of all six neighbors of 2026 is 12168.
+----
+Usage(input=70, output=16089, details={'completion_tokens_details': {'reasoning_tokens': 14144}})

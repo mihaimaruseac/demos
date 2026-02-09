@@ -1,0 +1,639 @@
+<think>
+Okay, so I need to figure out the sum of all 8 neighbors of the number 2026 on a square spiral of natural numbers. Let me start by recalling how the spiral works. 
+
+First, the spiral starts at 1, and then numbers spiral outwards clockwise. For example, the 3x3 spiral is:
+
+... 8 9
+... 7 6
+... 4 2 5
+... 3 1
+... 2 7
+
+Wait, no, actually, the example given in the problem is:
+
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+
+But it seems like it's not the exact same as the standard spiral I remember. Let me check. In the given example, 1 is in the center. Moving clockwise, the numbers increase. So going clockwise around 1, we have 2 to the right, then 3 on the top, then 4 to the left, then 5 down, then 6 to the left, then 7 down, then 8 right, then 9 right?
+
+Wait, maybe it's better to visualize the standard square spiral. Let me sketch it out mentally. 
+
+Let me think: Starting at 1 in the center. Then moving right, place 2, then up for 3, then left for 4, 5, then down for 6, 7, then right for 8, 9, 10, then down for 11, 12, then left... etc. Wait, no, the movement is such that each layer adds numbers in a square ring. 
+
+Alternatively, maybe it's helpful to think of layers or rings. The first ring is just 1. The second ring (around 1) would be numbers from 2 to 9. The third ring is numbers from 10 to 25. Each ring has a side length that increases by 2 each time. So, ring n has numbers from (2n-1)^2 - 4(n-1) +1 up to (2n+1)^2? Wait, maybe not. Let me recall that the numbers on the diagonals for each layer. For example, the corners of each square layer have numbers that can be calculated. For a square of side length m, the maximum number is m^2. For example, for the 3x3 square (side length 3), the maximum is 9. The numbers at the corners would be 3²=9, 3²- (3-1)= 9-2=7, 3²-2*(3-1)= 9-4=5, and 3²-3*(3-1)=9-6=3. 
+
+So, in general, for a square of side length m (which is an odd number), the four corners are m², m² - (m-1), m² - 2(m-1), m² - 3(m-1). 
+
+Therefore, if I want to figure out in which layer 2026 is located, I need to find n such that (2n-1)^2 < 2026 ≤ (2n+1)^2. Let me try to calculate this.
+
+First, take sqrt(2026). Let me compute sqrt(2025). Oh! 45^2 = 2025. So sqrt(2026) ≈ 45.01... So that means the square root is just a bit over 45. 
+
+So since 45^2 = 2025, which is odd (since 45 is odd). Therefore, the square of side length 45 has maximum number 2025, so 2026 is the next number, starting the next layer. Therefore, 2026 is the first number in the next layer, which is a square of side length 47? Wait, each layer increments the side length by 2. The first layer (center) is 1x1, then 3x3, then 5x5, etc. The layer number n corresponds to side length 2n-1. For example, n=1: 1, n=2:3, n=3:5, etc. So if the square with side length 45 is layer n=23, because 2*23 -1=45. Then the next layer is n=24, with side length 2*24 -1=47. Therefore, the maximum number in layer n=24 is 47²=2209. Therefore, numbers from 2026 up to 2209 are in layer n=24.
+
+But 2026 is just after 2025 (which is 45²). So 2026 is the first number of layer 24. So let's figure out where exactly 2026 is located in that layer. 
+
+Each layer starts at (2n-1)^2 + 1 and ends at (2n+1)^2. Wait, layer n corresponds to side length 2n-1? Let me check again. For n=1: 2(1)-1=1, which is layer 1. For n=2: side length 3, maximum number 9. So starting from 2 to 9. Wait, so for layer k (where k=1,2,3,...), the maximum number is (2k-1)^2. So layer k has maximum (2k-1)^2, and the layer above has maximum [2(k+1)-1]^2 = (2k+1)^2. Therefore, the numbers in layer k are from (2k-3)^2 +1 up to (2k-1)^2. Wait, for example, layer k=2 (side length 3), numbers from (2*2-3)^2 +1 = (1)^2 +1=2 to (2*2-1)^2=3²=9. Correct. So for layer k, numbers from [(2k - 3)^2 +1, (2k - 1)^2]. So for 2026, which is in the layer where? Since it is 2026, which is just after 45²=2025. So that is layer k where (2k - 1)^2 = 2025. So 2k-1=45, so k=23. Therefore, layer 23 ends at 45²=2025. Therefore the next layer, layer 24, starts at 2026 and ends at (2*24 -1)^2=47²=2209. 
+
+Therefore, 2026 is the first number in layer 24. Now, how is this layer structured? Let me recall that when moving from the end of one layer to the start of the next, you turn right. Wait, the spiral goes clockwise. So each layer is built by going right, up, left, down. Wait, but actually, each new layer requires moving right one step, then up, then left, then down?
+
+Wait, maybe I should think about how numbers are added in the spiral. Let's say we have completed the square of side length m. To get to the next square of side length m+2, you need to move in a direction. But actually, the movement between layers: for example, after completing the 3x3 square (ending at 9), the next number 10 is to the left of 9? Wait, let me recall the standard spiral:
+
+Starting from 1 at center:
+
+Let me write the numbers in order. Starting from 1, moving right to 2, up to 3, left to 4, left to 5, down to 6, down to 7, right to 8, right to 9, then right to 10? Wait no:
+
+Actually, let me look up the standard Ulam spiral configuration. Since I can't actually look it up, but I need to reconstruct it. 
+
+Imagine building the spiral step by step:
+
+Start at 1.
+
+Move right to place 2.
+
+Move up to place 3.
+
+Move left to place 4, then 5.
+
+Move down to place 6, 7.
+
+Move right to place 8, 9, 10.
+
+Move down to place 11, 12.
+
+Move left to place 13, 14, 15.
+
+Move up to place 16, 17, 18.
+
+Move right to place 19, 20, 21, 22.
+
+Wait, no, maybe it's more systematic.
+
+Each time you complete a layer, you add a new ring around the previous square. Each ring has a side length that is 2 more than the previous. The movement is such that you go east, north, west, south for each side of the square. 
+
+For example, starting with 1:
+
+Layer 1: 1 (1x1).
+
+To build layer 2 (3x3):
+
+Start at 1, move east (right) 1 step to 2.
+
+Move north (up) 1 step to 3.
+
+Move west (left) 2 steps to 4, then 5.
+
+Move south (down) 2 steps to 6, then 7.
+
+Move east (right) 2 steps to 8, then 9.
+
+Wait, so the first layer (from 1 to 9) is built by steps: right 1, up 1, left 2, down 2, right 2. Hmm. Then for layer 3 (5x5):
+
+Starting at 9, move left 1 step (to start next layer?), but maybe I need to think in terms of layers. Each new layer adds two more steps on each side? Wait.
+
+Alternatively, the number of steps increases every two sides. For example, moving east for n steps, then north for n steps, then west for n+1 steps, then south for n+1 steps, then east for n+1 steps... Hmm, perhaps.
+
+But maybe another approach: For layer k (starting from the center, layer 1 is just 1), the numbers in layer k are added by making 4 sides, each side having length (2k-1). Wait, but no, because for layer 2 (the first layer around the center), the side length of the square is 3. Each side has numbers... Well, for each side, you have a certain number of numbers.
+
+Wait, actually, each side of the square has length equal to the side length of the square minus 1? Because when you move from one corner to another, you move by side_length - 1 steps. So for example, for the 3x3 square, each side has 3-1=2 steps. Which would correspond to 2 numbers added per side (except the starting corner is already there). 
+
+But maybe it's better to think about how many numbers are added in each layer. The total numbers in layer k is 8(k-1). For example, layer 1 (center) has 1 number. Layer 2 has 8 numbers (from 2 to 9). Layer 3 has 16 numbers (from 10 to 25). Wait, but 25 - 9 = 16. But 8(k-1) for k=2 would be 8(1)=8 numbers. For k=3, 8(2)=16 numbers. Yes. So general formula: For layer k ≥ 2, numbers added are 8(k-1). Therefore, total numbers up to layer k is 1 + 8(1 + 2 + ... + (k-1)) = 1 + 8*( (k-1)k)/2 ) = 1 + 4k(k-1). 
+
+But since we found that 2025 is 45² = (2*23 - 1)^2, so layer 23. The total numbers up to layer 23 is 1 + 4*23*(23-1) = 1 + 4*23*22. Let me compute that if needed later. But perhaps more relevant is that in layer k=24, the numbers go from N_start = (2*23 - 1)^2 + 1 = 45² +1=2025 +1=2026 up to N_end = (2*24 -1)^2=47²=2209. So 2209 - 2026 +1= 184 numbers in layer 24? Wait but according to the previous formula, numbers per layer k is 8(k-1). For k=24, it is 8*(24-1)=8*23=184. Correct. So 2026 is the first number in layer 24.
+
+Now, to find the neighbors of 2026. The neighbors are the 8 surrounding numbers on the grid: up, down, left, right, and the four diagonals. But first, I need to figure out where exactly 2026 is located in the spiral. Since it's the first number of layer 24, which starts after completing layer 23.
+
+So when you finish layer 23, you end at 45²=2025. Let me think about how the spiral progresses. To move from the end of one layer to the start of the next. Let me think of the standard spiral movement. Suppose I finish layer k at the maximum number (which is at the end of a side). Where is that? For example, in layer 2, the last number is 9, which is at the bottom right corner? Wait.
+
+Let me think for layer k: The numbers in layer k are added in four sides, each side with m steps, where m=2k-1? No, for layer k, the side length is 2k-1, so each side of the square has m-1 steps, where m is side length. Wait, perhaps.
+
+Alternatively, considering that each layer is built by adding a square around the previous. Let me try for k=2 (layer 2, 3x3). Starting at 1, moving right to place 2, up to place 3, left two steps to 5, down two steps to 7, then right two steps to 9. Therefore, the last number of layer 2 is 9, which is at the bottom right corner. Then layer 3 (5x5) starts by moving left from 9? Wait, no. To start layer 3, after 9, you move left? Let me think. The previous movement ended at 9, moving right. Then the next direction would be down. Wait, no. The spiral is clockwise. After finishing a full square layer, the next step direction would be... Let me visualize.
+
+If I end at 9, which is bottom right corner of the 3x3 square. To add the next layer (layer 3, 5x5), you need to move down one step? Wait, but that might not be right. Let me think of the movement sequence. When building a spiral, after completing a full square, the next movement is to go left? Wait, maybe not. Let me consider that after completing the 3x3 square ending at 9, the next number is 10. Where is 10 located?
+
+In the standard spiral, after 1, 2, 3, 4, 5, 6, 7, 8, 9:
+
+...  5  4  3
+...  6  1  2
+...  7  8  9
+
+Then, you go down from 9 to add 10? Wait, that would be south direction. Let me try to extend the spiral:
+
+Let me try to write the next numbers. After 9 is 10, then 11, 12, etc. If going down from 9, then 10 is below 9. Then maybe moving down from 9 (south), but then after that moving left? Wait, it's a bit confusing. Maybe I need to think that when you finish a layer, you turn right to start the next side.
+
+Wait, here's a better approach: In the spiral movement, the order is always right, up, left, down, right, up, etc., turning clockwise each time. Each time you complete a side, you turn left (clockwise). Wait, no, when you complete a side, you make a 90-degree right turn to start the next side. 
+
+So for example, starting at 1 (center). Go right to 2, then turn left? Wait no. If you are moving along the right direction, to continue the spiral you turn right (clockwise). So after moving right, turn right (down?), no. Wait, let me think about directions:
+
+Assume directions: right (east), up (north), left (west), down (south), then right again... each turn is 90 degrees clockwise.
+
+So movement sequence:
+
+Start at 1 (center). Move east (right) to 2. Then turn clockwise (south) and move down to 3? Wait, no. Wait if you were moving east, turning clockwise would be south. Then moving south? Let me think.
+
+But in standard spiral, after moving right (east) to place 2, the next direction is up (north)? Wait that would be a left turn. Wait confusion arises here. Maybe I need to use coordinates.
+
+Let me assign coordinates to numbers. Let me take (0,0) as the center where 1 is. 
+
+The spiral starts at (0,0) = 1.
+
+Move east (right) to (1,0) = 2.
+
+Then move north to (1,1) = 3.
+
+Then move west to (-1,1)? Wait no. Wait, moving west from (1,1) would go to (0,1) = 4? Wait, but in the given example:
+
+... 5 4 3 ...
+
+... 6 1 2 ...
+
+... 7 8 9 ...
+
+So for 1 at center (0,0). Then 2 is (1,0). 3 is (1,1). 4 is (0,1). 5 is (-1,1). 6 is (-1,0). 7 is (-1,-1). 8 is (0,-1). 9 is (1,-1). Hmm, that's inconsistent with the direction. Wait, let me check:
+
+From 1 at (0,0), moving east to 2 at (1,0). Then turning north (up) to 3 at (1,1). Then turning west (left) to 4 at (0,1), 5 at (-1,1). Then turning south (down) to 6 at (-1,0), 7 at (-1,-1). Then turning east (right) to 8 at (0,-1), 9 at (1,-1). Then turning north to continue? So yes, after placing 9, the next direction would be north to go to 10 at (1,0)... but (1,0) is already 2. Wait that can't be. Therefore, there's a problem here. 
+
+Wait, perhaps after 9, we turn north again? Wait, the movement is: each time you complete a side, you turn clockwise. The sides alternate between increasing and same length? Wait, maybe for each "loop", the number of steps in each direction increases after two turns. For example, first, you move east for 1 step, north for 1 step, west for 2 steps, south for 2 steps, then east for 3 steps, north for 3 steps, west for 4 steps, south for 4 steps, etc. 
+
+This seems to be a more accurate description. So, starting at 1, the first move is east 1 step (to 2), then north 1 step (to 3), then west 2 steps (to 4 and 5), then south 2 steps (to 6 and 7), then east 3 steps (to 8, 9, 10), then north 3 steps, etc. So the length increases by 1 every two directions.
+
+Therefore, the side lengths of each "leg" increase by 1 every two directions. Therefore, after completing the first square (up to 9), the next movement is east 3 steps (from 7 to 8 to 9 to 10). Wait, in coordinates, after 7 is at (-1,-1). Then moving east would be towards positive x direction. So from (-1,-1) moving east 3 steps would go to (1,-1) as the third step. Hmm.
+
+Yes, that would be consistent with the standard spiral. So, after layer 2 (ending at 7?), no. Wait, the first layer is 1. The second layer is numbers 2-9? Maybe my earlier thought process is conflicting here. Maybe I should look at how many numbers are in each side.
+
+Alternatively, given that layer k (where k=1 is the center) has numbers from N_start to N_end = (2k-1)^2. For example, k=1: N_start=1, N_end=1. k=2: N_start=2, N_end=9. k=3: N_start=10, N_end=25. 
+
+Each layer k ≥2 has four sides, with each side having (2k-1) - 1 = 2k - 2 numbers? Wait, because when you move along a side, the starting number is already part of the previous side. For example, in layer 2 (numbers 2-9), each side has 2 numbers:
+
+- Right side (east): 2, 3 (but 3 is part of next side?)
+Wait no. Let me check for layer 2:
+
+Numbers 2-9. Side 1: from 2 to 3 (east then north?), maybe. If each side has length 2 steps (for layer k=2, side length is 3, so steps per side is 2). Therefore, numbers per side would be 2 numbers (excluding the starting corner which is the end of the previous side). 
+
+But for k=2, total numbers in layer is 8, divided into 4 sides, each with 2 numbers. That works. For k=3, numbers per layer is 16, divided into 4 sides each with 4 numbers (since 2k - 2 = 4, when k=3). Yes. 
+
+So in general, for layer k, each side of the square has (2k - 2) numbers. Therefore, to figure out where 2026 is, since it is the first number of layer 24, that must be on the first side of layer 24. The first side of each layer is the "east" side, meaning moving to the right from the end of the previous layer.
+
+Wait, so when we finish layer 23 at N_end = 45² = 2025, which is located at the end of the previous layer's last side. Let me recall in layer k, the last side is the south side, which goes from the southwest corner to the southeast corner? Or depends on the direction. Let me think. Starting from the center, each layer is built by:
+
+- First side: east (right)
+- Second side: north (up)
+- Third side: west (left)
+- Fourth side: south (down)
+
+So the last side of each layer is the south side, meaning the final number of layer k is at the end of the south side, which would be the southeast corner of the square? Wait, for example, layer 2 ends at 9. If we follow the above, starting from 1, moving east to 2, then north to 3, west to 4, 5, then south to 6, 7. Wait that ends at 7? But earlier we thought layer 2 ends at 9. Hmm, maybe inconsistency here.
+
+Wait let's track for k=2, numbers 2-9:
+
+Start of layer: 2. 
+
+First side (east): moving east from 1 to 2. Then turn north. Second side (north): from 2, move north to 3. Turn west. Third side (west): from 3, move west to 4, then to 5. Turn south. Fourth side (south): from 5, move south to 6, then 7. Turn east. So the last number of layer 2 is 7? But previously we said layer 2 ends at 9. There's a problem here. 
+
+Ah, I think my earlier analysis was incorrect. Maybe the numbers per side is (2k - 1). Wait, if for layer k, each side has length (2k - 1). But since you have already placed a number at the starting corner, the number of new numbers on each side is (2k - 1) - 1 = 2k - 2. However, maybe not. Let me take k=2. If the side length is 3 (2k - 1), then each side length is 3 numbers? But from the example:
+
+First side (east): numbers 2-3? That is 2 numbers. If side length is 3, then numbers per side would be 3, but overlapping with adjacent sides. So the first corner is already the end of the previous side. Therefore, each side adds (side_length - 1) numbers. For layer k, side_length is 2k - 1. So numbers added per side: (2k - 1) - 1 = 2k - 2. For k=2, 2*2 - 2 = 2 numbers per side. Since there are 4 sides, total numbers per layer is 4*(2k - 2) = 8(k - 1), which matches our previous formula. 
+
+Therefore for k=2, numbers per side is 2. So starting from 2:
+
+First side (east): start at previous layer's end (assuming previous layer ended at 1). Move east adding numbers 2 and 3? Wait, if moving east from 1, add 2 then turn north. So first side (east) adds 1 number, not 2? There's confusion here. Maybe the formula is slightly different.
+
+Let me think again. For each layer k ≥ 2, the total numbers added is 8(k - 1). The first layer is just 1. The second layer is numbers from 2 to 9, which is 8 numbers. So for k=2, 8(2 - 1) = 8 numbers. 
+
+If each layer is constructed by four sides, each side contributing numbers. Let me think for k=2:
+
+Start at the end of layer 1, which is 1. 
+
+First side: move east, adding numbers until the first turn. How many numbers? For layer k=2, side length is 3, but to get from one corner to the next, you move 3 units, but numbers are placed at each step. But since we start at 1 (the previous corner), moving east adds 2 numbers to reach the next corner. For example:
+
+From corner (1,0) [assuming coordinates where 1 is (0,0)], moving east 1 step to (1,0)=2, then next step to (2,0), but maybe the next corner is... Wait this is getting too coordinate-based. 
+
+Alternatively, since each side has length m = 2k - 1, then each side has m numbers. However, because the four sides share corners, the total numbers would be 4*m - 4 (since the four corners are counted twice). Therefore, for layer k, numbers = 4*(2k - 1) - 4 = 8k - 4 - 4 = 8k - 8 = 8(k - 1). Which matches the formula. Therefore, each side has (2k - 1) numbers, but the corners are shared between sides.
+
+Therefore, for layer k, each side has 2k - 1 numbers, with the first number of the side being the last number of the previous side. 
+
+Therefore, for k=2, each side has 3 numbers:
+
+First side: east, numbers 2, 3, 4?
+
+But in our earlier example, layer 2 ends at 9. If each side has 3 numbers, with overlapping corners, then total numbers would be 4*3 - 4 = 8, which works. For example:
+
+Side 1 (east): 2, 3, 4.
+
+Side 2 (north): 5, 6, 7.
+
+Side 3 (west): 8, 9, 10? Wait, but layer 2 ends at 9. Therefore, inconsistency. 
+
+Alternatively, maybe for k=2, the first side has 1, then 2 steps. Wait this is confusing. Let me actually map out the numbers for layer k=2 (numbers 2 to 9):
+
+Start at 1. First direction is east. Move east 1 step to 2, then another step to 3? Then turn north. Move north 1 step to 4, another step to 5? Then turn west. Move west 2 steps to 6 and 7? Then turn south. Move south 2 steps to 8 and 9? Then turn east to start next layer. So here, for layer k=2, each side after the first has one more step than the previous? Or no. 
+
+But according to the formula, each side should have m=3 numbers. But here, first side (east) has 2 numbers, then north 2 numbers, west 2 numbers, south 2 numbers. Total numbers would be 2*4 - duplicates. But if each side has 2 numbers, overlapping corners, then total numbers is 2*4 - 4 = 4, which is not 8. So something wrong here. 
+
+I think my main confusion arises from how the numbers are placed on each side. Maybe a better way is to think that when you go from one layer to the next, you add two more steps on each direction. For example:
+
+Layer 1: just 1.
+
+To create layer 2:
+
+From 1, move east 1 step to 2, north 1 step to 3, west 2 steps to 4, 5, then south 2 steps to 6, 7. Then east 2 steps to 8, 9. Wait that is 8 numbers (from 2 to 9). So sides:
+
+- East: 1 step (numbers 2)
+- North: 1 step (number 3)
+- West: 2 steps (numbers 4, 5)
+- South: 2 steps (numbers 6, 7)
+- East: 2 steps (numbers 8, 9)
+
+But that makes 5 sides? No, spiral has four sides. So maybe it's:
+
+First side: east with length 1, adding numbers 2.
+
+Second side: north with length 1, adding number 3.
+
+Third side: west with length 2, adding numbers 4, 5.
+
+Fourth side: south with length 2, adding numbers 6, 7.
+
+Then to start the next layer, turn east and go for length 2 steps, adding numbers 8, 9. But that seems like continuing the layer? This inconsistency suggests that my understanding is flawed.
+
+Alternatively, maybe there are two different kinds of layers? For even and odd? Wait no. 
+
+Perhaps another approach: Find the position of a number in the spiral. For any number n, determine its coordinates. Then, given coordinates, find neighbors.
+
+To find the neighbors of 2026, need to know where it is. Maybe I can find the coordinates of 2026, then look at the coordinates ±1 in x and y directions. 
+
+But how to find coordinates for 2026?
+
+First, as we know, 2026 is the first number of layer 24. The first number of each layer is located at a specific position. For example, the first number of layer 2 is 2, which is to the east of 1. Similarly, the first number of layer 3 is 10, which is to the west of 9? Wait, no. After finishing layer 2 at 9 (southeast corner?), then moving west to start layer 3? 
+
+Alternatively, given that each layer starts with a direction. For layer k, starting direction is east. Therefore, the first number of layer k is adjacent to the last number of the previous layer. 
+
+If we can figure out the direction in which the previous layer ended, then we know the direction of the new layer. 
+
+Earlier example: layer 2 ends with moving south to place 7 (if we follow previous partial logic), then the next direction is east to start layer 3. So starting at 7, moving east to place 8, 9, 10... Wait no. In the example given in the problem, the numbers go up to 9 in the bottom row. If 9 is at (1, -1). Then moving east from there would go to (2, -1)=10, then continue east?
+
+But if 2026 is the first number of layer 24, then it is located at the start of the first side of layer 24, which is the east side. 
+
+To figure out the coordinates, maybe we can find the coordinates of the last number of layer 23, then move east to get to 2026.
+
+So what is the last number of layer 23? It's (2*23 - 1)^2 = 45² = 2025. Where is 2025 located?
+
+In general, the last number of each layer is located at the southeast corner of that layer. Because layers are built by going east, north, west, south. Therefore, the last side of the layer is the south side, ending at the southeast corner.
+
+Therefore, coordinates of 2025 (the last number of layer 23) is at (layer_radius, -layer_radius), where layer_radius is equal to the layer number. Wait, for layer k, the radius is k-1? For example, layer 1 is at (0,0). Layer 2 has a radius of 1 (distance from center), so southeast corner is (1, -1). For example, number 9 is at (1, -1). Similarly, number 25 would be layer 3, southeast corner at (2, -2). Therefore, general formula: the southeast corner of layer k is located at ( (k-1), -(k-1) ). Because layer k has a radius of (k-1). 
+
+Wait for k=2, radius 1, coordinates (1, -1) for the southeast corner. Yes, that's where 9 is located in the example. Therefore, for layer 23, the southeast corner (last number 2025) is at (22, -22). 
+
+Therefore, to start layer 24, we need to move east from that position. Wait, if the last movement of layer 23 was south to reach (22, -22), then the next direction is east. Therefore, moving east from (22, -22) will start layer 24. 
+
+Therefore, the first number of layer 24, which is 2026, is located at (22 + 1, -22) = (23, -22). 
+
+Therefore, the coordinates of 2026 are (23, -22). 
+
+Now, to find the 8 neighbors, we need to check the numbers at:
+
+(23 ± 1, -22 ± 1), i.e., all combinations of ±1 in x and y. However, need to make sure those positions are valid and contain the respective numbers. 
+
+But how to find what numbers are at those coordinates? For that, perhaps we can find the number at coordinates (x, y). 
+
+Alternatively, since 2026 is at (23, -22), we can figure out the numbers surrounding it.
+
+But how?
+
+Alternatively, maybe we can figure out the direction and the numbers along the first side of layer 24. Since 2026 is the first number of the first side of layer 24, which is the east side. 
+
+Each side of layer k has length m = 2k - 1. For layer 24, m = 2*24 - 1 = 47. Therefore, each side has 47 numbers, but with overlapping corners. Since the first side is east, starting at (23, -22) = 2026, then moving east along the east side, adding numbers until reaching the next corner. 
+
+Therefore, the first side of layer 24 (east) will have numbers from 2026 up to 2026 + (m - 1) - 1 = 2026 + 46 = 2072? Wait, because the first number is 2026, then each step along the side adds 1, so m numbers in total. Since m = 47, numbers from 2026 to 2026 + 47 -1 = 2026 + 46 = 2072. Therefore, the east side goes from 2026 to 2072. The next corner (northeast corner of the layer) is 2072.
+
+Therefore, the coordinates of those numbers would be:
+
+Starting at (23, -22) for 2026, then (24, -22) for 2027, ..., up to (23 + 46, -22) = (23 + 46 = 69, -22) for 2026 + 46 = 2072. Therefore, the northeast corner is at (69, -22), with number 2072.
+
+Therefore, the first side (east) of layer 24 is from (23, -22) to (69, -22). 
+
+Therefore, the neighbors of 2026 at (23, -22) would be:
+
+- East: 2027 at (24, -22)
+- West: (22, -22), which is the last number of the previous layer? Wait, no. (22, -22) would be west of 2026. But the previous layer ended at (22, -22) which was number 2025. Therefore, west of 2026 is 2025.
+
+- North: (23, -21). What number is there?
+
+- South: (23, -23). What number is there?
+
+- Northeast: (24, -21)
+
+- Northwest: (22, -21)
+
+- Southeast: (24, -23)
+
+- Southwest: (22, -23)
+
+So total eight neighbors. We need to find the numbers at those 8 positions.
+
+Let me note down the coordinates:
+
+1. East: (24, -22) → 2027
+2. West: (22, -22) → 2025
+3. North: (23, -21)
+4. South: (23, -23)
+5. Northeast: (24, -21)
+6. Northwest: (22, -21)
+7. Southeast: (24, -23)
+8. Southwest: (22, -23)
+
+We already know 2025 and 2027. Now need to figure out the others.
+
+To find the numbers at (23, -21), (23, -23), (24, -21), (22, -21), (24, -23), (22, -23).
+
+To do that, we need to figure out what numbers are at these coordinates. How?
+
+One approach is to determine which layer and position those coordinates are in. 
+
+First, let's find for coordinate (x, y). For any coordinate, the layer can be determined by the maximum of |x|, |y|. For example, for (23, -22), max(|23|, |-22|) = 23. Therefore, this coordinate is in layer k where the radius is 23. But the layers are defined earlier with radius k - 1. Wait, earlier, layer k had radius (k - 1). For example, layer 2 had radius 1. So if a coordinate has radius r (max(|x|, |y|)), then it is in layer k = r + 1. 
+
+Therefore, for coordinates:
+
+- (23, -21): max(23, 21)=23. So layer k=23 + 1=24. Wait, same layer as 2026. 
+
+Wait 2026 is in layer 24, which has radius 23. Because for layer k=24, radius is k - 1 = 23. Therefore, coordinates with radius 23 are in layer 24. Therefore, (23, -21) is in layer 24.
+
+Similarly, (23, -23): max(23,23)=23, same layer. 
+
+Therefore, all these neighbors are in layer 24 except maybe some. Wait (22, -21) has max(22,21)=22, so in layer k=23. Similarly (22, -23) has max(22,23)=23, so in layer 24.
+
+Therefore, let's handle them one by one:
+
+First, coordinates in layer 24:
+
+- (23, -21): Need to find its number.
+
+- (23, -23): Need to find its number.
+
+- (24, -21): Need to find its number.
+
+- (24, -23): Need to find its number.
+
+- (22, -23): Need to find its number.
+
+Coordinates in layer 23:
+
+- (22, -21): Need to find its number.
+
+First, let's handle (22, -21), which is in layer 23 (radius 22). 
+
+For coordinates in layer 23, which ends at (22, -22)=2025. 
+
+To find the number at (22, -21), need to see where it is located in the spiral of layer 23.
+
+Layer 23 is the square with side length 2*23 - 1=45. But coordinates (22, -21) is within that square. 
+
+To find the number, we can think about the position in the layer. Each layer is divided into four sides. To figure out which side the coordinate is on, and how far along the side it is.
+
+Given a coordinate (x, y) in layer k (radius r = k - 1), we can determine which side it's on:
+
+- If x = r and y ranges from -r to r: it's on the east side.
+
+- If y = r and x ranges from r to -r: north side.
+
+- If x = -r and y ranges from r to -r: west side.
+
+- If y = -r and x ranges from -r to r: south side.
+
+So for coordinate (22, -21):
+
+r = 22 (layer 23). y = -21, which is greater than -r = -22. Therefore, it's not on the south side. x = 22, which is equal to r, so east side. Wait, but on east side, x = r, y ranges from -r to r. So for east side, y ranges from -22 to +22. But our coordinate is (22, -21). So it's on the east side of layer 23.
+
+Therefore, to find the number at (22, -21), we need to know how many numbers are before it in the layer.
+
+Layer 23 starts at N_start = (2*22 - 1)^2 + 1 = (43)^2 +1 = 1849 +1=1850. Wait, wait earlier formula said N_start for layer k is (2(k-1)-1)^2 +1? Wait no, earlier we said for layer k, numbers from [(2k - 3)^2 +1, (2k - 1)^2]. So for layer k=23, numbers from [(2*23 - 3)^2 +1, (2*23 - 1)^2] = [43² +1, 45²] = [1849 +1, 2025] = [1850, 2025]. 
+
+Therefore, layer 23 has four sides, each with m = 2k -1 = 45 numbers? Wait no, earlier discussion said for layer k, each side has length m = 2k - 1 numbers. But with overlapping corners, total numbers is 8(k - 1). For layer k=23, total numbers is 8*(23 - 1) = 8*22=176. However, 45*4 - 4(corners)= 180 -4=176. Yes. Therefore, each side has 45 numbers. 
+
+Therefore, for the east side of layer 23, numbers start at N_start of layer 23, which is 1850, and the east side goes from 1850 to ... ?
+
+The first side is east side, which has numbers 1850 to 1850 + 45 - 1 = 1894. Because each side has 45 numbers. 
+
+Therefore, the east side of layer 23 has numbers from 1850 to 1894. 
+
+The coordinate (22, -21) is on the east side (x = r = 22). On the east side, moving from south to north. 
+
+In terms of y coordinate: on the east side, y goes from -r to +r. For r=22, y=-22 to +22. The coordinate (22, -21) is y=-21, which is one step up from the bottom (south). Therefore, the position on the east side is the second number (since starting at y=-22 is first number, then y=-21 is next). 
+
+Therefore, the number at (22, -21) is N_start_east + 1 = 1850 + 1 = 1851. 
+
+Therefore, (22, -21) is 1851. Got that.
+
+Now, back to coordinates in layer 24:
+
+Let's first take (23, -21). This is in layer 24 (radius 23). Let's determine which side it's on.
+
+For (23, -21): x = 23, y = -21. Since x = r = 23, and y ranges from -23 to +23. But since y=-21 is greater than -23, this is on the east side of layer 24. 
+
+Layer 24 starts at N_start = 2026. The east side has numbers from 2026 to 2026 + 47 -1 = 2026 + 46 = 2072. 
+
+On the east side, as we move north from y=-23 to y=+23, keeping x=23. Therefore, the coordinate (23, -21) is located how far along the east side? 
+
+Starting at (23, -23): position 1 (number 2026)
+
+Then moving north to (23, -22): position 2 (2027)
+
+Then (23, -21): position 3 (2028)
+
+Therefore, the number at (23, -21) is 2026 + 2 = 2028? Wait, starting at position 1: (23, -23) is 2026, then each step north increases y by 1. So (23, -23) is position 1, (23, -22) is position 2, ..., (23, -21) is position 3. Therefore, number is N_start_east + (position - 1) = 2026 + 2 = 2028. 
+
+Yes, so (23, -21) is 2028. 
+
+Similarly, (23, -23) is 2026, which is already known. But just to confirm, (23, -23) is the starting point of the east side, so 2026.
+
+Now, moving on to (24, -21) and (24, -23). Both are in layer 24.
+
+First, (24, -21): Let's see which side it is on. x=24, which is greater than r=23? No, wait r=23, coordinates have max(x,y)=23. x=24 would be outside? Wait no, for layer 24, the coordinates have radius 23. Wait (24, -21): max(24, 21)=24, which would be radius 24, which would be layer k=25? Wait, something is wrong here.
+
+Wait hold on! Earlier, I thought that layer k has radius r = k - 1. Therefore, for layer 24, the maximum coordinate in any direction is 23. Therefore, coordinates like (24, -21) would have a radius of 24, so in layer 25. 
+
+But how come these coordinates (24, -21) and (24, -23) are part of neighbors of 2026? If they are outside of layer 24, that would mean that 2026 is on the edge of the grid, and those coordinates are outside the grid? But in reality, the spiral is infinite, so all coordinates are filled. 
+
+Therefore, need to correct my earlier assumption. 
+
+The position (24, -21) has max(|x|, |y|) = 24, which is in layer k = 24 + 1 = 25? Wait no, if radius is r = max(|x|, |y|), then layer k is r + 1? Wait no. Earlier we said for a coordinate with radius r, it is in layer k = r + 1? Wait no, for example, coordinate (1, 0) has radius 1, and is in layer 2. Because layer 2 has radius 1. So in general, for a coordinate with radius r, it is in layer k = r + 1? No, because layer k has radius k - 1. Therefore, if a coordinate has radius r, then it is in layer k = r + 1. For example, r = 1 is layer 2. Correct. 
+
+Therefore, coordinate (24, -21) has radius r = 24, so it's in layer k = 25. Similarly, (24, -23) has r = 24, in layer k=25. Therefore, these coordinates are in layer 25. Therefore, need to find the numbers there. 
+
+This complicates things, but manageable. Similarly, (22, -23) has coordinates (22, -23). The max(|22|, |-23|) is 23. Therefore, in layer k = 23 + 1 = 24. Therefore, (22, -23) is in layer 24. 
+
+So let's first handle (24, -21) and (24, -23), which are in layer 25.
+
+Starting with (24, -21). Let's determine which side of layer 25 it is on.
+
+Layer 25 has radius r = 24. For coordinate (24, -21):
+
+x = 24, y = -21. Since x = r and y ranges from -r to +r, this is on the east side of layer 25.
+
+Similarly, (24, -23) is x=24, y=-23. Still on the east side.
+
+Therefore, both are on the east side of layer 25.
+
+First, let's find the numbers on this side.
+
+Layer 25 starts at N_start = (2*24 - 1)^2 + 1 = (47)^2 +1 = 2209 + 1 = 2210. 
+
+Each side of layer 25 has length m = 2*25 - 1 = 49 numbers. Therefore, the east side has numbers from 2210 to 2210 + 49 -1 = 2210 + 48 = 2258. 
+
+Now, the east side of layer 25 is going from (r, -r) to (r, +r). That is from (24, -24) to (24, +24). Therefore, for a coordinate (24, y), where y ranges from -24 to +24. 
+
+The coordinate (24, -21) is at y = -21. How far up from the bottom is that? 
+
+Starting at (24, -24): position 1: number 2210
+
+Then (24, -23): position 2: 2211
+
+(24, -22): position 3: 2212
+
+(24, -21): position 4: 2213
+
+Therefore, the number at (24, -21) is 2210 + 3 = 2213.
+
+Similarly, the coordinate (24, -23) is position 2: 2211. 
+
+Therefore, number at (24, -23) is 2211.
+
+Therefore, (24, -21) is 2213 and (24, -23) is 2211.
+
+Now, the coordinate (22, -23) is in layer 24 (radius 23). Let's figure that out.
+
+For (22, -23): max(|22|, |-23|) = 23, so layer k=24. 
+
+Which side is it on? 
+
+x=22, y=-23. The max is at y=-23, so it's on the south side of layer 24. Because on the south side, y = -r = -23, and x ranges from -r to +r. So y=-23, x from -23 to +23. The coordinate (22, -23) is on the south side, at x=22. 
+
+Layer 24 starts at N_start = 2026. Each side has length m = 2*24 -1 = 47 numbers. Therefore, the south side has numbers from where?
+
+The four sides of layer 24:
+
+First side: east: 2026 to 2026 + 46 = 2072 (as before).
+
+Second side: north: starts at 2073. Length 47 numbers. Ends at 2073 + 46 = 2119.
+
+Third side: west: starts at 2120. Length 47 numbers. Ends at 2120 + 46 = 2166.
+
+Fourth side: south: starts at 2167. Length 47 numbers. Ends at 2167 + 46 = 2213. 
+
+Therefore, the south side of layer 24 has numbers from 2167 to 2213. 
+
+On the south side, y = -23, and x goes from +23 to -23 (moving west). Therefore, the starting point is (23, -23) with number 2167, then moving west to (22, -23), (21, -23), ..., (-23, -23)=2213.
+
+Therefore, coordinate (22, -23) is one step west from the starting point (23, -23). 
+
+The position of (23, -23) is the first number on the south side: 2167. Then (22, -23) is second number: 2168.
+
+Therefore, number at (22, -23) is 2168.
+
+Great! Now summarize all the numbers:
+
+1. East: (24, -22) → 2027
+2. West: (22, -22) → 2025
+3. North: (23, -21) → 2028
+4. South: (23, -23) → 2026? Wait no, (23, -23) is the starting point of the east side of layer 24, which is 2026. Wait, but we were told to find neighbors of 2026. The neighbor to the south of 2026 is (23, -23). Wait but earlier, we found that (23, -23) is in the south side of layer 24? Wait no, (23, -23) is on the east side of layer 24? Wait.
+
+Wait earlier analysis: (23, -23) is on the east side of layer 24? How?
+
+Because for (23, -23), x=23 and y=-23. Since the layer has radius 23, and x=23, y=-23 is on the east side? Wait no, because on the east side, y ranges from -23 to +23, while x=23. Therefore, (23, -23) is the starting corner of the east side, yes. Therefore, that is the first number of layer 24, which is 2026. Therefore, the number at (23, -23) is 2026 itself. 
+
+But we are to find the neighbors of 2026. Therefore, the neighbor to the south of 2026 is one step below, which is (23, -23 -1) = (23, -24). Wait, no, south direction is decreasing y? Wait if 2026 is at (23, -22)? No! Wait earlier we thought 2026 is at (23, -22). Wait now I'm confused. Wait let me recap.
+
+Earlier, I thought that the last number of layer 23 is at (22, -22), which is number 2025. Then the first number of layer 24 is at (23, -22), which is number 2026. Therefore, the coordinates of 2026 is (23, -22). Therefore, the neighbor to the south is (23, -22 -1) = (23, -23). Which is in layer 24. 
+
+Earlier, for coordinate (23, -23), we said it is on the east side of layer 24. Wait, but (23, -23) is part of the east side? Yes, because on the east side, y ranges from -23 to +23. Therefore, yes, (23, -23) is the starting corner of the east side of layer 24. But if the first number of the east side is at (23, -23), then how come we said earlier that the east side starts at (23, -23) and goes north? But we had earlier said that the first number of layer 24 is 2026 at (23, -22). Contradiction here! 
+
+Wait this is the problem. Earlier, I thought that after ending layer 23 at (22, -22), moving east to (23, -22) is the start of layer 24. But according to coordinates and layer sides, the start of layer 24's east side is at (23, -23). Where is the mistake?
+
+Let me think again about where the layer starts. If the last number of layer 23 is at (22, -22), which is the southeast corner. To start layer 24, we move east from there. 
+
+Moving east from (22, -22) would take us to (23, -22), which is the next coordinate. Therefore, this should be the first number of layer 24: 2026. Therefore, according to that, the coordinates of 2026 is (23, -22). 
+
+However, according to the layer's side definition, the east side of layer 24 starts at (23, -23). There's an inconsistency here. Where is the error?
+
+Earlier assumption that the southeast corner of layer k is at (k-1, -(k-1))? For layer 23, yes, southeast corner is at (22, -22). Then moving east from there gives (23, -22). Therefore, why does the east side of layer 24 start at (23, -23)? It must be because my previous analysis about the sides was incorrect.
+
+Let me revisit how the sides of a layer are structured.
+
+Each layer starts with the first side being east, starting just after the previous layer ended. For layer k:
+
+The previous layer ended at position (k-2, -(k-1))? Wait, no. Let me think recursively.
+
+After completing layer k-1, which ended at its southeast corner: ((k-2), -(k-2)). Then to start layer k, we move east one step to ((k-2)+1, -(k-2)) = (k-1, -(k-2)). This is the starting point of the east side of layer k. 
+
+For example, for layer 2, after layer 1 ended at (0, 0), moving east to (1, 0). Then moving north... yes, example holds. 
+
+For layer 24, after layer 23 ended at (22, -22), moving east to start layer 24 at (23, -22). Therefore, the east side of layer 24 starts at (23, -22). Earlier mistake was thinking that it started at (23, -23). That was wrong. 
+
+Therefore, correcting that, for layer k, the east side starts at (k-1, -(k-2)), and goes north to (k-1, +(k-2)), then continuing? Wait need to define properly.
+
+Actually, the east side of layer k has coordinates (x, y) = ( (k-1), y ), where y ranges from - (k - 2) to + (k - 2). Because starting from (k-1, -(k-2)) moving north to (k-1, +(k-2)), with total steps of [ (k-2) - (-(k-2)) ] = 2(k - 2) + 1? No, number of positions is 2(k - 2) + 1? For example, for layer k=2, east side from (1, -0) to (1, +0)? Wait no, for layer 2, starting at (1, -1 + something?)
+
+Wait perhaps my coordinate analysis is too tangled. Let's instead use the previous result that the east side of layer 24 starts at (23, -22), and ends at... moving north? Let's think about the length of the east side.
+
+Earlier, we said that for layer k, each side has length m = 2k - 1 numbers. Wait for layer k=24, length per side is 2*24 -1=47 numbers. Therefore, on the east side, starting at (23, -22), moving northward, how many steps? Since each number is one step north, the number of steps is m -1=46 steps. Therefore, final coordinate would be (23, -22 + 46) = (23, 24). Wait but the y-coordinate can't exceed the layer's radius. Wait radius is 23, so y ranges from -23 to +23. But starting at y=-22, moving 46 steps north would overshoot?
+
+Wait no, the number of numbers on the east side is 47. Starting at position (23, -22) as the first number, then next number is (23, -21), ..., up to y=+23 - something? Wait let's calculate the range of y.
+
+Starting at (23, -22), how many steps north until reaching y=+23? The difference between -22 and +23 is 23 - (-22) = 45, so 45 steps north from (23, -22) gets to (23, +23). Then adding one more number would be... but the total numbers on east side is 47. Wait this is conflicting. 
+
+Wait if starting at (23, -22), then moving north to (23, +23) is how many steps? From y=-22 to y=+23: that's a distance of 23 - (-22) = 45 units. Therefore, 45 + 1 = 46 numbers? Wait if you have positions at y=-22, -21,..., +23: that's 46 numbers? Let me count from -22 to +23 inclusive: that's 22 + 23 +1 = 46? Wait no:
+
+From -22 to +23 inclusive: the number of integers is (23 - (-22)) +1 = 45 +1 = 46. Yes. Therefore, the east side of layer 24 has 46 numbers. But according to earlier, for layer k=24, each side should have 2*24 -1 = 47 numbers. Contradiction! Where is mistake?
+
+Ah, earlier assumption that the number of numbers per side is 2k - 1 was wrong. Wait let's rederive it. 
+
+For layer k, with side length m = 2k - 1. Each side of the square has m numbers, but the corners are shared between sides. Therefore, the total numbers in the layer is 4*(m - 1) = 4*(2k -1 -1) = 4*(2k - 2) = 8k - 8 = 8(k - 1), which matches. Therefore, each side has m - 1 numbers, not m. Wait no, if total is 4*(m - 1), and there are 4 sides, then each side has m - 1 numbers. But m = 2k - 1. Therefore, each side has (2k - 2) numbers. 
+
+Wait yes, earlier we had this. For layer k, each side has 2k - 2 numbers. For k=24, each side has 46 numbers. Therefore, east side has 46 numbers. Starting at (23, -22), moving north to add 46 numbers. From y=-22 to y=+23 -1? Wait because starting at y=-22, adding 46 numbers would get to y=-22 + 45 = +23. Yes, because first number is at y=-22, then adding 45 steps north to reach y=+23. Hence, total 46 numbers. Therefore, the east side ends at (23, +23). 
+
+Therefore, the starting number of the east side is 2026 at (23, -22), ending at 2026 + 45 = 2071? Wait 46 numbers, so 2026 to 2026 + 45 = 2071. Wait 2026 is first number, then 2071 is the last number on the east side. Then next side is north side, starting at 2072.
+
+This makes sense because earlier we said that the northeast corner of layer 24 is at (23, +23) with number 2071. Wait but earlier I thought it was 2072? No, now with correct calculation it's 2026 + 45 = 2071. 
+
+Therefore, the number at (23, -21) is 2026 + 1 = 2027? No, starting at (23, -22) as 2026, next is (23, -21) = 2027, ..., up to (23, +23) = 2026 + 45 = 2071. Yes. Earlier calculation of (23, -21) = 2028 was incorrect, now corrected to 2027 + 1? Wait let me check:
+
+The position of (23, -21) is one step north from (23, -22), so it's the second number on the east side: 2026 + 1 = 2027. Previously I had thought it was third number, but that was because I incorrectly assumed the east side started at (23, -23). Now with corrected starting point, it is second number. 
+
+Therefore, let's correct all previous calculations.
+
+Now, back to coordinates of neighbors of 2026 at (23, -22):
+
+1. East: (24, -22) → 2027 + 1? Wait no, the next number is 2027 at (23, -21)? No, east direction is increasing x. Wait 2026 is at (23, -22). East neighbor is (24, -22). But is this on the east side of layer 24? 
+
+Wait for coordinate (24, -22): x=24, y=-22. The radius is max(24,22)=24, so layer 25. As before, in layer 25. Let's calculate its number.
+
+For layer 25, starting at N_start = (2*24 - 1)^2 + 1 = 47² +1=2209 +1=2210. 
+
+Now, coordinate (24, -22) is on the east side of layer 25? Let's check.
+
+Layer 25 has radius 24, so east side is x=24, y from -24 to +24. (24, -22) is on the east side, at position y=-22. 
+
+Starting at (24, -24) with number 2210, moving north to y=-23 (2211), y=-22 (2212). Therefore, the number at (24, -22) is 2212.
+
+Similarly, earlier for (24, -21) was 2213. Correct.
+
+Therefore, the east neighbor of 2026 is 2212.
+
+West neighbor: (22, -22) is the last number of layer 23: 2025.
+
+North neighbor: (23, -21) is the second number of east side: 2027.
+
+South neighbor: (23, -23). What is this coordinate? 
+
+(23, -23) is in layer 24? max(23,23)=23, radius 23, so layer 24. Which side is it on? x=23, y=-23. Since y=-23 is the south edge for this layer (radius 23), it is on the south side of layer 24. 
+
+Layer 24's south side starts at (23, -23)? No, layer 24's south side starts at the northeast corner of the previous side. Wait let's define the order of sides.
+
+Layer 24:
+
+- First side: east, from (23, -22) to (23, +23), numbers 2026 to 2071.
+
+- Second side: north, starting at (23, +23) moving north to (x decreasing?), wait no. After completing the east side, direction is north. Wait no, after moving east along the east side, the next direction is north. Wait but starting at the end of the east side, which is (23, +23). Turning north would go to (23 + ?). Wait no, direction after east is north. So from (23, +23), moving north? That would be increasing y, but y is already at +23, the maximum. Therefore, moving north from there is impossible. Must have made a mistake.
+
+Wait movement after completing a side is to turn left (clockwise). Wait no, always turning clockwise. If you finish moving east, turn right (south?), no. Wait if you're facing east, turning clockwise would be south? No, facing east, right turn is south? No: facing east, clockwise is right turn down, which is south? No, if you imagine facing east, a right turn is clockwise, which would point you south? Wait no,
+----
+Usage(input=65, output=16384, details={'estimated_cost': 0.00459272})

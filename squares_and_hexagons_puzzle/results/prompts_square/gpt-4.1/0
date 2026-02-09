@@ -1,0 +1,447 @@
+Given the spiral (counterclockwise, square grid):
+
+\[
+\begin{array}{ccc}
+5 & 4 & 3 \\
+6 & 1 & 2 \\
+7 & 8 & 9 \\
+\end{array}
+\]
+
+Let's **generalize the spiral** and then find the sum of the 8 neighbors of a given number, specifically 2026.
+
+---
+
+### 1. **Understanding the spiral**
+
+Each layer "wraps" around the previous one. The center is 1.
+
+- 1 is at (0,0)
+- Numbers increase as we spiral outwards: right, up, left, down, and repeat.
+
+**Sequence of UPPER-RIGHT corners**:  
+Layer 0: (0,0) = 1  
+Layer 1: (1,1) = 9  
+Layer 2: (2,2) = 25  
+Layer \( n \): (n,n) = \((2n+1)^2\)  
+
+So, the outermost layer containing a number \( N \) is the minimal \( n \) such that:
+\[
+(2n-1)^2 < N \leq (2n+1)^2
+\]
+
+---
+
+### 2. **Determine the ring (`n`) where 2026 falls**
+
+\[
+(2n-1)^2 < 2026 \leq (2n+1)^2
+\]
+Calculate square roots:
+\[
+(2n+1)^2 \geq 2026 \implies 2n+1 \geq \sqrt{2026} \approx 45
+\implies 2n \geq 44 \implies n \geq 22
+\]
+
+Check:
+- \( (2\cdot 21+1)^2 = 43^2 = 1849 \)
+- \( (2\cdot 22+1)^2 = 45^2 = 2025 \)
+- \( (2\cdot 23+1)^2 = 47^2 = 2209 \)
+
+We have:
+- Lower bound: \( 43^2 = 1849 \)
+- Upper bound: \( 45^2 = 2025 \)
+  \( 47^2 = 2209 \)
+
+So:
+\[
+1849 < N \leq 2025 \implies n = 22
+\]
+But \( 2026 > 2025 \), so **n = 23**.
+
+\[
+45^2 = 2025 < 2026 \leq 2209 = 47^2 \implies n = 23
+\]
+
+---
+
+### 3. **Locate 2026's coordinates**
+
+Each layer forms a square. For layer \( n \), the square runs from \((n,-n)\) (lower right) counterclockwise:
+
+For **layer \( n \):** (ring = 23)
+
+- Side length = \(2n + 1 = 47\)
+- Maximum number in this layer = \(47^2 = 2209\)
+- Minimum number in this layer (immediately after previous layer): \( (47-2)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026 \)
+
+So:
+
+- **2026 is the smallest number on ring 23!**
+- The numbers in this ring range from 2026 up to 2209.
+
+Where does the lowest number of a ring begin?  
+- The minimal number is at \((n, -n+1)\) (i.e., just after the bottom right corner), then it traces the perimeter.
+
+But let's check the construction more carefully.
+
+- **Start** for ring \( n \): (n, -n+1), with value \( (2n - 1)^2 + 1 \)
+  - (Side breakdown: bottom → left → top → right)
+
+So for \( n = 23 \):
+
+- \((2\cdot23 - 1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026\)
+- So, position: \( (23, -22) \)
+
+---
+
+### 4. **Trace the sequence around the ring**
+
+The ring perimeter is: 4 sides of length \(2n+1\), but the ring consists of \(4 \times (2n) = 92\) steps.
+
+**Sequence around ring:**
+
+1. **Right edge:** From (23, -22) up to (23, 23)
+2. **Top edge:** From (23, 23) to (-23, 23)
+3. **Left edge:** From (-23, 23) down to (-23, -23)
+4. **Bottom edge:** From (-23, -23) to (22, -23)
+
+Each side is length \(2n = 46\), but the corners are only counted once.
+
+Let’s clarify:
+
+- Start at (23, -22): 2026
+- Up to (23, 23): increasing y by 1 each time (\(0\) to \(45\)) → 46 steps
+
+So the positions for the first 46 numbers:
+
+- \(k\) from 0 to 45: \((23, -22 + k)\), value = 2026 + k
+
+**Check the identity:**
+
+At (23, -22): 2026  
+At (23, 23): \(2026 + 45 = 2071\)
+
+---
+
+### 5. **Get the 8 neighbors of 2026**
+
+2026 is at position \((23, -22)\)
+
+Neighbors are at:
+
+- (22, -23)
+- (22, -22)
+- (22, -21)
+- (23, -23)
+- (23, -21)
+- (24, -23)
+- (24, -22)
+- (24, -21)
+
+We need to find what numbers are at these coordinates.
+
+---
+
+#### **Map number to coordinates**
+
+On ring \( n = 23 \):
+
+- The ring starts at (23, -22): 2026
+- Traverses up to (23, 23): numbers 2026 to 2071
+- Then goes left: (23, 23) to (-23, 23): numbers 2072 to 2117
+- Down: (-23, 23) to (-23, -23): numbers 2118 to 2163
+- Right: (-23, -23) to (22, -23): numbers 2164 to 2209
+
+**Let's note which positions each neighbor falls into.**
+
+---
+
+Let's break each of the 8 neighbors:
+
+#### A. (22, -23)
+
+This is on the **bottom edge**, since y = -23.
+
+The bottom edge runs from \(( -23, -23 )\) (left) to (22, -23) (right).
+
+Positions on bottom edge:
+
+- x varies from -23 to 22, y = -23
+- How many steps from (-23, -23) to (22, -23)?  
+That’s from x = -23 to x = 22, which is 46 steps (since \(2n=46\)), matching the pattern.
+
+But what's the value at (-23, -23)?  
+- The previous side (down, left edge) ends at (-23, -23): 2163
+
+So bottom edge:
+
+- (-23, -23): 2164
+- (-22, -23): 2165
+- ...
+- (22, -23): 2164 + (22 + 23) = 2164 + 45 = 2209
+
+So at (22, -23): \( 2164 + (22 + 23) = 2164 + 45 = 2209 \) (yes, since side length is 46, as expected for last number in the ring).
+
+**Conclusion:**  
+(22, -23) = 2209
+
+---
+
+#### B. (22, -22)
+
+(22, -22): this is inside the spiral (not on the ring), i.e., part of ring 22.
+
+Let’s recall **number at (x, y) in the spiral** is determined by which ring you are on. Here, \( n = \max(|x|, |y|) \).
+
+- For (22, -22), \( n = 22 \)
+- The start of ring 22 is at (22, -21), value \( (2 \times 22 - 1)^2 + 1 = 43^2 + 1 = 1849 + 1 = 1850\)
+
+The ring traverses as before:
+
+- From (22, -21) up to (22, 22): numbers 1850 upward
+
+So (22, -22) is **one y below (22, -21)**, i.e., **doesn't occur** as the spiral path (the starting point is (22, -21) and goes up).
+
+Wait. Let's track:
+
+- Right edge of ring 22: (22, -21) to (22, 22), y goes from -21 to 22
+
+(22, -22) does not occur in the sequence, that would be in the ring inside 22.
+
+Wait: This suggests **the 8-neighbor rule includes numbers from the previous and next ring**, as well as the same ring.
+
+So at (22, -22): **belongs to ring 22**.
+
+We must find the number at (22, -22):
+
+- For ring 22:
+    - Start: (22, -21): 1850
+    - Moves up: y increases from -21 to 22
+    - From (22, -21): 1850
+    - (22, -22) would come **before** (22, -21), which isn’t on the spiral path for that ring.
+
+Seems (22, -22) is part of an **inner ring** or not on the spiral path at all. But in the spiral, all positions are filled.
+
+Alternatively, perhaps more methodically, let's find a **general formula** to determine the value at coordinates (x, y):
+
+---
+
+### 6. **General formula for spiral number at (x, y)**
+
+This approach is systematic.
+
+Let \( n = \max(|x|, |y|) \).
+
+- The maximum number in ring \( n \): \( m = (2n+1)^2 \)
+- The "side length" for ring \( n \) is \( 2n+1 \)
+- The bottom right corner (n, -n): \( m \)
+- The bottom left corner (-n, -n): \( m-s \), where \( s = 2n \)
+- The top left corner (-n, n): \( m-2s \)
+- The top right corner (n, n): \( m-3s \)
+
+Here's how to get the number at \( (x, y) \):
+
+- If \( y = -n \), along bottom edge:
+    \[
+    \text{number} = m - (n - x)
+    \]
+- If \( x = -n \), along left edge:
+    \[
+    \text{number} = m - s - (n + y)
+    \]
+- If \( y = n \), along top edge:
+    \[
+    \text{number} = m - 2s - (n + x)
+    \]
+- If \( x = n \), along right edge:
+    \[
+    \text{number} = m - 3s - (n - y)
+    \]
+
+Let’s check if that fits with our earlier calculations.
+
+For (23, -22):
+
+- \( n = 23 \), \( m = 47^2 = 2209 \), \( s = 46 \)
+- \( x = 23 \), \( y = -22 \), so on the right edge.
+- \( x = n \), so use the right edge formula:
+    \[
+    \text{number} = m - 3s - (n - y)
+    \]
+    \( n - y = 23 - (-22) = 45 \)
+    \[
+    2209 - 138 - 45 = 2209 - 183 = 2026
+    \]
+Perfect!
+
+Now proceed to calculate for each neighbor:
+
+---
+
+#### **Neighbors calculations**
+
+Let’s define \( n, m, s \) for the rings involved:
+
+- For ring 23: \( n=23, m=2209, s=46 \)
+- For ring 22: \( n=22, m=2025, s=44 \)
+- For ring 21: \( n=21, m=1849, s=42 \)
+- For ring 24: \( n=24, m=2401, s=48 \)
+
+But for our coordinates, only n=23,22, and 24 are relevant.
+
+**Now, neighbor by neighbor:**
+
+---
+
+#### i) \((22, -23)\), \( n = 23 \), \( x = 22, y = -23 \)
+
+Since \( y = -n \):
+
+\[
+\text{number} = m - (n - x) = 2209 - (23 - 22) = 2209 - 1 = 2208
+\]
+
+---
+
+#### ii) \((22, -22)\), \( n = 22 \), \( x = 22, y = -22 \)
+
+Which **edge**? \( x = n \):
+
+On ring 22:
+- \( n = 22, m = 2025, s = 44 \)
+- \( x = 22, y = -22 \), so \( x = n \) **(right edge)**
+
+So,
+\[
+\text{number} = m - 3s - (n - y) = 2025 - 3 \times 44 - (22 - (-22)) = 2025 - 132 - 44 = 2025 - 176 = 1849
+\]
+
+Wait—a sign error: Let’s check calculation:
+
+Examining the formula:
+For \( x = n \), right edge, \( m - 3s - (n - y) \), but \( n - y = 22 - (-22) = 44 \):
+
+\[
+2025 - 132 - 44 = 2025 - 176 = 1849
+\]
+
+So \((22, -22)\) = **1849**
+
+---
+
+#### iii) \((22, -21)\), \( n = 22 \), \( x = 22, y = -21 \):
+
+Again \( x = n \):
+
+\[
+\text{number} = 2025 - 132 - (22 - (-21)) = 2025 - 132 - 43 = 2025 - 175 = 1850
+\]
+
+---
+
+#### iv) \((23, -23)\), \( n = 23 \), \( x = 23, y = -23 \)
+
+- \( y = -n \)
+- \[
+\text{number} = 2209 - (23 - 23) = 2209 - 0 = 2209
+\]
+
+---
+
+#### v) \((23, -21)\), \( n = 23 \), \( x = 23, y = -21 \):
+
+\( x = n \):
+
+\[
+\text{number} = 2209 - 138 - (23 - (-21)) = 2209 - 138 - 44 = 2209 - 182 = 2027
+\]
+
+---
+
+#### vi) \((24, -23)\), \( n = 24, m = 2401, s = 48 \):
+
+\( y = -n \) (bottom edge):
+
+\[
+\text{number} = 2401 - (24 - 24) = 2401 - 0 = 2401
+\]
+But \( x = 24, y = -23 \), is this on the right edge or bottom edge? Let's check \( x, y \):
+
+- At \( n = 24 \), bottom edge: y = -n, so \( x \) from -24 to 23.
+- \( x = 24 \) is **one step beyond edge**? From earlier, yes, the bottom edge runs from (-24, -24) (left) to (24, -24) (right). For y = -24.
+- For y = -23, so \( x = 24 \), y = -23 corresponds to **right edge**, with y from -23 to 24.
+
+Thus, for \( x = n \):
+
+\[
+\text{number} = 2401 - 3 \times 48 - (24 - (-23)) = 2401 - 144 - 47 = 2401 - 191 = 2210
+\]
+
+---
+
+#### vii) \((24, -22)\), \( n = 24 \):
+
+Again, \( x = n \):
+
+\[
+\text{number} = 2401 - 144 - (24 - (-22)) = 2401 - 144 - 46 = 2401 - 190 = 2211
+\]
+
+---
+
+#### viii) \((24, -21)\), \( x = n \):
+
+\[
+\text{number} = 2401 - 144 - (24 - (-21)) = 2401 - 144 - 45 = 2401 - 189 = 2212
+\]
+
+---
+
+### 7. **Sum up all the neighbor numbers**
+
+Let’s collect calculated values:
+
+1. (22, -23): **2208**
+2. (22, -22): **1849**
+3. (22, -21): **1850**
+4. (23, -23): **2209**
+5. (23, -21): **2027**
+6. (24, -23): **2210**
+7. (24, -22): **2211**
+8. (24, -21): **2212**
+
+Sum:
+
+\[
+2208 + 1849 + 1850 + 2209 + 2027 + 2210 + 2211 + 2212
+\]
+
+Let’s add step by step:
+
+First, group similarly sized numbers for easier addition:
+
+- 2208 + 2209 = 4417
+- 2210 + 2211 = 4421
+- 2212
+
+Sum of high numbers: 4417 + 4421 = 8838, 8838 + 2212 = 11050
+
+Sum of low numbers: 1849 + 1850 = 3699;  
+Add 2027: 3699 + 2027 = 5726
+
+Total sum:
+
+\[
+11050\ (from high)\ +\ 5726\ (from low)\ =\boxed{16776}
+\]
+
+---
+
+## **Final Answer**
+The sum of all 8 neighbors of the number **2026** in this spiral is:
+\[
+\boxed{16776}
+\]
+----
+Usage(input=62, output=4075, details={})

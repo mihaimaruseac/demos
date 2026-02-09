@@ -1,0 +1,173 @@
+We wish to find the sum of the numbers written in the eight grid‐neighbors of 2026 on the usual “spiral” (or “Ulam” spiral) in which
+
+   … 5  4  3 … 
+   … 6  1  2 … 
+   … 7  8  9 …
+
+with 1 placed at the grid origin (0,0), 2 just to its right (1,0), 3 next “up” (1,1), etc.
+
+The plan is as follows:
+ 1. Find the grid coordinates (x,y) where 2026 lies.
+ 2. Write down the coordinates of its eight neighbors.
+ 3. For each neighbor, “invert” the spiral formula to recover the number written there.
+ 4. Sum the eight numbers.
+
+Below is one way to do this.
+
+────────────────────────
+Step 1. Finding the Coordinates of 2026
+
+A standard fact about this spiral is that the numbers lie in “rings” around 1. For a number n > 1, define k to be the ring number so that
+  (2k–1)² < n ≤ (2k+1)².
+Alternatively, one may use the formulas below that “invert” the Ulam spiral construction.
+
+For numbers on ring k (with k ≥ 1) the side length L = 2k+1 and the maximum number on that ring is 
+  m = L².
+Moreover, one may determine the coordinates from n as follows:
+ • Let d = m – n.
+ • Then:
+  – If d < L–1, then n is on the bottom row and its coordinates are (x,y) = (k – d, –k).
+  – Else if d < 2(L–1), then n is on the left column: (x,y) = (–k, –k + (d – (L–1))).
+  – Else if d < 3(L–1), then n is on the top row: (x,y) = (–k + (d – 2(L–1)), k).
+  – Else (i.e. d < 4(L–1)), then n is on the right column: (x,y) = (k, k – (d – 3(L–1))).
+
+Now, for n = 2026 let’s find its ring.
+
+• We look for k with (2k+1)² ≥ 2026.
+ For k = 22: (45)² = 2025, but 2025 < 2026.
+ For k = 23: (47)² = 2209 ≥ 2026.
+Thus, 2026 is on the 23rd ring, with
+  L = 2×23+1 = 47  and  m = 2209.
+Also, d = 2209 – 2026 = 183.
+Since L–1 = 46, note that
+  183 ≥ 3×46 = 138  and  183 < 4×46 = 184.
+Thus, we are in the “else” case (the right column). Then the coordinates of 2026 are
+  x = k = 23  and  y = k – (d – 3(L–1)) = 23 – [183 – 138] = 23 – 45 = –22.
+So 2026 is at (23, –22).
+
+────────────────────────
+Step 2. Listing the 8 Neighbors
+
+The eight (immediate, horizontally/vertically/diagonally adjacent) neighbors of (23, –22) are:
+  (22, –23), (23, –23), (24, –23),
+  (22, –22),        (24, –22),
+  (22, –21), (23, –21), (24, –21).
+
+────────────────────────
+Step 3. Finding the Numbers at a Given Coordinate
+
+A useful “inverse” formula works as follows. For any grid point (x, y):
+ a. Let k = max(|x|, |y|).
+  – If k = 0 then the point must be (0,0), which holds the number 1.
+ b. Otherwise, form
+   L = 2k + 1  and  m = L².
+ Then, depending on which side the point lies:
+  • If y = –k (bottom row) then 
+   number = m – (k – x).
+  • If x = –k (left column) then 
+   number = m – [(L–1) + (y + k)].
+  • If y = k (top row) then 
+   number = m – [2(L–1) + (x + k)].
+  • If x = k (right column) then 
+   number = m – [3(L–1) + (k – y)].
+
+We now apply this to each neighbor.
+
+────────────────────────
+Neighbor 1. (22, –23)
+
+Here, |22| = 22 and |–23| = 23 so k = 23, L = 47, m = 2209.
+Since y = –23 equals –k, we are on the bottom row.
+Number = m – (k – x) = 2209 – (23 – 22) = 2209 – 1 = 2208.
+
+────────────────────────
+Neighbor 2. (23, –23)
+
+Again k = 23.
+Since y = –23 (bottom row), 
+Number = 2209 – (23 – 23) = 2209.
+
+────────────────────────
+Neighbor 3. (24, –23)
+
+Here, |24| = 24 (and |–23| = 23) so k = 24.
+Then L = 2×24+1 = 49 and m = 49² = 2401.
+Notice that y = –23 is not equal to –24 (the “bottom row” for ring 24), and x = 24, so we are on the right column.
+Thus, number = m – [3(L–1) + (k – y)].
+Here L–1 = 48 and k – y = 24 – (–23) = 47.
+So, number = 2401 – [3×48 + 47] = 2401 – (144 + 47) = 2401 – 191 = 2210.
+
+────────────────────────
+Neighbor 4. (22, –22)
+
+Here, |22| = 22 so k = 22, L = 45, m = 45² = 2025.
+Since y = –22 equals –k for k = 22,
+Number = m – (k – x) = 2025 – (22 – 22) = 2025.
+
+────────────────────────
+Neighbor 5. (24, –22)
+
+Here, |24| = 24 so k = 24, L = 49, m = 2401.
+Now, y = –22 is not –24; but x = 24 equals k so we are on the right column.
+Then, number = 2401 – [3(L–1) + (k – y)].
+With L–1 = 48 and k – y = 24 – (–22) = 46,
+Number = 2401 – [144 + 46] = 2401 – 190 = 2211.
+
+────────────────────────
+Neighbor 6. (22, –21)
+
+Here, |22| = 22 so k = 22, L = 45, m = 2025.
+Now, (22, –21) has x = 22 which is k.
+Thus, it lies on the right column.
+Then, number = m – [3(L–1) + (k – y)].
+For L = 45, L–1 = 44 and k – y = 22 – (–21) = 43.
+So, number = 2025 – (3×44 + 43) = 2025 – (132 + 43) = 2025 – 175 = 1850.
+
+────────────────────────
+Neighbor 7. (23, –21)
+
+Here, |23| = 23 so k = 23, L = 47, m = 2209.
+We have x = 23 = k, so again we use the right column rule.
+Then, number = 2209 – [3(L–1) + (k – y)].
+Now L–1 = 46 and k – y = 23 – (–21) = 44.
+Thus, number = 2209 – (138 + 44) = 2209 – 182 = 2027.
+
+────────────────────────
+Neighbor 8. (24, –21)
+
+For this point, |24| = 24 so k = 24, L = 49, m = 2401.
+Since x = 24 = k (right column), we have
+Number = 2401 – [3(L–1) + (k – y)].
+Here L–1 = 48 and k – y = 24 – (–21) = 45.
+So, number = 2401 – (144 + 45) = 2401 – 189 = 2212.
+
+────────────────────────
+Step 4. Summing the Eight Neighbors
+
+We found:
+ (22, –23): 2208
+ (23, –23): 2209
+ (24, –23): 2210
+ (22, –22): 2025
+ (24, –22): 2211
+ (22, –21): 1850
+ (23, –21): 2027
+ (24, –21): 2212
+
+Now add them:
+ 2208 + 2209 = 4417  
+ 4417 + 2210 = 6627  
+ 6627 + 2025 = 8652  
+ 8652 + 2211 = 10863  
+ 10863 + 1850 = 12713  
+ 12713 + 2027 = 14740  
+ 14740 + 2212 = 16952
+
+Thus, the sum is 16,952.
+
+────────────────────────
+Final Answer
+
+The sum of the 8 neighbors of 2026 is 16,952.
+----
+Usage(input=61, output=7009, details={'completion_tokens_details': {'reasoning_tokens': 4736}})

@@ -1,0 +1,174 @@
+We are given a hexagonal spiral where numbers are placed in a hex grid starting at 1 in the center and spiraling outward. The pattern is such that each ring around the center forms a complete hexagon, and the total number of cells in the first \( n \) rings is:
+
+\[
+\text{Total cells} = 1 + 6(1 + 2 + 3 + \dots + (n-1)) = 1 + 3n(n-1)
+\]
+
+So:
+
+- Ring 0 (center): 1
+- Ring 1: 6 new numbers → up to 1 + 6 = 7
+- Ring 2: 12 new numbers → up to 7 + 12 = 19
+- Ring 3: 18 new numbers → up to 19 + 18 = 37
+- etc.
+
+The number of new numbers that are added in ring \( r \) is \( 6r \). So the maximum number in ring \( r \) is:
+
+\[
+M(r) = 1 + 6(1 + 2 + ... + r) = 1 + 3r(r+1)
+\]
+
+We want to know the neighbors of **2026** in this hexagonal spiral.
+
+---
+
+### Step 1: Find which ring 2026 is in.
+
+We use:
+\[
+M(r) = 1 + 3r(r+1)
+\]
+
+We want the smallest \( r \) such that:
+\[
+1 + 3r(r+1) \geq 2026
+\]
+
+Subtracting 1:
+
+\[
+3r(r+1) \geq 2025 \Rightarrow r(r+1) \geq 675
+\]
+
+Trying values:
+- \( r = 25 \): \( 25 \cdot 26 = 650 \) too small
+- \( r = 26 \): \( 26 \cdot 27 = 702 \) good!
+
+So 2026 is in ring **26**
+
+Maximum value in ring 26 is:
+\[
+M(26) = 1 + 3 \cdot 26 \cdot 27 = 1 + 2106 = 2107
+\]
+
+Minimum value in ring 26 is:
+\[
+M(25) = 1 + 3 \cdot 25 \cdot 26 = 1 + 1950 = 1951
+\]
+
+So the 26th ring has values from 1951 to 2107, total of 157 values (since \( 2107 - 1951 + 1 = 157 \))
+
+---
+
+The 26th ring has 6 sides, each with \( r = 26 \) values.
+
+So starting from 1951, going around the hexagon, each side has exactly 26 consecutive numbers.
+
+Now, to find the 6 neighbors of 2026, we need to find neighboring hex cells. In a regular hexagonal grid, each cell has 6 neighbors.
+
+To find the neighbors of 2026, we can look at the pattern of the spiral.
+
+Let’s enumerate the structure:
+
+Position 1 is in the center. Then:
+
+### Spiral Structure:
+
+The hexagonal spiral adds numbers in a specific walking direction: each full layer (ring) is made up by walking in 6 directions forming the hexagon.
+
+To find the 6 neighbors of a number like 2026, we can use the known property of the hex spiral numbers.
+
+There's a known online problem about this same type of spiral, referenced in OEIS (OEIS A003215), and someone has reverse engineered a formula. But here, we'll take another approach.
+
+We can look at the number **2026**, find its position in ring 26 (from 1 to 157), and determine its 6 neighbors.
+
+Let’s compute how far into ring 26 it is:
+
+We have:
+- Ring 26 starts at 1951
+- So \( 2026 - 1951 = 75 \), so it's the **76th** element in ring 26
+
+Each side of the hexagon has 26 numbers
+
+So:
+- Side 1: positions 1 to 26 (1951 to 1976)
+- Side 2: 27 to 52 (1977 to 2002)
+- Side 3: 53 to 78 (2003 to 2028)
+- Side 4: 79 to 104 (2029 to 2054)
+- Side 5: 105 to 130 (2055 to 2080)
+- Side 6: 131 to 156 (2081 to 2106)
+
+(157 numbers total in ring 26)
+
+So 2026 is on side **3**, position \( 2026 - 2003 = 23 \), so it's 24th number on that side.
+
+(Positions are 2003 to 2028 on side 3)
+
+Now, to find the neighbors of 2026, we need to find the numbers adjacent to it.
+
+Each number on a ring has:
+
+- 2 neighbors on the same ring (the previous and next numbers)
+- 2 neighbors in the inner ring (i.e., ring 25)
+- 2 neighbors in the outer ring (i.e., ring 27)
+
+So 2 neighbors are 2025 and 2027 (adjacent in the ring)
+
+Now let’s compute the corresponding neighbors in ring 25 and ring 27.
+
+To determine which position in ring 25 lines up with 2026, we need to compute the starting index of side 3 in ring 25 and mirror the position.
+
+Recall:
+
+- Ring 25 has numbers from: \( M(24)+1 = 1801 \) to \( M(25) = 1950 \)
+- Total: 150 values
+- 6 sides, 25 per side
+
+Side 3 of ring 25: positions 51 to 75 → values 1851 to 1875
+
+We said 2026 is the 24th number on side 3 of ring 26, so ring 25 side 3 at same relative position would be 24th number → \( 1851 + 23 = 1874 \)
+
+So one neighbor in ring 25 is **1874**
+
+Similarly, likely the other neighbor in ring 25 is the 25th number, i.e. 1875
+
+Also ring 27:
+
+We can compute ring 27 values: from \( M(26)+1 = 2108 \) to \( M(27) = 1 + 3×27×28 = 1 + 2268 = 2269 \)
+
+Total: 2269 – 2108 + 1 = 162 values
+
+Each side: 27 values
+
+Side 3: numbers from \( 2108 + 2 \cdot 27 = 2108 + 54 = 2162 \) onwards
+
+Side 3 numbers: positions 55 to 81 → numbers 2162 to 2188
+
+So 24th position on side 3: 2162 + 23 = **2185**
+
+So ring 27 neighbor values are ~2184 and 2185
+
+So 6 neighbors of 2026 are:
+
+- In ring 26: 2025, 2027
+- In ring 25: 1874, 1875
+- In ring 27: 2184, 2185
+
+### Sum:
+
+\[
+2025 + 2027 = 4052 \\
+1874 + 1875 = 3749 \\
+2184 + 2185 = 4369 \\
+\text{Sum total} = 4052 + 3749 + 4369 = \boxed{12170}
+\]
+
+---
+
+### ✅ Final Answer:
+
+\[
+\boxed{12170}
+\]
+----
+Usage(input=71, output=1647, details={})

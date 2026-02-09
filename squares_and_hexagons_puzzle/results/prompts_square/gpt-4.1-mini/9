@@ -1,0 +1,375 @@
+Let's analyze the problem carefully.
+
+---
+
+### Understanding the spiral:
+
+The spiral layout is:
+
+```
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+```
+
+This is a well-known "square spiral" of natural numbers starting with 1 at the center, moving to the right first (2), and continuing in a counterclockwise spiral:
+
+- Start at (0,0) = 1
+- Move right: (1,0) = 2
+- Move up: (1,1) = 3
+- Move left: (0,1) = 4
+- Move left: (-1,1) = 5
+- Move down: (-1,0) = 6
+- Move down: (-1,-1) = 7
+- Move right: (0,-1) = 8
+- Move right: (1,-1) = 9
+- Move right: (2,-1) = 10
+- Move up: (2,0) = 11, etc.
+
+---
+
+### Step 1: Find the coordinates of 2026
+
+We want the 8 neighbors around the number 2026. First, find the coordinate \((x,y)\) of 2026.
+
+#### Recall the spiral indexing pattern:
+
+The spiral forms layers (or rings) around the center.
+
+- Layer 0 (center): 1 at (0,0)
+- Layer 1 ring: numbers 2 to 9 around center forming a 3x3 square
+- Layer 2 ring: numbers from 10 to 25 forming a 5x5 square
+- Layer \(k\) ring: numbers from \((2k-1)^2 + 1\) to \((2k+1)^2\), where the side length is \(2k+1\).
+
+Let's find which layer 2026 belongs to:
+
+- Largest number on Layer \(k\) is \((2k+1)^2\).
+
+Find \(k\) such that
+\[
+(2k-1)^2 < 2026 \leq (2k+1)^2
+\]
+
+Calculate \((2k+1)^2\) for some values:
+
+- For \(k=22\), side length \(= 45\), max number = \(45^2 = 2025\)
+- For \(k=23\), side length \(= 47\), max number = \(47^2 = 2209\)
+
+We see:
+\[
+2025 < 2026 \leq 2209
+\]
+
+So number **2026 is on layer 23** (layers count starting at layer 0 for 1).
+
+- The maximum number for layer 22: \(45^2 = 2025\)
+- The maximum number for layer 23: \(47^2 = 2209\)
+
+Layer 23 starts at \(2026\) and ends at \(2209\).
+
+---
+
+### Step 2: Define the layer
+
+For layer \(k = 23\):
+
+- Side length \(s = 2k + 1 = 47\)
+- The ring has \(47 \times 47 = 2209\) numbers from 1 through 2209.
+- The previous layer max is \(45^2 = 2025\), so the first number in layer 23 is 2026.
+
+---
+
+### Step 3: Coordinates of the spiral
+
+The coordinates of the spiral number for layer \(k\) go around the square of side length \(s = 2k + 1\) starting at the bottom right corner.
+
+**Important Positions:**
+
+- Bottom-right corner of layer \(k\) is at coordinate \((k, -k)\) and contains number \((2k+1)^2\).
+- The numbers decrease as you go around the square edges **in the reverse direction** of the spiral. The spiral moves **counterclockwise**, so when calculating backwards from the bottom-right corner, it's easier to obtain the location of any number.
+
+The bottom-right corner number is \(c = s^2 = (2k+1)^2\).
+
+The edges progress in this order (counterclockwise):
+
+1. Right edge (going from bottom-right corner up to top-right corner)
+2. Top edge (going from top-right corner left to top-left corner)
+3. Left edge (going from top-left corner down to bottom-left corner)
+4. Bottom edge (going from bottom-left corner right to bottom-right corner)
+
+---
+
+### Step 4: Finding (x,y) for number N in layer k
+
+- \(k = 23\)
+- \(s = 47\)
+- \(c = 2209\) (bottom-right corner number)
+- \(N = 2026\)
+
+Calculate offset from bottom-right corner:
+\[
+\text{offset} = c - N = 2209 - 2026 = 183
+\]
+
+The length of each side minus 1 (since corners are counted at the start of each side) is:
+\[
+\text{side length} - 1 = s - 1 = 46
+\]
+
+The perimeter of the ring (edges) is \(4 \times 46 = 184\).
+
+---
+
+### Step 5: Determine position along the edges
+
+We will subtract edge lengths to find on which edge offset 183 falls.
+
+- If offset < 46: bottom edge (moving left along bottom)
+- Else if offset < 92: left edge (moving up along left)
+- Else if offset < 138: top edge (moving right along top)
+- Else if offset < 184: right edge (moving down along right)
+
+Now:
+
+- \(183 < 184\) and \(183 \geq 138\), so on the **right edge**.
+
+Calculate offset along right edge:
+\[
+183 - 138 = 45
+\]
+
+---
+
+### Step 6: Coordinates for each corner
+
+Recall the corners for layer \(k=23\):
+
+- Bottom-right corner: \((23, -23)\)
+- Bottom-left corner: \((-23, -23)\)
+- Top-left corner: \((-23, 23)\)
+- Top-right corner: \((23, 23)\)
+
+We are on the **right edge**, which goes from top-right corner down to bottom-right corner:
+
+- At top-right corner (start of right edge): \((23, 23)\)
+- Downwards to bottom-right corner: \((23, -23)\)
+
+The offset along the right edge \(= 45\).
+
+So from top-right corner going down \(45\) steps:
+
+\[
+x = 23 \\
+y = 23 - 45 = -22
+\]
+
+---
+
+### Step 7: So the coordinate of number 2026 is:
+
+\[
+(23, -22)
+\]
+
+---
+
+### Step 8: Find the 8 neighbors of (23, -22)
+
+Neighbors are the points:
+
+\[
+(x-1,y+1), (x,y+1), (x+1,y+1),\\
+(x-1,y), \quad\quad\quad (x+1,y),\\
+(x-1,y-1), (x,y-1), (x+1,y-1)
+\]
+
+i.e.
+\[
+(22,-21), (23,-21), (24,-21),\\
+(22,-22), \quad\quad (24,-22),\\
+(22,-23), (23,-23), (24,-23)
+\]
+
+---
+
+### Step 9: Find the numbers at these neighbor coordinates
+
+We need a function to convert a coordinate \((x,y)\) to the number in the spiral:
+
+---
+
+### Step 10: General formula for number at (x,y)
+
+Given \((x,y)\):
+
+- \(k = \max(|x|, |y|)\) is the layer number.
+- Number at bottom-right corner of layer \(k\) is:
+\[
+c = (2k + 1)^2
+\]
+
+Coordinates of corners:
+
+- Bottom-right: \((k, -k)\), number \(c\)
+- Bottom-left: \((-k, -k)\), number \(c - (2k)\)
+- Top-left: \((-k, k)\), number \(c - 2 \times (2k) = c - 4k\)
+- Top-right: \((k, k)\), number \(c - 3 \times (2k) = c - 6k\)
+
+Sides length = \(2k\)
+
+Depending on the edge:
+
+- If \(x = k\) and \(y < k\) (right edge going down): 
+\[
+\text{number} = c - (k - y)
+\]
+
+- If \(y = k\) and \(x > -k\) (top edge going left):
+\[
+\text{number} = c - 2k - (k - x)
+\]
+
+- If \(x = -k\) and \(y > -k\) (left edge going up):
+\[
+\text{number} = c - 4k - (k + y)
+\]
+
+- If \(y = -k\) and \(x < k\) (bottom edge going right):
+\[
+\text{number} = c - 6k - (k + x)
+\]
+
+---
+
+### Step 11: Compute each neighbor
+
+1. \((22, -21)\)
+
+- \(k = \max(|22|, |-21|) = 22\)
+- \(c = (2 \times 22 + 1)^2 = 45^2 = 2025\)
+- \(y = -21\)
+- Check edge:
+
+Since \(x = 22\), \(y = -21\), \(k=22\)
+
+- If \(x = k=22\) and \(y < k=22\) → right edge
+- number = \(c - (k - y) = 2025 - (22 - (-21)) = 2025 - (22 + 21) = 2025 - 43 = 1982\)
+
+---
+
+2. \((23, -21)\)
+
+- \(k = \max(23, 21) = 23\)
+- \(c= (2 \times 23 + 1)^2 = 47^2 = 2209\)
+- \(x = 23 = k\), \(y = -21 < 23\) → right edge
+- number = \(c - (k - y) = 2209 - (23 - (-21)) = 2209 - 44 = 2165\)
+
+---
+
+3. \((24, -21)\)
+
+- \(k = 24\)
+- \(c = (2 \times 24 + 1)^2 = 49^2 = 2401\)
+- \(x = k = 24\), \(y = -21 < 24\) → right edge
+- number = \(c - (k - y) = 2401 - (24 - (-21)) = 2401 - 45 = 2356\)
+
+---
+
+4. \((22, -22)\)
+
+- \(k = 22\)
+- \(c = 2025\)
+- \(x = 22 = k\), \(y = -22 < 22\) → right edge
+- number = \(2025 - (22 - (-22)) = 2025 - (22 + 22) = 2025 - 44 = 1981\)
+
+---
+
+5. \((24, -22)\)
+
+- \(k = 24\)
+- \(c = 2401\)
+- \(x = 24 = k\), \(y = -22 < 24\) → right edge
+- number = \(2401 - (24 - (-22)) = 2401 - 46 = 2355\)
+
+---
+
+6. \((22, -23)\)
+
+- \(k = 23\)
+- \(c = 47^2 = 2209\)
+- \(y = -23 = -k\)
+- \(x = 22 < k=23\) → bottom edge
+
+On bottom edge:
+\[
+\text{number} = c - 6k - (k + x) = 2209 - 6 \times 23 - (23 + 22) = 2209 - 138 - 45 = 2209 - 183 = 2026
+\]
+
+This is the center number we started with, confirming correct calculation.
+
+---
+
+7. \((23, -23)\)
+
+- \(k=23\)
+- \(c=2209\)
+- \(y = -23 = -k\)
+- \(x = k = 23\) 
+
+At bottom-right corner:
+- Number = \(c = 2209\)
+
+---
+
+8. \((24, -23)\)
+
+- \(k=24\)
+- \(c=2401\)
+- \(y=-23\)
+- Check edges:
+
+- Since \(y = -23 > -24\), \(y \neq -k\),
+- Is \(y = -k = -24\)? No.
+
+Now check the value of \(x\):
+
+\(|x|=24 = k\), so \(x = k\).
+
+- \(x = 24 = k\),
+- \(y = -23 < k = 24\) → right edge
+
+Number = \(c - (k - y) = 2401 - (24 - (-23))= 2401 - 47 = 2354\)
+
+---
+
+### Step 12: Sum all neighbors:
+
+\[
+1982 + 2165 + 2356 + 1981 + 2355 + 2026 + 2209 + 2354
+\]
+
+Calculate step by step:
+
+- \(1982 + 2165 = 4147\)
+- \(4147 + 2356 = 6503\)
+- \(6503 + 1981 = 8484\)
+- \(8484 + 2355 = 10839\)
+- \(10839 + 2026 = 12865\)
+- \(12865 + 2209 = 15074\)
+- \(15074 + 2354 = 17428\)
+
+---
+
+### Final answer:
+
+\[
+\boxed{17428}
+\]
+
+---
+
+# **Answer:**
+
+The sum of all 8 neighbors of the number 2026 in the spiral is **17428**.
+----
+Usage(input=62, output=3081, details={})

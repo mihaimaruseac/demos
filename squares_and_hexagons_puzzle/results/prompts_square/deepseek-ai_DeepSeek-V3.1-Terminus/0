@@ -1,0 +1,325 @@
+Alright, let's break this down step-by-step.
+
+---
+
+## 1. Understanding the spiral
+
+The spiral given is:
+
+```
+...  5  4  3  ...
+...  6  1  2  ...
+...  7  8  9  ...
+```
+
+So the center is `1`, then going right: `2`, up-right: `3`, up: `4`, up-left: `5`, left: `6`, down-left: `7`, down: `8`, down-right: `9`.
+
+This is the standard Ulam spiral starting at 1, moving right first, then turning left at each step.
+
+Actually, let's confirm the spiral pattern more systematically:
+
+From 1, go right to 2, then up to 3, 4, 5? Wait, no — the diagram shows:
+
+Top row: 5 4 3  
+Middle row: 6 1 2  
+Bottom row: 7 8 9  
+
+So reading order:  
+Center 1, east: 2, northeast: 3, north: 4, northwest: 5, west: 6, southwest: 7, south: 8, southeast: 9.
+
+Yes — so the spiral order is:
+
+Start at 1, right to 2, then go counterclockwise around 1:  
+3 (NE), 4 (N), 5 (NW), 6 (W), 7 (SW), 8 (S), 9 (SE).
+
+So neighbors of 1: 2(E), 3(NE), 4(N), 5(NW), 6(W), 7(SW), 8(S), 9(SE).
+
+---
+
+## 2. Locating 2026 in the spiral
+
+We need a formula for coordinates of number \( n \) in this spiral.
+
+Common approach:  
+- Find which square ring (layer) contains \( n \).  
+- Center 1 is layer \( k = 0 \).  
+- Layer \( k \) has numbers from \( (2k-1)^2 + 1 \) to \( (2k+1)^2 \), but careful: Actually, layer \( k \) (k≥1) has side length \( 2k+1 \), starting number at center 1.
+
+Better:  
+Layer 0: just 1.  
+Layer 1: numbers 2 to 9 → 8 numbers, side length 3.  
+Layer 2: numbers 10 to 25 → 16 numbers, side length 5.  
+Layer \( k \) (k≥1): numbers from \( (2k-1)^2 + 1 \) to \( (2k+1)^2 \), with \( 8k \) numbers in that layer.
+
+---
+
+Check: \( k=1 \): from \( 1^2+1=2 \) to \( 3^2=9 \), yes.  
+\( k=2 \): from \( 3^2+1=10 \) to \( 5^2=25 \), yes.
+
+So find \( k \) such that \( (2k-1)^2 < 2026 \le (2k+1)^2 \).
+
+Try \( k=22 \): \( (2k-1)^2 = 43^2 = 1849 \), \( (2k+1)^2 = 45^2 = 2025 \).  
+So 2025 is the last number of layer \( k=22 \).
+
+But 2026 > 2025, so 2026 is in layer \( k=23 \):
+
+\( (2k-1)^2 \) for \( k=23 \) is \( 45^2 = 2025 \), wait — that was for k=22? Let's check indexing carefully.
+
+Actually:  
+Layer k=0: numbers 1 (1 number)  
+Layer k=1: numbers 2..9 (8 numbers)  
+Layer k=2: numbers 10..25 (16 numbers)  
+
+So layer k has numbers from \( m^2+1 \) to \( (m+2)^2 \) where \( m=2k-1 \).
+
+Better: The largest number in layer k is \( (2k+1)^2 \).  
+Smallest number in layer k is \( (2k-1)^2 + 1 \).
+
+So find k such that \( (2k-1)^2 < 2026 \le (2k+1)^2 \).
+
+Test k=22:  
+\( (2*22-1)^2 = 43^2 = 1849 \)  
+\( (2*22+1)^2 = 45^2 = 2025 \)  
+So layer k=22 contains numbers 1850 to 2025.
+
+2026 is >2025, so it's in layer k=23:  
+\( (2*23-1)^2 = 45^2 = 2025 \)  
+\( (2*23+1)^2 = 47^2 = 2209 \)  
+
+So layer k=23: numbers 2026 to 2209.
+
+---
+
+## 3. Position of 2026 in layer k=23
+
+Layer k has side length \( 2k+1 = 47 \) for k=23.  
+Start of layer: bottom-right corner number is \( (2k+1)^2 = 2209 \).  
+We go counterclockwise around from the start of the layer.
+
+The first number of layer k is \( (2k-1)^2 + 1 = 2025+1=2026 \).  
+Where is it? In the standard spiral (starting at 1, going right each new layer), the number after \( (2k-1)^2 \) is to the right of the last layer's start? Wait, pattern:
+
+From 1 (layer 0), to start layer 1: go right from 1 to 2.  
+From 9 (last of layer 1), to start layer 2: go right from 9 to 10.
+
+So indeed: The first number of layer k is positioned one step to the right of the last number of layer k-1.
+
+But last number of layer k-1=22 is \( 45^2=2025 \), which is the bottom-right corner of layer 22's square.
+
+So 2026 is one step right from bottom-right corner of layer 22's square.
+
+Coordinates: Let’s set center 1 at (0,0).  
+Layer k’s square has corners:  
+Start at (k, -k+1)? Let's do systematically:
+
+Better known:  
+Layer k: square of side length \( 2k+1 \), starting at coordinate (k, k) for bottom-right? Actually standard coordinate:  
+Assign 1 at (0,0). East is +x, North is +y.
+
+Layer k=1:  
+2 at (1,0), 3 at (1,1), 4 at (0,1), 5 at (-1,1), 6 at (-1,0), 7 at (-1,-1), 8 at (0,-1), 9 at (1,-1).
+
+Layer k=2: start 10 at (2,-1)? Wait check: 9 at (1,-1), then right to 10 at (2,-1). Yes.
+
+So pattern: Start of layer k: at (k, -(k-1))? Let's check k=2: start 10 at (2,-1), yes k=2 → (2,-(2-1))=(2,-1).  
+k=1: start 2 at (1,0) = (1,-0) yes.
+
+So start of layer k=23: coordinates (23, -(23-1)) = (23, -22).
+
+So 2026 is at (23, -22).
+
+---
+
+## 4. Neighbors of 2026
+
+Neighbors: all positions one step away in 8 directions:
+
+E:  (24, -22)  
+NE: (24, -21)  
+N:  (23, -21)  
+NW: (22, -21)  
+W:  (22, -22)  
+SW: (22, -23)  
+S:  (23, -23)  
+SE: (24, -23)
+
+---
+
+## 5. Find numbers at these neighbor positions
+
+We need a function from coordinates to number.
+
+Known formula:  
+First, find max(|x|,|y|) = r (the layer index).  
+If r=0, number=1.
+
+Otherwise, find side and position in layer r.
+
+We can compute by: The largest number in layer r is \( (2r+1)^2 \).  
+We can work backwards from coordinates to number.
+
+Better: Let’s find numbers systematically.
+
+---
+
+Given 2026 at (23,-22), r=max(23,22)=23. This is layer 23.
+
+We know start of layer 23: number 2026 at (23,-22).
+
+Now let's trace around layer 23 to find neighbors.
+
+Layer 23: side length 47. Start (23,-22).  
+Path: go up to (23,23)? Wait, standard:  
+From start (r, -(r-1)):  
+1. Go north to (r, r) — top-right corner.  
+2. Go west to (-r, r) — top-left corner.  
+3. Go south to (-r, -r) — bottom-left corner.  
+4. Go east to (r, -r) — bottom-right corner.  
+5. Go north to (r, -(r-1)) — back to start.
+
+So:  
+Start (23,-22) = start of layer.  
+Up to (23,23): that’s 22+23=45 steps up? Wait: from y=-22 to y=23 is 45 steps north.
+
+Each step increases number by 1.
+
+So:  
+Segment 1: North from (23,-22) to (23,23): dy=45 → length 45 steps. Numbers 2026..2026+44=2070.
+
+So:  
+2026 at (23,-22)  
+2027 at (23,-21)  
+…  
+2070 at (23,23).
+
+So neighbor N: (23,-21) → number 2027.  
+NE: (24,-21) — that’s outside layer 23? Wait x=24>23, so it’s in next layer r=24? No, max(|x|,|y|)=max(24,21)=24, so layer 24. That’s future numbers >2209. So NE neighbor is in layer 24.
+
+Similarly E: (24,-22) → r=24, also future.  
+SE: (24,-23) → r=24, future.
+
+So 4 neighbors (E, NE, SE, and also maybe S?) Let’s check S: (23,-23) — max(23,23)=23, so layer 23. Find its number:  
+We can find when we reach (23,-23) in layer 23’s path.
+
+Path: Start (23,-22) → North to (23,23) → West to (-23,23) → South to (-23,-23) → East to (23,-23) → North to (23,-22).
+
+So (23,-23) is the point just before end of layer (last before start of layer).  
+That’s the bottom-right corner? Actually bottom-right corner is (23,-23)? Wait bottom-right corner is (r,-r)=(23,-23). Yes.
+
+So (23,-23) is reached just before completing the loop:  
+From (-23,-23) east to (23,-23): that’s 46 steps east. Let’s track counts:
+
+Segment 4: from (-23,-23) east to (23,-23): length 46 steps.  
+Numbers: start number at (-23,-23) = after finishing segment 3.  
+
+Segment lengths:  
+Seg1: North length = 45 steps (2026..2070)  
+Seg2: West length = 46 steps (2071..2116)  
+Seg3: South length = 46 steps (2117..2162)  
+Seg4: East length = 46 steps (2163..2208)  
+Seg5: North length = 1 step (2209 back to start).
+
+So (-23,-23) is start of seg4: number 2163.  
+Move east 46 steps: (23,-23) is last of seg4: number 2163+45=2208? Wait first step: (-23,-23)=2163, after 46 steps east, final step (23,-23) = 2163+45=2208. Yes.
+
+So S neighbor of 2026: (23,-23) = number 2208.
+
+Similarly SW: (22,-23): max(22,23)=23, layer 23. That’s on seg3: from (-23,23) south to (-23,-23): seg3 numbers 2117..2162.  
+Point (22,-23): from (-23,-23)? Wait seg3 is at x=-23, moving south from y=23 to y=-23. So (22,-23) not on seg3. Actually seg3 is at x=-23 fixed. So (22,-23) is west of S neighbor? That’s not on layer 23 path except seg4? Let’s check: seg4: from (-23,-23) east to (23,-23), y fixed -23. So (22,-23) is on seg4: number = 2163 + (22 - (-23)) = 2163 + 45 = 2208? Wait 22 - (-23) = 45 steps east, so number = 2163+45=2208? That’s same as (23,-23)? That’s wrong — oh, I see: seg4: points (-23,-23)..(23,-23) increasing x. So at x=22, y=-23: number = 2163 + [22 - (-23)] = 2163+45=2208. Yes indeed (22,-23) and (23,-23) have same number? That can’t be — they are distinct points. Oh! I made a mistake: seg4: starting at (-23,-23) number 2163, moving east:  
+x=-23: 2163  
+x=-22: 2164  
+…  
+x=22: 2163+45=2208  
+x=23: 2163+46=2209.
+
+So (22,-23) = 2208, (23,-23) = 2209? Wait start of seg5: (23,-22) is 2209+1? That’s wrong — careful:
+
+Actually:  
+Seg4: (-23,-23)=2163, going east to (23,-23):  
+x=-23..23: 46 steps? Count: -23 to 23 inclusive: 23-(-23)=46, but number of steps = 46, so numbers 2163..2163+45=2208? Wait 46 steps means 46 numbers: 2163 to 2163+45=2208? That’s 46 numbers: 2163..2208.
+
+So (23,-23) = 2208. Then seg5: north one step: (23,-22)=2209. But start was (23,-22)=2026. Contradiction! Oh — I see: I messed up the numbering: The start of layer is (23,-22)=2026. The end of layer is (23,-22) again but number (2k+1)^2=2209. So indeed (23,-22) appears twice in path: once as start, once as end. So seg5 length=1: (23,-23) to (23,-22): number 2209.
+
+Thus:  
+(23,-23) = 2208 (seg4 end)  
+(23,-22) = 2209 (seg5 end) = start of layer.
+
+So S neighbor of 2026: (23,-23) = 2208.  
+SW neighbor: (22,-23): on seg4: x=22, number = 2163+45=2208? Wait x from -23 to 23:  
+distance from -23 to 22 = 45 steps: number=2163+45=2208. Yes same as (23,-23)! That means two neighbor cells have same number? That’s impossible unless spiral path visits (22,-23) and (23,-23) consecutively with same number? That can’t happen. I realize: The seg4: we go from (-23,-23) to (23,-23) increasing x, so each (x,-23) has unique number. So (22,-23) number = 2163+[22-(-23)]=2163+45=2208. (23,-23) number = 2163+46=2209? Wait length of seg4: from -23 to 23: that’s 47 points? side length 47. So numbers: 2163..2163+46=2209.
+
+So:  
+(-23,-23)=2163  
+…  
+(22,-23)=2163+45=2208  
+(23,-23)=2163+46=2209.
+
+Then seg5: (23,-23) to (23,-22): one step: 2209 to 2210? But max is 2209. So error: Actually last number of layer is 2209 at (23,-23)? Let’s check known: layer k=23: numbers up to (47)^2=2209. So largest number 2209 at (23,-23)? Then start of layer is 2026 at (23,-22). So indeed path:  
+Start (23,-22) [2026] → north … eventually end at (23,-23) [2209].
+
+Thus:  
+S: (23,-23) = 2209  
+SW: (22,-23) = 2208  
+W: (22,-22): on seg4? No, y=-22 not on seg4 (y=-23). So (22,-22) is on seg5? seg5: (23,-23) to (23,-22) only. So (22,-22) is in layer 22 (since max(22,22)=22). So it’s in previous layer.
+
+Similarly NW: (22,-21): max(22,21)=22, layer 22.  
+N: (23,-21): max(23,21)=23, layer 23: on seg1: from (23,-22) to (23,23): (23,-21) is 1 north from start: number 2027.  
+NE: (24,-21): layer 24, future.  
+E: (24,-22): layer 24, future.  
+SE: (24,-23): layer 24, future.
+
+So neighbors in same layer (23): N:2027, S:2209, SW:2208.  
+Neighbors in layer 22: W, NW, and maybe others? Let’s check W: (22,-22): layer 22.  
+SW: (22,-23) we already in layer 23. Wait SW we computed in layer 23. So W: (22,-22) layer 22.  
+NW: (22,-21) layer 22.
+
+Also need:  
+Which neighbors? 8 neighbors:  
+E, NE, N, NW, W, SW, S, SE.
+
+We have:  
+N=2027 (layer 23)  
+S=2209 (layer 23)  
+SW=2208 (layer 23)  
+W: (22,-22) in layer 22: find number: layer 22: numbers 1850..2025. Path: start (22,-21)=1850, north to (22,22), etc. We need (22,-22): that’s the bottom-right corner of layer 22? Actually layer 22 start (22,-21)=1850, bottom-right corner (22,-22) is the point before start? Actually last point of layer 22: (22,-22) is end of seg4 of layer 22: number = (2*22+1)^2=2025. Yes! So W neighbor = 2025.
+
+NW: (22,-21): that’s start of layer 22 = 1850.
+
+So neighbors:  
+N=2027, NE= future (>2209), E= future, SE= future, S=2209, SW=2208, W=2025, NW=1850.
+
+Future ones: in layer 24: start 2210, so NE, E, SE are 2210, 2211, 2212? Let’s deduce:
+
+We can find them by symmetry: The difference between center and neighbor sums: In such spiral, sum of neighbors = 8n + something? Actually, known: For a number n in layer k, its neighbors include 4 from layer k-1, 4 from layer k+1? Not exactly.
+
+Better: We can compute future ones:  
+Layer 24 start at (24,-23)=2210.  
+So E of 2026: (24,-22) is north of start of layer 24: so =2210+1=2211.  
+NE: (24,-21) = 2210+2=2212.  
+SE: (24,-23) = start of layer 24 = 2210.
+
+So neighbors:  
+1850, 2025, 2027, 2208, 2209, 2210, 2211, 2212.
+
+---
+
+## 6. Sum of neighbors
+
+Sum = 1850 + 2025 + 2027 + 2208 + 2209 + 2210 + 2211 + 2212.
+
+Group: 1850 + 2025 = 3875.  
+3875 + 2027 = 5902.  
+5902 + 2208 = 8110.  
+8110 + 2209 = 10319.  
+10319 + 2210 = 12529.  
+12529 + 2211 = 14740.  
+14740 + 2212 = 16952.
+
+---
+
+**Final answer:**
+\[
+\boxed{16952}
+\]
+----
+Usage(input=59, output=4829, details={'prompt_tokens_details': {'cached_tokens': 2}, 'estimated_cost': 0.003827216})

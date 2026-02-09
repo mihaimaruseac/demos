@@ -1,0 +1,1831 @@
+<think>
+The problem involves a spiral of natural numbers on a square grid. It shows a snippet:
+
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+
+I need to find the sum of all eight neighbors of the number 2026. First, I must understand how the spiral is constructed. It seems to start from 1 at the center and spirals outward.
+
+From the snippet, 1 is at the center, 2 is to its right, 3 above 2, 4 left of 3, 5 left of 4, then 6 below 5? Let me sketch this out.
+
+Assume the center is (0,0) for simplicity. So:
+
+- 1 at (0,0)
+
+- 2 is to the right, so (1,0)
+
+- 3 is above 2? In the snippet, above 2 is 3? Let's see:
+
+The grid is:
+
+Row 1: ... 5 4 3 ... so probably y=1: 5,4,3
+
+But typically, in coordinates, we might set y increasing upwards or downwards. To avoid confusion, let's define coordinates.
+
+Set the center 1 at (0,0).
+
+Then, moving right to 2 at (1,0).
+
+Then, moving up to 3 at (1,1)? But in the snippet, above 2 is 3? Looking:
+
+The snippet shows:
+
+First row: ... 5 4 3 ... so if this is the top row, y=1 say, with 3 at (0,1)? But center is at (0,0), so above center should be y=1.
+
+Assume standard Cartesian coordinates, x right, y up.
+
+So:
+
+- At (0,0): 1
+
+- At (1,0): 2
+
+- At (1,1): 3? But in the snippet, it shows 3 above 2, which is consistent if 2 is at (1,0), then above is (1,1), which is 3.
+
+Then it shows 4 left of 3? So if 3 is at (1,1), left is (0,1), which should be 4.
+
+But in the snippet, first row has 5,4,3, so if y=1, x decreasing: say x= -1,0,1? But (0,1) is 4, (1,1) is 3, so perhaps ( -1,1) is 5? But snippet shows ...5,4,3 so probably x decreasing: so let's say at y=1: x= -1:5, x=0:4, x=1:3.
+
+But center is (0,0), so above center is (0,1), which is 4? But typically, after 2 at (1,0), we go up to (1,1) for 3, then left to (0,1) for 4, then left to (-1,1) for 5, then down to (-1,0) for 6, then down to (-1,-1) for 7? But snippet shows below: ...7,8,9 so at bottom row.
+
+Snippet has:
+
+...5 4 3...  // probably y=1
+
+...6 1 2...  // y=0? But 1 is at (0,0), 6 is left? If y=0, x= -1:6, x=0:1, x=1:2? But then below: ...7 8 9 so y= -1: say x= -1:7, x=0:8, x=1:9?
+
+But according to this, at (0,1):4, (1,1):3, (-1,1):5? Earlier I said x= -1,y=1:5, x=0,y=1:4, x=1,y=1:3.
+
+At y=0: x= -1:6, x=0:1, x=1:2.
+
+At y= -1: x= -1:7, x=0:8, x=1:9.
+
+But is this consistent? After 5 at (-1,1), next should be down to (-1,0) which is 6, yes. Then left? But (-1,0) is already occupied? No, next after 6 should be down to (-1,-1) for 7, then right to (0,-1) for 8, then right to (1,-1) for 9, then up to (1,0) but that's already 2? Problem.
+
+Sequence should be: start 1, right to 2, up to 3, left to 4, left to 5, down to 6, down to 7, right to 8, right to 9, up to 10? But at (1,-1) is 9, then up to (1,0) but that's occupied by 2, so instead, after 7 at (-1,-1), it should go right to (0,-1) for 8, then to (1,-1) for 9, then since down is not possible or something, it should go up, but (1,-1) to (1,0) is occupied, so perhaps it goes to (2,-1) for 10? But in the snippet, it only shows up to 9, so for larger numbers it spirals out.
+
+In the snippet, it shows 7,8,9 at bottom, but 8 and 9 are at (0,-1) and (1,-1), but (1,0) is 2, so next would be to (2,-1)? But snippet doesn't show it.
+
+The spiral direction: from 1, go right to 2, then up to 3, then left to 4, left to 5, then down to 6, down to 7, then right to 8, right to 9, then up to 10, up to 11, then left to 12, etc.
+
+In my coordinate, after 7 at (-1,-1), go right to (0,-1) for 8, right to (1,-1) for 9, then up to (1,0) but occupied, so it must go to (2,-1) for 10? But (1,0) is occupied, so when moving up from (1,-1), it can't go to (1,0), so it should go to (1,0) only if not occupied, but it is, so the spiral must turn left or something. Standard Ulam spiral is counter-clockwise, starting right.
+
+Recall the standard Ulam spiral. Typically, it starts at center, moves right, then up, then left, then down, then right again, and so on, with increasing step size.
+
+The movement is: after completing a "ring", it moves to the next layer.
+
+The side length increases. For example, the center 1 is layer 0 or 1? Let's define layers.
+
+Let the spiral be built in "rings" or "layers". The innermost is 1, which can be considered layer 0 or 1.
+
+After 1, we add numbers in directions: right, up, left, down, but with increasing size.
+
+Specifically, from 1, move right 1 step to 2, then up 1 step to 3, then left 2 steps to 4 and 5, then down 2 steps to 6 and 7, then right 2 steps to 8 and 9, then up 2 steps to 10 and 11, then left 3 steps to 12,13,14, and so on.
+
+In this case:
+
+Start at (0,0):1
+
+Move right 1: to (1,0):2
+
+Move up 1: to (1,1):3
+
+Move left 2: first to (0,1):4, then to (-1,1):5
+
+Move down 2: to (-1,0):6, then to (-1,-1):7
+
+Move right 2: to (0,-1):8, then to (1,-1):9
+
+Move up 2: to (1,0) but occupied! Problem.
+
+After down to (-1,-1):7, then right to (0,-1):8, then to (1,-1):9, then up to (1,0) but it's occupied by 2, so instead, it should continue up to (1,1) but occupied by 3? So it can't.
+
+I think I recall now: after moving down to the bottom, it moves right, but only for the same layer? No.
+
+Standard is: after placing 1, the first layer (size 1) is just 1. Then next layer starts at the right of 1.
+
+General rule: for each "layer" k, starting from k=1, the layer has numbers from (2k-1)^2 +1 to (2k+1)^2, but let's think.
+
+The numbers at distance k from center.
+
+The spiral goes in turns. The bottom-right corner of each layer is an odd square.
+
+Notice that the numbers on the axes are squares.
+
+For example, 1=1^2, 9=3^2, 25=5^2, etc., at positions (k,k) for k=0,1,2,... but 1 at (0,0), 9 at (1,-1)? In my earlier, at (1,-1):9, which is not (k,k).
+
+Set coordinates properly.
+
+Assume that after each complete layer, the last number is a perfect square on the bottom right corner.
+
+For instance, 1 at (0,0)
+
+Then 2 at (1,0), 3 at (1,1), 4 at (0,1), 5 at (-1,1), 6 at (-1,0), 7 at (-1,-1), 8 at (0,-1), 9 at (1,-1)
+
+Then next, from 9 at (1,-1), it should go up, but (1,-1) to (1,0) is occupied, so it goes to (2,-1) for 10? Then to (2,0) for 11? But (2,0) is above (1,0)=2, which is free, so 10 at (2,-1), 11 at (2,0), then since it was up, but typically it should continue up to (2,1) for 12, but let's see the sequence.
+
+From 9 at (1,-1), move up to (1,0) but occupied, so the spiral turns left, but in standard Ulam spiral, it continues in the same direction until it can't, but here it should change direction after completing a side.
+
+The side lengths increase by 1 every two turns, but actually for each "ring", the side length is 2k for layer k.
+
+Define the layer by the step size.
+
+The number of steps in each direction for the n-th "leg" of the spiral.
+
+Start from 1.
+
+Then move right for 1 step: to 2
+
+Then move up for 1 step: to 3
+
+Then move left for 2 steps: to 4 and 5
+
+Then move down for 2 steps: to 6 and 7
+
+Then move right for 2 steps: to 8 and 9
+
+Then move up for 3 steps: to 10,11,12? But 10 at (2,-1)? Let's calculate.
+
+From 9 at (1,-1), move up 3 steps: first to (1,0) but occupied, so it must be that after moving right to (1,-1), the next direction is up, but since the step size is now 3? No, after down with size 2, then right with size 2, then up should be size 3? But that doesn't make sense because the layer is not complete.
+
+The last number before starting a new layer is a perfect square, and it is at (k, -k) for k=1,2,3,...
+
+For k=1, 1 at (0,0), but 1=1^2.
+
+For k=2, 9 at (1,-1)? Distance from origin is sqrt(1+1)=sqrt(2), not integer.
+
+Usually, the perfect squares are at (n, -n) for n odd or something.
+
+1 at (0,0) = 1^2
+
+9 at (1,-1)? But (1,-1) is not on the diagonal.
+
+Let's list positions:
+
+- 1: (0,0)
+
+- 2: (1,0)
+
+- 3: (1,1)
+
+- 4: (0,1)
+
+- 5: (-1,1)
+
+- 6: (-1,0)
+
+- 7: (-1,-1)
+
+- 8: (0,-1)
+
+- 9: (1,-1)
+
+- 10: (2,-1)  // assume from 9 move right? But last move was right to 9, so next should be up, but (1,0) occupied, so perhaps it moves to (2,-1) for 10, then up to (2,0) for 11, (2,1) for 12, then left to (1,1) occupied, so to (0,1) occupied, to (-1,1) occupied, so it must go to (2,2) or something. This is messy.
+
+I recall that in the Ulam spiral, the position can be determined by finding which "ring" the number is in.
+
+The perfect squares are at positions that are on the axes or diagonals.
+
+Specifically, the number m is at position (x,y) where the ring is determined by the smallest k such as (2k-1)^2 < m ≤ (2k+1)^2 or something.
+
+For a number n, find the largest integer k such that (2k-1)^2 ≤ n.
+
+Then n is in the k-th layer.
+
+For example, n=1: (2*1-1)^2 =1^2=1, so k=1.
+
+n=2: 1<2<9, (2*1-1)^2=1<2, (2*2-1)^2=9>2, so k=1? But layer k=1 should be from 1 to 8 or something.
+
+Typically, the layer is defined by the size.
+
+The last number of the k-th ring is (2k+1)^2.
+
+For k=0, just 1 =1^2.
+
+k=1, up to 9=3^2.
+
+k=2, up to 25=5^2, etc.
+
+The numbers in the k-th ring are from (2k-1)^2 +1 to (2k+1)^2.
+
+For k=1: from 1^2 +1=2 to 3^2=9, so 2 to 9.
+
+For k=2: from 3^2 +1=10 to 5^2=25.
+
+Yes.
+
+Now, the ring has four sides, each of length 2k.
+
+For ring k, each side has 2k numbers? For k=1, side length should be 2, but from 2 to 9, that's 8 numbers, which is 4 sides of 2 each? 4*2=8, yes.
+
+For k=2, 10 to 25, 16 numbers, 4*4=16, so each side has 4 numbers? 2k for k=2 is 4, yes.
+
+Now, the starting point of the ring is at the position after the previous ring ends.
+
+The previous ring ends at (k-1, -(k-1)) for the bottom-right corner? Let's see.
+
+For k=1, starts after 1, which is at (0,0), and it starts by moving right to (1,0) for 2.
+
+The ring starts at the right of the previous end.
+
+Previous end for k=0 is 1 at (0,0), so start of k=1 is at (1,0) for 2.
+
+Then it moves up, left, down, right.
+
+The directions are: for each ring, it starts by moving in a certain direction.
+
+Typically, for ring k, it starts at (k, -(k-1)) or something.
+
+For k=1: start at (1,0)
+
+Then move up: to (1,1) for 3
+
+Then move left: to (0,1) for 4, then to (-1,1) for 5
+
+Then move down: to (-1,0) for 6, then to (-1,-1) for 7
+
+Then move right: to (0,-1) for 8, then to (1,-1) for 9
+
+Ends at (1,-1)
+
+Now for k=2, starts at (2,-1)? Since after (1,-1), it should move up, but (1,-1) to (1,0) occupied, so instead it moves to (2,-1) for 10.
+
+Then move up: to (2,0) for 11, (2,1) for 12, (2,2) for 13? But according to side length 4 for k=2, so up should have 4 numbers: 10,11,12,13? But 10 at (2,-1), 11 at (2,0), 12 at (2,1), 13 at (2,2)
+
+Then move left: to (1,2) for 14, (0,2) for 15, (-1,2) for 16, (-2,2) for 17
+
+Then move down: to (-2,1) for 18, (-2,0) for 19, (-2,-1) for 20, (-2,-2) for 21
+
+Then move right: to (-1,-2) for 22, (0,-2) for 23, (1,-2) for 24, (2,-2) for 25
+
+Ends at (2,-2)
+
+Then next ring k=3 starts at (3,-2) for 26, and so on.
+
+Pattern: for ring k, it starts at (k, -(k-1)) 
+
+For k=1: (1, -0) = (1,0), yes.
+
+k=2: (2,-1), yes.
+
+k=3: (3,-2), etc.
+
+And ends at (k, -k)
+
+For k=1: (1,-1), yes.
+
+k=2: (2,-2), yes.
+
+Now, the movement: from start, move up for 2k steps? For k=1, move up 2 steps? But earlier it moved up only 1 step to (1,1) for 3, but side length is 2k=2, but it moved only one step? No, for the up direction, it moved from (1,0) to (1,1), that's one step, but there are two numbers: 2 and 3? No, the numbers are placed at each step, so moving up one step places one number.
+
+In the sequence, when moving up from (1,0) to (1,1), it places 3 at (1,1), so only one move, but for k=1, each side has 2 numbers? From start: 2 at (1,0), then move up to (1,1) for 3, so the first side (right? no) actually, the ring starts at (1,0) with 2, but the direction is up.
+
+For ring k, the sides are: first up, then left, then down, then right? But in this case for k=1: start at (1,0), move up to (1,1) for 3? But that's only one move, but there should be two numbers per side.
+
+The side includes the starting point or not?
+
+Typically, for a side of length L, there are L numbers on that side, including the start.
+
+In this case, for k=1, first side (up): from (1,0) to (1,1), numbers 2 and 3? But 2 is at start, 3 after move.
+
+But when we move, we place a number at each new cell.
+
+So from (1,0) which has 2, we move up to (1,1) and place 3.
+
+So for the up side, we have two cells: (1,0) and (1,1), numbers 2 and 3.
+
+Similarly, next move left: from (1,1) to (0,1) place 4, then to (-1,1) place 5. So cells (1,1),(0,1),(-1,1), numbers 3,4,5? But 3 is already placed, so actually the side starts after the corner.
+
+Standard way: for each side, we move in the direction and place numbers in the new cells.
+
+For ring k, there are four sides, each of length 2k, meaning 2k numbers per side? But for k=1, 2k=2, but total numbers 8, 8/4=2, yes.
+
+But when moving, each "step" places one number.
+
+For the first side (up): starts at (k, -(k-1)) = (1,0) for k=1, and we move in the up direction for 2k steps? But 2k=2 steps, but from (1,0), moving up one step to (1,1) places 3, then another step to (1,2)? But in our case, it went to (0,1) next.
+
+I think I have the direction wrong.
+
+In the sequence, after placing 2 at (1,0), we move up to (1,1) place 3, then we move left to (0,1) place 4, then to (-1,1) place 5, then down to (-1,0) place 6, etc.
+
+So the first side is not "up"; actually, the ring starts at the bottom-right corner or something.
+
+For ring k, it starts at (k, -(k-1)), and the first move is up, but for k=1, from (1,0) move up to (1,1) for the next number, but the number at start is already placed? In this case, number 2 is at (1,0), which is the start, and it is part of the ring.
+
+Then we place the next number by moving up to (1,1) for 3.
+
+Then we place the next by moving left to (0,1) for 4.
+
+Then to (-1,1) for 5.
+
+Then down to (-1,0) for 6, then to (-1,-1) for 7, then right to (0,-1) for 8, then to (1,-1) for 9.
+
+So for the up side: from (1,0) to (1,1), but only one move, placing one number (3), but the side should have two cells: (1,0) and (1,1), with numbers 2 and 3.
+
+Similarly for left side: (1,1) to (0,1) to (-1,1), cells (1,1),(0,1),(-1,1), numbers 3,4,5 — three cells? But for k=1, should be two per side.
+
+Mistake: for left side, it should be only two cells, but here we have three cells if we include (1,1).
+
+The issue is that the corners are shared between sides.
+
+In this case, cell (1,1) is shared between the up side and the left side.
+
+For ring k, each side has 2k cells, but the corners are included in both adjacent sides, but since it's a ring, each corner cell is counted in two sides, but for the number of cells in the ring, it's correct because 4 * 2k - 4, since corners are shared, but 4*2k - 4 = 8k -4, but for k=1, 8-4=4, but we have 8 cells, so not.
+
+Total cells in ring k are (2k+1)^2 - (2k-1)^2 = 8k, as we have.
+
+Each side has exactly 2k cells, and the corners are the start and end of each side, but each corner cell is in only one side? No, in a grid, the corner cells are shared.
+
+For example, ring k=1: cells: (1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1),(0,-1),(1,-1)
+
+Now, if we assign sides:
+
+- Right side: but it's not on the right.
+
+Typically, the sides are: top, left, bottom, right, but in this case, for the ring, we can define the sides based on direction.
+
+From the movement, the first side is the "east" side or something.
+
+For the up direction: cells with y increasing, x constant? In this case, from (1,0) to (1,1), so only one cell in y-direction? But it's not a full side.
+
+Perhaps for each side, it's a sequence of cells in one direction.
+
+For the "up" side, it should be cells where we are moving up, which is from (1,0) to (1,1), placing 3, so only one cell for the move, but the cell (1,0) is already there.
+
+To avoid confusion, for the purpose of finding the position, we can use the following method.
+
+For a number n, find the largest k such that (2k-1)^2 ≤ n.
+
+Then n is in the k-th ring.
+
+The ring starts at number s = (2k-1)^2 + 1
+
+And ends at e = (2k+1)^2
+
+The side length L = 2k
+
+The ring has four sides: right, up, left, down, but in what order? From the movement, for each ring, it starts at the bottom-right, and moves up, then left, then down, then right.
+
+For k=1: start at (1,0), move up to (1,1), then left to (0,1),(-1,1), then down to (-1,0),(-1,-1), then right to (0,-1),(1,-1)
+
+So the sides are:
+
+- Up: from (1,0) to (1,1) — but this is only one step, but it includes two cells.
+
+The first "side" is the top side? Let's list the cells in order.
+
+The ring is traversed as follows: from start cell (k, -(k-1)) , then move up for L-1 steps? For k=1, L=2, move up 1 step to (1,1), so cells: (1,0), (1,1)
+
+Then from there, move left for L steps? To (0,1), (-1,1), so cells (0,1), (-1,1) — but (1,1) is already included, so the left side starts from (1,1) to (-1,1), which is three cells: (1,1),(0,1),(-1,1)
+
+But for k=1, L=2, should be 2 cells per side, but here 3 cells for left side.
+
+I see the problem: the start cell is shared, but in the sequence, when we move from one side to the next, we don't revisit the corner.
+
+In the sequence for k=1: cells in order: 2 at (1,0), 3 at (1,1), 4 at (0,1), 5 at (-1,1), 6 at (-1,0), 7 at (-1,-1), 8 at (0,-1), 9 at (1,-1)
+
+So the sides are:
+
+- First side (up): cells with numbers 2 and 3: (1,0) and (1,1) — 2 cells.
+
+- Second side (left): cells 3,4,5? But 3 is already in first side. No, in the list, cell (1,1) has number 3, which is the end of first side, and start of second side.
+
+So for the second side, it includes cell (1,1) to (-1,1), but (1,1) is already counted in first side.
+
+For the purpose of the path, each cell is visited once, but for defining which side a cell is on, we need to assign each cell to a side, but the corner cells are on two sides, but in this case, since the ring is closed, each cell is on exactly one side if we define the sides exclusively.
+
+For cell assignment, each cell in the ring is on one of the four sides, and the corners are part of one side or the other, but in standard, for the up side, it includes the cells with max y for that x, etc.
+
+For finding the position of n, we can calculate the offset from the start.
+
+For ring k, start number s = (2k-1)^2 + 1
+
+Start position: (k, -(k-1)) as we had.
+
+Then the ring has 8k numbers.
+
+The sides are traversed in order: up, left, down, right.
+
+Each side has 2k cells, but since the start cell is included in the first side, and the end cell in the last side, and corners are not shared in this counting because the sides are consecutive.
+
+For the first side (up): it has 2k cells, starting from (k, -(k-1)) and moving up, so y increases, x constant at k.
+
+For k=1: cells (1,0), (1,1) — y from 0 to 1, x=1.
+
+Number of cells: 2, which is 2k=2.
+
+Then next side (left): from (1,1) moving left, so x decreases, y constant at 1.
+
+Cells (1,1), (0,1), (-1,1) — but (1,1) is already included in previous side? In the path, when we move from (1,1) to (0,1), we are placing the next number at (0,1), so the cell (1,1) is already occupied by the previous number, so for the left side, we start from the next cell.
+
+So for left side, cells: (0,1), (-1,1) for k=1? But that's only two cells, but we have numbers 4 and 5 at (0,1) and (-1,1), and 3 is at (1,1), which is the end of the up side.
+
+So the left side has cells from x=0 to x= -1, y=1, so cells (0,1), (-1,1), number 4 and 5.
+
+Similarly, down side: from (-1,1) to (-1,0), (-1,-1)? Cells (-1,0), (-1,-1) for numbers 6 and 7.
+
+Then right side: from (-1,-1) to (0,-1), (1,-1) for 8 and 9.
+
+So for each side, there are 2k cells, and they are consecutive, with no overlap.
+
+The corners are included in the side where they are the start or end, but in this case, for up side, it includes the bottom-right corner (k, -(k-1)) and the top-right corner (k, k-1 + (2k-1)? For k=1, up side: (1,0) and (1,1), so corners (1,0) and (1,1).
+
+Then left side: (0,1), (-1,1), so corners (0,1) and (-1,1).
+
+But (1,1) is not in left side; it's only in up side.
+
+Similarly, (-1,1) is in left side, and also the start of down side? Down side starts at (-1,1)? But in the sequence, after left side ends at (-1,1) with 5, then we move down to (-1,0) for 6, so the cell (-1,1) is part of left side, and down side starts at (-1,0).
+
+So no overlap; each cell is in exactly one side.
+
+For k=1, up side: cells (1,0),(1,1) — numbers 2,3
+
+Left side: (0,1),(-1,1) — numbers 4,5
+
+Down side: (-1,0),(-1,-1) — numbers 6,7
+
+Right side: (0,-1),(1,-1) — numbers 8,9
+
+Perfect.
+
+For k=2: start at (2,-1) for 10
+
+Up side: move up from (2,-1) to (2,0),(2,1),(2,2)? But length 2k=4, so cells: (2,-1),(2,0),(2,1),(2,2) — numbers 10,11,12,13
+
+Then left side: from there, move left, y=2 constant, x decreases: (1,2),(0,2),(-1,2),(-2,2) — numbers 14,15,16,17
+
+Then down side: x=-2 constant, y decreases: (-2,1),(-2,0),(-2,-1),(-2,-2) — numbers 18,19,20,21
+
+Then right side: y=-2 constant, x increases: (-1,-2),(0,-2),(1,-2),(2,-2) — numbers 22,23,24,25
+
+Ends at (2,-2)
+
+Good.
+
+Now, the direction of movement: for each ring, the sides are traversed in the order: up, left, down, right.
+
+And for each side, the movement is in the direction of the side name.
+
+Now, to find the position of a number n.
+
+First, find which ring k it is in.
+
+k is determined by the largest integer such that (2k-1)^2 ≤ n.
+
+Since the rings go from s_k = (2k-1)^2 + 1 to e_k = (2k+1)^2.
+
+So for given n, compute k = ceil( (sqrt(n) + 1)/2 ) or something, but better to solve (2k-1)^2 ≤ n < (2k+1)^2? No, n starts from s_k = (2k-1)^2 +1 to e_k = (2k+1)^2.
+
+For example, n=1: (2*1-1)^2=1, so if we set k such that (2k-1)^2 ≤ n, then for n=1, k=1.
+
+But n=1 is in ring k=0? Earlier I said ring k starts from (2k-1)^2 +1, so for k=1, s=2, so n=1 is before ring 1.
+
+We can define ring 0 as just n=1.
+
+Set k such that n is in ring k, meaning k=0 for n=1, k=1 for n=2 to 9, k=2 for n=10 to 25, etc.
+
+Then for k≥1, the ring has start number s_k = (2k-1)^2 + 1
+
+End number e_k = (2k+1)^2
+
+Number of numbers: e_k - s_k + 1 = (2k+1)^2 - (2k-1)^2 = [4k^2 + 4k +1] - [4k^2 -4k +1] = 8k
+
+As before.
+
+The offset within the ring: offset m = n - s_k
+
+m ranges from 0 to 8k - 1.
+
+Now, the ring is divided into four sides, each of length 2k.
+
+The sides in order: up, left, down, right.
+
+So:
+
+- If 0 ≤ m < 2k, on up side
+
+- If 2k ≤ m < 4k, on left side
+
+- If 4k ≤ m < 6k, on down side
+
+- If 6k ≤ m < 8k, on right side
+
+Now, for each side, the position relative to start.
+
+Start position is (k, -(k-1))
+
+For up side: m from 0 to 2k-1
+
+We move up, so y increases, x constant at k.
+
+The start cell is at y = -(k-1)
+
+After m steps, but since it includes the start, when m=0, at start: (k, -(k-1))
+
+When we move up, each step increases y by 1.
+
+After j steps, y = -(k-1) + j
+
+But since m is the offset, when m=0, j=0, y= -(k-1)
+
+m=1, at next cell, y= -(k-1) +1
+
+In general, for the up side, the y-coordinate is -(k-1) + m
+
+x-coordinate is k
+
+Since we move vertically, x constant.
+
+So pos: (x,y) = (k, -(k-1) + m)
+
+For m from 0 to 2k-1.
+
+Check for k=1, n=2: m=0, pos=(1, -(1-1) +0)=(1,0), good.
+
+n=3: m=1, pos=(1,0+1)=(1,1), good.
+
+For k=2, n=10: m=0, pos=(2,-(2-1)+0)=(2,-1), good.
+
+n=11: m=1, pos=(2,-1+1)=(2,0), good.
+
+n=12: m=2, (2,-1+2)=(2,1), good.
+
+n=13: m=3, (2,-1+3)=(2,2), good.
+
+Now left side: m from 2k to 4k-1
+
+Start of left side: after up side, which ends at m=2k-1, position (k, -(k-1) + (2k-1) ) = (k, -k+1 +2k -1) = (k, k)
+
+For k=1: after m=1 (n=3), at (1,1)
+
+Left side starts at m=2k=2, so for n=4, m=2? s_k= for k=1, s=2, n=4, m=4-2=2
+
+Pos: should be (0,1)
+
+Now, moving left, so x decreases, y constant at k? For k=1, y=1.
+
+General: at the start of left side, which is after the up side, so at position (k, k) ? For k=1, (1,1), yes.
+
+But y-coordinate: from up side end, y= -(k-1) + (2k-1) = -k +1 +2k -1 = k
+
+Yes, so start of left side: (k, k)
+
+Now, moving left, so x decreases, y constant at k.
+
+The offset within the side: let p = m - 2k
+
+p from 0 to 2k-1
+
+When p=0, at start: (k,k)
+
+Then move left, so each step decreases x by 1.
+
+So after p steps, x = k - p
+
+y = k
+
+So pos: (x,y) = (k - p, k) = (k - (m - 2k), k) = (3k - m, k)
+
+Since p = m - 2k
+
+So x = k - (m - 2k) = k - m + 2k = 3k - m
+
+y = k
+
+For k=1, n=4, m=2, pos=(3*1 - 2, 1)=(1,1)? But should be (0,1). Mistake.
+
+x=3k - m =3-2=1, but should be 0. Off by one.
+
+When p=0, x=k, y=k
+
+p=1, x=k-1, y=k
+
+So for p=0: x=k
+
+p=1: x=k-1
+
+So x = k - p
+
+p = m - 2k
+
+So x = k - (m - 2k) = 3k - m
+
+But for m=2k, p=0, x=k
+
+m=2k+1, p=1, x=k-1
+
+For k=1, m=2, p=0, x=1, but should be at (1,1) for n=4? But earlier we have n=4 at (0,1). Contradiction.
+
+For k=1, left side: m from 2k=2 to 4k-1=3? Since 4k-1=3 for k=1.
+
+m=2: n=4, should be at (0,1)? But according to above, at start m=2, pos=(k,k)=(1,1), but that's where n=3 is.
+
+I see, the offset m starts from 0 at start of ring, which is (k, -(k-1)), but for left side, it starts at m=2k, which is after 2k steps, so the first cell of left side is at index m=2k, which is the cell after the up side.
+
+For up side, last cell is at m=2k-1, position (k, k) as above.
+
+Then left side starts at next cell, m=2k.
+
+For k=1, m=2, n=4, at position left of (1,1)? Which is (0,1).
+
+So when we move left from (1,1) to (0,1), so the new cell is (0,1).
+
+So for left side, the position is not starting at (k,k), but at (k-1,k) or something.
+
+The start position for left side is (k-1, k)? For k=1, (0,1), yes.
+
+In general, from the end of up side, which is (k,k), we move left to (k-1,k), so the first cell of left side is (k-1,k).
+
+Then we continue left to (k-2,k), etc.
+
+So for left side, x starts at k-1 and decreases, y=k constant.
+
+After p steps, x = (k-1) - p
+
+y = k
+
+p = m - 2k
+
+So x = k-1 - (m - 2k) = k-1 -m +2k = 3k - m -1
+
+y = k
+
+For k=1, m=2: x=3-2-1=0, y=1, good.
+
+m=3: n=5, x=3-3-1=-1, y=1, good.
+
+For k=2, left side: m from 4 to 7? 2k=4, 4k-1=7
+
+Start m=4, n=14? s_k=10 for k=2, n=14, m=14-10=4
+
+pos: x=3*2 -4 -1=6-4-1=1, y=2, so (1,2)
+
+Which matches earlier, since after up side: n=13 at (2,2), then left to (1,2) for n=14, yes.
+
+Then m=5, n=15, x=3*2-5-1=6-5-1=0, y=2, (0,2)
+
+Good.
+
+Now down side: m from 4k to 6k-1
+
+Start of down side: after left side, which ends at m=4k-1
+
+Position: for left side, when m=4k-1, p=m-2k=4k-1-2k=2k-1
+
+x=3k - m -1 =3k - (4k-1) -1=3k-4k+1-1=-k
+
+y=k
+
+So end of left side: (-k, k)
+
+Then move down to next cell: (-k, k-1) ? For k=1, end left at m=3, n=5, pos=(-1,1), move down to (-1,0) for n=6.
+
+So start of down side: (-k, k-1) ? For k=1, (-1,0)
+
+But y=k-1=0.
+
+General: move down, so y decreases, x constant at -k.
+
+Start cell: (-k, k-1) ? But for k=1, (-1,0), yes.
+
+But y-coordinate: from end of left, y=k, we move down to y=k-1.
+
+So first cell of down side: (-k, k-1)
+
+Then continue down to y=k-2, etc.
+
+So for down side, x = -k constant
+
+y starts at k-1 and decreases.
+
+p = m - 4k
+
+p from 0 to 2k-1
+
+When p=0, y=k-1
+
+p=1, y=k-2
+
+...
+
+So y = (k-1) - p
+
+x = -k
+
+So y = k-1 - (m - 4k) = k-1 -m +4k = 5k - m -1
+
+x = -k
+
+For k=1, m=4 (n=6), y=5-4-1=0, x=-1, good.
+
+m=5 (n=7), y=5-5-1=-1, x=-1, good.
+
+For k=2, m=8 (n=18), y=5*2-8-1=10-8-1=1, x=-2, so (-2,1), which matches earlier.
+
+Now right side: m from 6k to 8k-1
+
+Start of right side: after down side, ends at m=6k-1
+
+Position: for down side, m=6k-1, p=m-4k=6k-1-4k=2k-1
+
+y=5k - m -1 =5k - (6k-1) -1=5k-6k+1-1=-k
+
+x=-k
+
+So end of down side: (-k, -k)
+
+Then move right to next cell: (-k+1, -k) ? For k=1, end down at (-1,-1) for n=7, move right to (0,-1) for n=8.
+
+So start of right side: (-k+1, -k) ? For k=1, (0,-1)
+
+General: move right, x increases, y constant at -k.
+
+Start cell: (-k+1, -k)
+
+Then to (-k+2, -k), etc.
+
+p = m - 6k
+
+p from 0 to 2k-1
+
+x = (-k+1) + p ? Since p=0: x=-k+1
+
+p=1: x=-k+2
+
+So x = -k + 1 + p = -k + 1 + (m - 6k) = m - 7k + 1
+
+y = -k
+
+For k=1, m=6 (n=8), x=6-7+1=0, y=-1, good.
+
+m=7 (n=9), x=7-7+1=1, y=-1, good.
+
+For k=2, m=12? 6k=12, so m=12 to 15? 8k-1=15
+
+n=s_k + m=10+12=22? Earlier n=22 at (-1,-2)
+
+m=12, x=12 -7*2 +1=12-14+1=-1, y=-2, so (-1,-2), yes.
+
+Good.
+
+Now, what about n=1? We set k=0.
+
+For k=0, it should be at (0,0).
+
+We can handle it separately.
+
+Now, for a given n, find k.
+
+If n=1, k=0, pos=(0,0)
+
+Else, find k such that (2k-1)^2 < n ≤ (2k+1)^2? Earlier we have for ring k≥1, n from (2k-1)^2 +1 to (2k+1)^2.
+
+But (2k-1)^2 is included in previous ring? For n=1, (2*1-1)^2=1, which is ring k=0.
+
+Define k as the smallest integer such that n ≤ (2k+1)^2, but then for n=1, k=0? (2*0+1)^2=1, yes.
+
+For n=2, (2k+1)^2 ≥2, k=1 since 3^2=9≥2.
+
+But n=1 is also ≤1, so same k.
+
+But we need to distinguish ring.
+
+k is determined by: k = ceil( (sqrt(n) - 1)/2 ) or something.
+
+Set r = floor(sqrt(n))
+
+Then if r is odd, it's a corner, but anyway.
+
+The largest odd integer less than or equal to sqrt(n) is the side length or something.
+
+From earlier, k is such that (2k-1)^2 ≤ n ≤ (2k+1)^2? But for n=1, k=1? (2*1-1)^2=1, (2*1+1)^2=9, so n=1 to9, but we want n=1 separate.
+
+Note that for n≥1, k = ceil( (sqrt(n) + 1)/2 ) - 1 or something.
+
+Set m = floor(sqrt(n))
+
+Then if m is odd, then n is in ring k where 2k+1 = m? For example n=9, m=3, odd, so k=1? Since 2*1+1=3.
+
+n=1, m=1, odd, k=0? Since 2*0+1=1.
+
+n=2, m=1, odd, but should be k=1.
+
+Problem.
+
+When m is odd, n ≤ m^2, and it might be the last number of ring k with 2k+1=m, so k=(m-1)/2.
+
+For n=9, m=3, k=(3-1)/2=1, good.
+
+n=1, m=1, k=(1-1)/2=0, good.
+
+n=2, m=floor(sqrt(2))=1, k=(1-1)/2=0, but should be k=1. Mistake.
+
+For n=2, it should be in ring k=1.
+
+So when m is odd, and n > m^2? But m^2 is the last number of previous ring.
+
+Ring k ends at (2k+1)^2.
+
+So for a given n, find the smallest k such that n ≤ (2k+1)^2.
+
+Then if n > (2k-1)^2, it's in ring k, else in ring k-1? 
+
+Set k such that (2k-1)^2 < n ≤ (2k+1)^2, but for n=1, (2k-1)^2 <1, which is never true for integer k, since min is 1.
+
+Better: let k be the largest integer such that (2k-1)^2 ≤ n.
+
+For n=1: k=1? (2*1-1)^2=1≤1, but ring k=1 starts at n=2.
+
+For n=1, k=0: (2*0-1)^2=1≤1? But 2*0-1=-1, (-1)^2=1, yes.
+
+So define k as the largest integer such that (2k-1)^2 ≤ n.
+
+Then for k=0: ( -1 )^2 =1 ≤ n, but k=0.
+
+Then if k=0, n=1, pos=(0,0)
+
+Else, for k≥1, n is in ring k, with s_k = (2k-1)^2 +1, but for n=1, k=0, good.
+
+n=2: (2k-1)^2 ≤2, k=1:1≤2, k=2:9>2? so k=1.
+
+n=9: k=1:1≤9, k=2:9≤9? so k=2? But (2*2-1)^2=9, and if k=2, but ring k=2 starts at (2*2-1)^2 +1=9+1=10? But n=9 should be in ring k=1.
+
+Problem: for n=9, (2k-1)^2 ≤9, k=1:1≤9, k=2:9≤9, k=3:25>9, so largest k is 2.
+
+But ring k=2 starts at n=10.
+
+So inconsistency.
+
+To fix, when (2k-1)^2 = n, it is the end of ring k-1 or start of ring k?
+
+In our case, (2k-1)^2 is the last number of ring k-1? For k=1, (2*1-1)^2=1, last of ring 0.
+
+For k=2, (3)^2=9, last of ring 1.
+
+So define: let k be such that if n is a perfect square, say m^2, and m odd, then it is the end of ring (m-1)/2.
+
+Otherwise, etc.
+
+But simpler: after finding k as largest integer with (2k-1)^2 ≤ n, then if n = (2k-1)^2, it is in ring k-1? But for k=1, n=1, ring k-1=0.
+
+For k=2, n=9, ring k-1=1.
+
+Otherwise, in ring k.
+
+But for n=1, k=1? (2*1-1)^2=1≤1, so k=1, but then if n=(2k-1)^2, in ring k-1=0.
+
+For n=2, k=1 (since k=1:1≤2, k=2:9>2), and n≠1, so in ring k=1.
+
+For n=9, k=2 (k=2:9≤9, k=3:25>9), and n=9=(2*2-1)^2, so in ring k-1=1.
+
+Good.
+
+So algorithm:
+
+- Compute k = floor( (1 + sqrt(n)) / 2 ) ? Or better: let k be the largest integer such that (2k-1)^2 ≤ n.
+
+Which is equivalent to k = floor( (1 + sqrt(n)) / 2 ) ? Let's see.
+
+(2k-1)^2 ≤ n ⇒ 2k-1 ≤ sqrt(n) ⇒ 2k ≤ sqrt(n) +1 ⇒ k ≤ (sqrt(n) +1)/2
+
+So k = floor( (sqrt(n) +1)/2 )
+
+For n=1: sqrt(1)=1, (1+1)/2=1, floor=1
+
+But earlier we need k=1 for n=1, but then we assign to ring k-1 if n is square.
+
+k = floor( (sqrt(n) +1)/2 )
+
+n=1: k= floor(1) =1
+
+n=2: sqrt(2)≈1.414, (1.414+1)/2≈1.207, floor=1
+
+n=9: sqrt=3, (3+1)/2=2, floor=2
+
+n=10: sqrt≈3.162, (3.162+1)/2≈2.081, floor=2
+
+Good.
+
+Now, if n = (2k-1)^2, then it is the last number of ring k-1.
+
+Otherwise, it is in ring k.
+
+But ring k-1 for k≥1.
+
+For n=1, k=1, n=(2*1-1)^2=1, so in ring k-1=0.
+
+For n=2, k=1, n≠1, so in ring k=1.
+
+For n=9, k=2, n=9=(2*2-1)^2? 3^2=9, yes, so in ring k-1=1.
+
+For n=10, k=2, n≠9, so in ring k=2.
+
+Good.
+
+Now, for ring assignment:
+
+If n is in ring r, where r = k if n > (2k-1)^2, else r = k-1 if n = (2k-1)^2.
+
+But since when n = (2k-1)^2, r=k-1.
+
+Otherwise r=k.
+
+Note that r is the ring index, from 0 up.
+
+For r=0, only n=1, pos=(0,0)
+
+For r≥1, start number s_r = (2r-1)^2 + 1
+
+End number e_r = (2r+1)^2
+
+Offset m = n - s_r
+
+Then as before.
+
+In terms of k, but perhaps directly.
+
+So for given n, compute k = floor( (sqrt(n) + 1)/2 )
+
+Then if n == (2k-1)^2, then ring r = k-1
+
+Else r = k
+
+Then if r=0, pos=(0,0)
+
+Else, s_r = (2r-1)^2 + 1
+
+m = n - s_r
+
+Then based on m, determine side and position.
+
+Now for our problem, n=2026.
+
+First, find k.
+
+Compute sqrt(2026). 45^2=2025, since 40^2=1600, 50^2=2500, 45^2=2025, 46^2=2116.
+
+So sqrt(2026) ≈ 45.011, since 45^2=2025.
+
+So k = floor( (45.011 + 1)/2 ) = floor(46.011 / 2) = floor(23.0055) = 23
+
+Now, (2k-1)^2 = (46-1)^2=45^2=2025
+
+n=2026, which is greater than (2k-1)^2=2025, and not equal, so ring r = k = 23
+
+Now, s_r = (2r-1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026
+
+s_r = (2*23 -1)^2 +1 = (46-1)^2 +1=45^2 +1=2025+1=2026
+
+So m = n - s_r = 2026 - 2026 = 0
+
+Now, ring r=23, m=0
+
+Now, since m=0, it is on the up side (first side), since 0 ≤ m < 2r = 46
+
+For up side, position: x = r = 23
+
+y = -(r-1) + m = -(23-1) + 0 = -22
+
+So pos: (23, -22)
+
+Now, we need the eight neighbors of this cell.
+
+The eight neighbors are the cells adjacent horizontally, vertically, or diagonally.
+
+So for a cell (x,y), neighbors are:
+
+(x-1,y-1), (x-1,y), (x-1,y+1)
+
+(x,y-1), (x,y+1)
+
+(x+1,y-1), (x+1,y), (x+1,y+1)
+
+So in this case, (23,-22)
+
+Neighbors:
+
+(22,-23), (22,-22), (22,-21)
+
+(23,-23), (23,-21)
+
+(24,-23), (24,-22), (24,-21)
+
+Now, we need to find what numbers are in these cells, but since the spiral is infinite, each cell has a number, but we need to compute the number at each of these positions.
+
+So we need a way to, given coordinates (x,y), find the number n at that position.
+
+Since we have the position, we can reverse the process.
+
+Given (x,y), find which ring it is in, and then the offset.
+
+Note that the rings are symmetric, and we can find the ring by the max of |x|,|y|.
+
+For a cell (x,y), the ring r is max(|x|, |y|)
+
+For example, (0,0): r=0
+
+(1,0): |x|=1,|y|=0, max=1, ring r=1
+
+(1,1): max=1, ring r=1
+
+(0,1): max=1, r=1
+
+(-1,1): max=1, r=1
+
+(2,-1): max(2,1)=2, ring r=2, which is correct for n=10.
+
+(2,2): max=2, r=2, n=13? Earlier n=13 at (2,2), yes.
+
+(1,-1): max(1,1)=1, r=1, n=9? Earlier n=9 at (1,-1), yes.
+
+(0,-1): max(0,1)=1, r=1, n=8, yes.
+
+So ring r = max(|x|, |y|)
+
+Now, for a given (x,y), r = max(|x|, |y|)
+
+If r=0, n=1
+
+Else, we need to find which side it is on, and the position on that side.
+
+The start position of ring r is (r, -(r-1))
+
+Now, the sides:
+
+- Up side: x = r, y from -(r-1) to r-1? Earlier for up side, y = -(r-1) + m, with m=0 to 2r-1, so y from -(r-1) to -(r-1) + (2r-1) = -r +1 +2r -1 = r
+
+So y from -(r-1) to r
+
+But since x=r, and y in [-(r-1), r]
+
+But for example r=1: y from -0 to 1, i.e., 0 and 1.
+
+But cell (1,0) and (1,1)
+
+Now, left side: y=r, x from r-1 down to -r? Earlier, for left side, x=3r - m -1, y=r, m from 2r to 4r-1
+
+x=3r - m -1
+
+When m=2r, x=3r -2r -1=r-1
+
+m=4r-1, x=3r - (4r-1) -1=3r-4r+1-1=-r
+
+So x from r-1 down to -r
+
+Similarly, down side: x=-r, y from r-1 down to -r? Earlier y=5r - m -1, m from 4r to 6r-1
+
+m=4r, y=5r -4r -1=r-1
+
+m=6r-1, y=5r - (6r-1) -1=5r-6r+1-1=-r
+
+So y from r-1 to -r
+
+Right side: y=-r, x from -r+1 to r? Earlier x=m -7r +1, y=-r, m from 6r to 8r-1
+
+m=6r, x=6r -7r +1= -r +1
+
+m=8r-1, x=(8r-1)-7r+1=r
+
+So x from -r+1 to r
+
+Now, for a given (x,y), with r=max(|x|,|y|)
+
+We can determine which side based on the position.
+
+Specifically:
+
+- If x = r and y ≥ -(r-1) and y ≤ r, but since max is r, and x=r, then |y| ≤ r, but since max is r, if x=r, then |y| ≤ r, and actually y ≥ -(r-1) because if y < -(r-1), max would be |y| > r-1, but since r is integer, |y| ≥ r, but max is r, so |y| ≤ r, and if |y| = r, but if y = -r, then max(|x|,|y|)=max(r,r)=r, but in the up side, y goes down to -(r-1) > -r for r>1, so for example r=2, up side y from -1 to 2, so y=-1,0,1,2. But y=-2 would be on down or right side.
+
+So for cell with max(|x|,|y|)=r, it is in ring r.
+
+Now, to find which side:
+
+- If x = r and y > -(r-1) ? But for r=2, up side: x=2, y=-1,0,1,2
+
+But y= -1, which is -(r-1) for r=2, -(2-1)=-1.
+
+Now, left side: x from 1 to -2? Earlier for r=2, left side: x from r-1=1 down to -r=-2, y=r=2.
+
+So cells: (1,2),(0,2),(-1,2),(-2,2)
+
+Down side: x=-2, y from r-1=1 down to -r=-2, so (-2,1),(-2,0),(-2,-1),(-2,-2)
+
+Right side: y=-2, x from -r+1=-1 to r=2, so (-1,-2),(0,-2),(1,-2),(2,-2)
+
+Now, the corners: (r,r) is in left side? For r=2, (2,2) is in up side? Up side has (2,2), left side has (1,2), etc.
+
+Specifically:
+
+- (r,r) is in up side? For r=2, (2,2) is in up side.
+
+- ( -r, r) is in left side? (-2,2) in left side.
+
+- ( -r, -r) in down side? (-2,-2) in down side.
+
+- (r, -r) in right side? (2,-2) in right side.
+
+Now, for a cell (x,y), with r=max(|x|,|y|)
+
+- If x = r and y ≥ -(r-1) and y ≤ r, then up side? But for r=2, y from -1 to 2, yes.
+
+But when y = r, it's included.
+
+Similarly, for left side: if y = r and x ≤ r-1 and x ≥ -r? For r=2, y=2, x from -2 to 1.
+
+But when x=r, it's not included, since x≤r-1.
+
+Similarly, for down side: if x = -r and y ≤ r-1 and y ≥ -r? y from -r to r-1.
+
+For r=2, y≤1, y≥-2.
+
+But when y=r, not included.
+
+Right side: if y = -r and x ≥ -r+1 and x ≤ r? x from -r+1 to r.
+
+Now, note that the corners (r,r), (-r,r), (-r,-r), (r,-r) are covered: (r,r) is in up side (since x=r, y=r), (-r,r) in left side (y=r, x=-r), (-r,-r) in down side (x=-r, y=-r), (r,-r) in right side (y=-r, x=r).
+
+And no overlap, all covered.
+
+Now for our case, we have neighbors of (23,-22)
+
+First, r = max(|23|,|-22|) = max(23,22)=23
+
+Now, for each neighbor, we need to find r and then the position.
+
+List the neighbors:
+
+1. (22,-23) : |x|=22, |y|=23, max=23
+
+2. (22,-22) : |x|=22, |y|=22, max=22
+
+3. (22,-21) : |x|=22, |y|=21, max=22
+
+4. (23,-23) : |x|=23, |y|=23, max=23
+
+5. (23,-21) : |x|=23, |y|=21, max=23
+
+6. (24,-23) : |x|=24, |y|=23, max=24
+
+7. (24,-22) : |x|=24, |y|=22, max=24
+
+8. (24,-21) : |x|=24, |y|=21, max=24
+
+So we have neighbors in ring 22, 23, 24.
+
+Specifically:
+
+- Ring 22: (22,-22) and (22,-21)? max(|22|,|-22|)=22, max(|22|,|-21|)=22? |y|=21<22, so max=22, yes.
+
+But (22,-22) and (22,-21) both have max(|x|,|y|)=22, since |x|=22, |y|=22 or 21 ≤22.
+
+Similarly, (22,-23): |x|=22, |y|=23>22, so max=23, ring 23.
+
+Similarly:
+
+- (22,-23): r=23
+
+- (22,-22): r=22
+
+- (22,-21): r=22
+
+- (23,-23): r=23
+
+- (23,-21): r=23
+
+- (24,-23): r=24
+
+- (24,-22): r=24
+
+- (24,-21): r=24
+
+Now, for each, we need to find the number.
+
+First, let's handle ring 23 neighbors: (22,-23), (23,-23), (23,-21)
+
+But (22,-23) is in ring 23? r=max(22,23)=23, yes.
+
+Similarly, (23,-23) r=23, (23,-21) r=23.
+
+Now, (23,-22) is the center, but we need neighbors.
+
+Now, for ring r=23, we need to find n for each of these points.
+
+First, (23,-23)? But earlier for ring r, the corners: (r,r) is up side, but (23,-23)? y is negative.
+
+For (x,y) with r=max(|x|,|y|)=23
+
+Now, (23,-23): x=23, y=-23
+
+Since x=23=r, and y=-23
+
+Now, is it in up side? Up side requires y ≥ -(r-1) = -22, and y ≤ r=23.
+
+y=-23 < -22, so not in up side.
+
+Left side: y=r=23? But y=-23 ≠23, so no.
+
+Down side: x=-r? But x=23 ≠ -23, so no.
+
+Right side: y=-r? y=-23, and r=23, so y=-r.
+
+Now, right side requires y=-r, and x ≥ -r+1 = -22, and x ≤ r=23.
+
+Here x=23, which is ≤23, and ≥ -22? 23 ≥ -22 yes.
+
+So yes, in right side.
+
+Similarly, for (23,-21): x=23,y=-21
+
+x=r=23, so check up side: y ≥ -22? -21 ≥ -22 yes, y ≤23? -21≤23 yes, so in up side.
+
+For (22,-23): x=22,y=-23
+
+r=23
+
+Now, up side: x=r? 22≠23, no.
+
+Left side: y=r? -23≠23, no.
+
+Down side: x=-r? 22≠-23, no.
+
+Right side: y=-r? -23=-23, yes. Then x ≥ -r+1 = -22? 22 ≥ -22 yes, and x ≤ r=23? 22≤23 yes, so in right side.
+
+Now, for (23,-23): as above, in right side.
+
+Now, we need the number for each.
+
+So for a cell in ring r, on a specific side, we can find the offset.
+
+First, recall the start position of ring r: (r, -(r-1))
+
+And start number s_r = (2r-1)^2 + 1
+
+For each side, we have the position relative to the start of the side or ring.
+
+Since we have the coordinates, we can compute the offset.
+
+First, for up side: cells with x=r, y from -(r-1) to r
+
+The start of the side is at (r, -(r-1)), which corresponds to m=0 in the ring.
+
+The y-coordinate ranges from y_min = -(r-1) to y_max = r
+
+The value y - y_min = y - (-(r-1)) = y + r -1
+
+Since at y_min, offset 0, and each step up increases y by 1, so the offset within the side is y - y_min = y + r -1
+
+Then since it's the first side, the ring offset m = offset in side
+
+Because m starts at 0 for this side.
+
+In general, for up side, m = y - [-(r-1)] = y + r -1
+
+Since at y= -(r-1), m=0
+
+y= -(r-1) +1, m=1, etc., up to y=r, m= r - (-(r-1)) = r + r -1 = 2r -1, which matches.
+
+So for up side, m = y + r - 1
+
+Then n = s_r + m
+
+Now for left side: cells with y=r, x from r-1 down to -r
+
+Start of left side: at (r-1, r) ? Earlier we had first cell at (r-1, r)
+
+At this point, ring offset m = 2r (since after up side which has 2r cells)
+
+The x-coordinate: at start, x=r-1
+
+Then as we move left, x decreases to -r.
+
+So x ranges from r-1 to -r, decreasing.
+
+The offset within the side: let p = (r-1) - x
+
+Since at x=r-1, p=0
+
+x=r-2, p=1, ..., x=-r, p= (r-1) - (-r) = r-1 + r = 2r -1
+
+So p = (r-1) - x
+
+Then since left side starts at m=2r, so ring offset m = 2r + p = 2r + (r-1 - x) = 3r -1 - x
+
+Then n = s_r + m
+
+Now for down side: cells with x=-r, y from r-1 down to -r
+
+Start at (-r, r-1)
+
+Ring offset m=4r (after left side)
+
+y-coordinate: at start y=r-1
+
+Decreases to y=-r
+
+So offset within side: q = (r-1) - y ? Since at y=r-1, q=0
+
+y=r-2, q=1, ..., y=-r, q= (r-1) - (-r) = 2r -1
+
+Then m = 4r + q = 4r + (r-1 - y) = 5r -1 - y
+
+n = s_r + m
+
+For right side: cells with y=-r, x from -r+1 to r
+
+Start at (-r+1, -r)
+
+Ring offset m=6r
+
+x-coordinate: at start x=-r+1
+
+Increases to x=r
+
+So offset within side: s = x - (-r+1) = x + r -1
+
+At x=-r+1, s=0
+
+x=-r+2, s=1, ..., x=r, s= r - (-r+1) = 2r -1
+
+Then m = 6r + s = 6r + (x + r -1) = 7r + x -1
+
+n = s_r + m
+
+Now, for each neighbor, compute r, then which side, then m, then n.
+
+We have eight neighbors.
+
+List them with their ring r and coordinates.
+
+1. (22,-23): r=max(22,23)=23
+
+As above, in right side (since y=-23=-r)
+
+So for right side, n = s_r + m, with m = 7r + x -1
+
+r=23, x=22
+
+m=7*23 + 22 -1 = 161 + 22 -1=182
+
+s_r = (2r-1)^2 +1 = (46-1)^2 +1=45^2 +1=2025+1=2026
+
+So n= s_r + m = 2026 + 182 = 2208
+
+But s_r is start of ring, m=0 to 8r-1, here m=182, which is less than 8*23=184, yes.
+
+n=2026+182=2208
+
+But is this correct? Let me verify with small example.
+
+Take r=1, cell (1,-1): should be in right side? y=-1=-r, x=1=r
+
+Right side: m=7r + x -1=7*1 +1 -1=7
+
+s_r=(2*1-1)^2 +1=1+1=2
+
+n=2+7=9, which is correct, since (1,-1) has 9.
+
+Good.
+
+Now, next neighbor: 2. (22,-22): r=max(22,22)=22
+
+Now, which side? x=22=r, y=-22
+
+Up side: requires y ≥ -(r-1)= -21? -22 < -21? -22 < -21, yes, so not in up side.
+
+Left side: y=r? -22 ≠22, no.
+
+Down side: x=-r? 22≠-22, no.
+
+Right side: y=-r? -22=-22, yes. Then x ≥ -r+1= -21? 22 ≥ -21 yes, x ≤ r=22? 22≤22 yes.
+
+So in right side.
+
+m=7r + x -1=7*22 +22 -1=154+22-1=175
+
+s_r=(2*22-1)^2 +1=(44-1)^2 +1=43^2 +1=1849+1=1850
+
+n=1850 + 175=2025
+
+1850+175=2025, yes.
+
+But 2025 is 45^2, which is a square.
+
+Now, 3. (22,-21): r=max(22,21)=22
+
+x=22=r, y=-21
+
+Up side: y ≥ -(r-1)= -21? -21 ≥ -21 yes, y ≤ r=22? -21≤22 yes.
+
+So in up side.
+
+m= y + r -1 = -21 + 22 -1=0? 
+
+s_r=1850
+
+n=1850 + 0=1850
+
+m=y + r -1= -21 +22 -1=0, yes.
+
+Now, 4. (23,-23): r=max(23,23)=23
+
+As before, in right side (y=-23=-r)
+
+m=7r + x -1=7*23 +23 -1=161+23-1=183
+
+s_r=2026
+
+n=2026+183=2209
+
+x=23, r=23, m=7*23 +23 -1=161+23-1=183, yes.
+
+5. (23,-21): r=23, x=23=r, y=-21
+
+In up side, as earlier.
+
+m=y + r -1= -21 +23 -1=1
+
+s_r=2026
+
+n=2026+1=2027
+
+6. (24,-23): r=max(24,23)=24
+
+Now, which side? x=24=r, y=-23
+
+Up side: y ≥ -(r-1)= -23? -23 ≥ -23 yes, y ≤ r=24? -23≤24 yes.
+
+So in up side.
+
+m=y + r -1= -23 +24 -1=0
+
+s_r=(2*24-1)^2 +1=(48-1)^2 +1=47^2 +1=2209+1=2210
+
+n=2210 + 0=2210
+
+7. (24,-22): r=24, x=24=r, y=-22
+
+Up side: y ≥ -23? -22 ≥ -23 yes, y ≤24 yes.
+
+m=y + r -1= -22 +24 -1=1
+
+s_r=2210
+
+n=2210+1=2211
+
+8. (24,-21): r=24, x=24=r, y=-21
+
+Up side: y ≥ -23? -21 ≥ -23 yes, y ≤24 yes.
+
+m=y + r -1= -21 +24 -1=2
+
+s_r=2210
+
+n=2210+2=2212
+
+Now, we have all eight neighbors' numbers:
+
+1. (22,-23): 2208
+
+2. (22,-22): 2025
+
+3. (22,-21): 1850
+
+4. (23,-23): 2209
+
+5. (23,-21): 2027
+
+6. (24,-23): 2210
+
+7. (24,-22): 2211
+
+8. (24,-21): 2212
+
+Now, sum them up.
+
+List:
+
+2208, 2025, 1850, 2209, 2027, 2210, 2211, 2212
+
+Now, sum.
+
+First, group them.
+
+Notice that some are consecutive or close.
+
+Compute step by step.
+
+List in order:
+
+1850, 2025, 2027, 2208, 2209, 2210, 2211, 2212
+
+Now, sum = ?
+
+Add sequentially.
+
+Start with 1850
+
++2025 = 3875
+
++2027 = 3875 + 2027 = 5902
+
++2208 = 5902 + 2208 = 8110
+
++2209 = 8110 + 2209 = 10319
+
++2210 = 10319 + 2210 = 12529
+
++2211 = 12529 + 2211 = 14740
+
++2212 = 14740 + 2212 = 16952
+
+So sum is 16952.
+
+But let me verify with a smaller example to make sure.
+
+Take the center n=1, neighbors should be 2,3,4,5,6,7,8,9, sum=2+3+4+5+6+7+8+9=44? 2+9=11,3+8=11,4+7=11,5+6=11, so 4*11=44.
+
+Now, according to our method, center (0,0), neighbors:
+
+( -1,-1), (-1,0), (-1,1)
+
+(0,-1), (0,1)
+
+(1,-1), (1,0), (1,1)
+
+Now, compute each:
+
+1. (-1,-1): r=max(1,1)=1
+
+Which side? x=-1, y=-1
+
+Down side? x=-r? -1=-1, yes. y from r-1=0 to -r=-1? y=-1 ≥ -1, and ≤0? -1≤0 yes.
+
+Down side: m=5r -1 -y? Earlier m=5r -1 -y
+
+r=1, y=-1, m=5*1 -1 -(-1)=5-1+1=5
+
+s_r=(2*1-1)^2 +1=1+1=2
+
+n=2+5=7? But should be 7, yes.
+
+2. (-1,0): r=max(1,0)=1
+
+x=-1, y=0
+
+Down side? x=-r? yes. y=0 ≤ r-1=0? yes, ≥ -1? yes.
+
+m=5r-1-y=5-1-0=4
+
+n=2+4=6, good.
+
+3. (-1,1): r=1, x=-1,y=1
+
+Down side? y=1 ≤0? no, 1>0.
+
+Left side? y=r?1=1, yes. x from r-1=0 to -r=-1? x=-1 ≥ -1? yes, ≤0? -1≤0 yes? but x≤ r-1=0, and x≥ -r=-1.
+
+x=-1, which is ≥ -1 and ≤0? -1≤0 yes.
+
+Left side: m=3r - m -1? Earlier m=3r - m -1? No.
+
+For left side, m=3r - x -1? Earlier we had m=3r - x -1? For left side.
+
+Earlier: m=3r - x -1? For (x,y) in left side.
+
+r=1, x=-1, y=1
+
+m=3*1 - (-1) -1? Earlier formula: m=3r - x -1? But earlier for left side, we had m=3r - m -1? No.
+
+From earlier calculation: for left side, m=3r - x -1? For k=1, n=4 at (0,1), m=n-s_r=4-2=2? s_r=2
+
+x=0, r=1, 3*1 -0 -1=2, yes.
+
+n=5 at (-1,1), m=5-2=3, x=-1, 3*1 -(-1)-1=3+1-1=3, yes.
+
+So m=3r - x -1
+
+Here x=-1,r=1, m=3-(-1)-1=3+1-1=3
+
+n=2+3=5, good.
+
+4. (0,-1): r=max(0,1)=1
+
+y=-1, x=0
+
+Right side? y=-r? -1=-1, yes. x≥ -r+1=0? x=0≥0, x≤r=1?0≤1 yes.
+
+Right side: m=7r + x -1=7*1 +0 -1=6
+
+n=2+6=8, good.
+
+5. (0,1): r=1, x=0,y=1
+
+Left side? y=r?1=1, yes. x=0≥ -1? yes, ≤0? yes.
+
+m=3r -x -1=3-0-1=2
+
+n=2+2=4, good.
+
+6. (1,-1): r=1, x=1,y=-1
+
+Right side? y=-r? yes. x=1≥0? yes, ≤1? yes.
+
+m=7r +x -1=7+1-1=7
+
+n=2+7=9, good.
+
+7. (1,0): r=1, x=1,y=0
+
+Up side? x=r? yes. y=0≥ -(1-1)=0? 0≥0 yes. y≤1? yes.
+
+m=y + r -1=0+1-1=0
+
+n=2+0=2, good.
+
+8. (1,1): r=1, x=1,y=1
+
+Up side: m=y + r -1=1+1-1=1
+
+n=2+1=3, good.
+
+Sum:7+6+5+8+4+9+2+3= let's see: 7+6=13,13+5=18,18+8=26,26+4=30,30+9=39,39+2=41,41+3=44, correct.
+
+So our method is good.
+
+Now back to our sum: 1850,2025,2027,2208,2209,2210,2211,2212
+
+We computed sum=16952
+
+But let me add them again.
+
+List:
+
+1850
+
+2025
+
+2027
+
+2208
+
+2209
+
+2210
+
+2211
+
+2212
+
+Add in pairs.
+
+1850 + 2212 = 4062
+
+2025 + 2211 = 4236
+
+2027 + 2210 = 4237
+
+2208 + 2209 = 4417? 2200+2200=4400, 8+9=17, total 4417.
+
+Now sum these: 4062 + 4236 = 8298
+
+4237 + 4417 = 8654? 4200+4400=8600, 37+17=54, total 8654
+
+Now 8298 + 8654 = ?
+
+8298 + 8600 = 16898
+
+16898 + 54 = 16952
+
+Same as before.
+
+Notice that the numbers are symmetric.
+
+We have 1850, 2025, 2027, 2208,2209,2210,2211,2212
+
+2025 and 2027 are symmetric around 2026, but 2026 is the center, but neighbors.
+
+2025 is left? But anyway.
+
+Sum is 16952.
+
+But is this correct? The center is 2026 at (23,-22), and neighbors include 2025 and 2027.
+
+2025 is at (22,-22), which is adjacent diagonally? (22,-22) and (23,-22) are adjacent horizontally? Distance |dx|=1, dy=0, so yes, adjacent.
+
+Similarly, 2027 at (23,-21), which is adjacent vertically? Same x, dy=1? |dy|=1, dx=0, so vertically adjacent.
+
+Others are farther.
+
+Now, sum is 16952.
+
+But let me confirm one more: the center is at ring 23, start 2026.
+
+Neighbors: (22,-23) is in ring 23, right side, n=2208
+
+(23,-23) same ring, right side? y=-23, x=23, so same as above? Earlier for (23,-23): we have n=2209? Earlier I computed 2209 for (23,-23)
+
+(23,-23): r=23, right side, m=7*23 +23 -1=161+23-1=183, n=2026+183=2209
+
+(22,-23): same r=23, right side, m=7*23 +22 -1=161+22-1=182, n=2026+182=2208
+
+(24,-23): r=24, up side, m=0, s_r=2210, n=2210
+
+(24,-22): same, m=1, n=2211
+
+(24,-21): m=2, n=2212
+
+(22,-22): r=22, right side? Earlier we said right side, n=2025
+
+(22,-21): r=22, up side, n=1850
+
+(23,-21): r=23, up side, n=2027
+
+All seem consistent.
+
+Sum is 16952.
+
+But the problem asks for sum of all eight neighbors, and we have them.
+
+Now, is there any duplicate or missing? Eight neighbors, we have eight numbers.
+
+Note that 2025 is 45^2, which is the square before, and it's adjacent.
+
+Sum is 16952.
+
+Perhaps we can box it.
+
+But let me see if it makes sense.
+
+The neighbors include numbers from different rings: ring 22,23,24.
+
+Specifically:
+
+- Ring 22: (22,-22) and (22,-21) → n=2025 and 1850
+
+- Ring 23: (22,-23), (23,-23), (23,-21) → 2208,2209,2027
+
+- Ring 24: (24,-23), (24,-22), (24,-21) → 2210,2211,2212
+
+Sum: ring 22: 2025 + 1850 = 3875
+
+Ring 23: 2208 + 2209 + 2027 = 2208+2209=4417, +2027=6444? 4417+2000=6417, +27=6444
+
+2027 is smaller.
+
+2208 + 2209 = 4417, plus 2027: 4417 + 2027 = 6444
+
+Ring 24: 2210 + 2211 + 2212 = 2210+2212=4422, plus 2211=6633? 4422+2211=6633
+
+Now total: ring22:3875, ring23:6444, ring24:6633
+
+Sum: 3875 + 6444 = 10319
+
+10319 + 6633 = 16952, same.
+
+Note that ring24 sum: 2210+2211+2212=3*2211=6633, since consecutive.
+
+Similarly, ring23: 2027,2208,2209. Not consecutive.
+
+But anyway.
+
+So the sum is 16952.
+
+Therefore, the answer is 16952.
+</think>
+The number 2026 is located at position (23, -22) in the spiral grid, where the center (1) is at (0, 0). The eight neighbors of this position are:
+
+- (22, -23)
+- (22, -22)
+- (22, -21)
+- (23, -23)
+- (23, -21)
+- (24, -23)
+- (24, -22)
+- (24, -21)
+
+To find the numbers at these positions, determine the ring \(r\) for each neighbor, where \(r = \max(|x|, |y|)\). The start number of ring \(r\) is \(s_r = (2r-1)^2 + 1\), and the offset \(m\) within the ring depends on the side (up, left, down, or right) and the coordinates. The number is then \(n = s_r + m\).
+
+The neighbors and their corresponding numbers are:
+
+1. (22, -23): \(r = 23\), right side, \(m = 7 \times 23 + 22 - 1 = 182\), \(s_{23} = 2026\), \(n = 2026 + 182 = 2208\).
+2. (22, -22): \(r = 22\), right side, \(m = 7 \times 22 + 22 - 1 = 175\), \(s_{22} = (2 \times 22 - 1)^2 + 1 = 43^2 + 1 = 1849 + 1 = 1850\), \(n = 1850 + 175 = 2025\).
+3. (22, -21): \(r = 22\), up side, \(m = -21 + 22 - 1 = 0\), \(s_{22} = 1850\), \(n = 1850 + 0 = 1850\).
+4. (23, -23): \(r = 23\), right side, \(m = 7 \times 23 + 23 - 1 = 183\), \(s_{23} = 2026\), \(n = 2026 + 183 = 2209\).
+5. (23, -21): \(r = 23\), up side, \(m = -21 + 23 - 1 = 1\), \(s_{23} = 2026\), \(n = 2026 + 1 = 2027\).
+6. (24, -23): \(r = 24\), up side, \(m = -23 + 24 - 1 = 0\), \(s_{24} = (2 \times 24 - 1)^2 + 1 = 47^2 + 1 = 2209 + 1 = 2210\), \(n = 2210 + 0 = 2210\).
+7. (24, -22): \(r = 24\), up side, \(m = -22 + 24 - 1 = 1\), \(s_{24} = 2210\), \(n = 2210 + 1 = 2211\).
+8. (24, -21): \(r = 24\), up side, \(m = -21 + 24 - 1 = 2\), \(s_{24} = 2210\), \(n = 2210 + 2 = 2212\).
+
+The numbers at the neighbor positions are: 2208, 2025, 1850, 2209, 2027, 2210, 2211, 2212.
+
+Summing these numbers:
+\[
+1850 + 2025 + 2027 + 2208 + 2209 + 2210 + 2211 + 2212 = 16952.
+\]
+
+Thus, the sum of all eight neighbors of 2026 is 16952.
+
+\boxed{16952}
+----
+Usage(input=58, output=21494, details={'estimated_cost': 0.06453999999999999})

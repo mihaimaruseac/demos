@@ -1,0 +1,158 @@
+Let me solve this step by step.
+
+We have a standard “Ulam” (number‐spiral) grid, where 1 sits at the center and numbers increase outward in successive square layers.  We need the eight neighbors of 2026 (the cells immediately north, south, east, west, and the four diagonals) and their sum.
+
+1.  Find the “ring” (layer) in which 2026 sits.  
+    – Layer 0: just 1 (sum of layer =1).  
+    – Layer k (k≥1) starts at (2k−1)²+1 and ends at (2k+1)².  Its side‐length is 2k+1 and it contains 8k numbers.
+
+    Let m = ⌊√2026⌋ = 44.  
+    Since 44² =1936 ≤2026 <45²=2025?  Wait 45²=2025<2026<46²=2116, so actually 2026 lies between 45² and 46².  
+    But the outer boundary of layer k is (2k+1)².  We want the largest odd square ≤2026, namely 45²=2025, which is the last number of layer 22 (because 2·22+1=45).  
+    Hence 2025 is the last number of layer 22, so 2026 is the very first number of layer 23.
+
+2.  Locate 2026 on the grid.  
+    – Layer 22 runs from 1937 up to 2025 and occupies rows and columns −22…+22.  
+    – Layer 23 starts at 2026, which is placed immediately to the right of 2025 (which is at (row=−22, col=+22)).  
+    – Thus 2025→(−22, +22), and 2026→(−22, +23).
+
+3.  Coordinates of the eight neighbors of 2026 at (−22,+23):
+    (−23,+22), (−23,+23), (−23,+24),
+    (−22,+22),           (−22,+24),
+    (−21,+22), (−21,+23), (−21,+24)
+
+    We now find which number sits in each of those cells.
+
+    a)  (−22,+22) is the last cell of layer 22 → 2025  
+    b)  (−22,+24) is two steps to the right of (−22,+22) along the top edge of layer 23.  
+        – The top edge of layer 23 runs from (−23,+23)→(−23,+24)→…→(−23,+44).  
+        – But we are on row −22, so instead we use the “top‐right” horizontal segment that is actually part of the ring’s outer boundary.  
+        – More systematically, the rightmost column of layer 23 is col=+23…+44 at row=−23, but the cell (−22,+24) lies on the “top” horizontal of the ring one step in.  
+        – Instead let’s use the standard Ulam‐spiral coordinate→number formula.
+
+    A simpler way is to use the coordinate→number mapping for the spiral:
+
+    For a point (r,c) with r≤c and r≥−c (i.e. in the first quadrant or on its axes), the number is
+        n = (2k+1)² − (r − (−k)) + 1   if we are on the top edge,
+    but a unified formula is known:
+
+        Let k = max(|r|,|c|).  
+        Let m = (2k−1)².  
+        Let side = 2k−1.  
+        Let offset = m + (side − r)   if c = +k   (top edge)
+                       m + (side − r) + side   if c = +k and r < −k?  
+        Actually the standard closed form is:
+
+        if r ≥ c:   # right half‐plane including positive x‐axis
+            n = (2k−1)² + (r + k) + (c − r)
+        else:       # top half‐plane including positive y‐axis
+            n = (2k−1)² + 3k + (c + k − r)
+
+    But I’ll use the simpler “walk” method since we are only a few steps away.
+
+    We already know:
+      (−22,+22) → 2025  
+      (−22,+23) → 2026  
+      (−22,+24) → next on that row → 2027  
+
+    Now move up one row (r→−23) along the leftmost column of layer 23:
+      (−23,+23) → first cell of layer 23 → 2026?  No, that’s at (−22,+23).  
+      Actually the layer 23 starts by going left from (−23,+23).  
+      Standard Ulam‐spiral order: from 2025 at (−22,+22) we go right to fill the bottom edge of layer 23, then up the right edge, then left along the top edge, then down the left edge.
+
+      – Bottom edge (row=−23, col=−23…+23): 2026 … 2049  (24 numbers)  
+        ⇒ (−23,+23) is the last of that bottom edge → 2026+23 = 2049  
+      – Then up the right edge (col=+23, row=−22…+23): 2050 … 2071  (24 numbers)  
+        ⇒ (−22,+23)=2050, (−21,+23)=2051, …, (+23,+23)=2071  
+      – Then left along the top edge (row=+23, col=+22…−23): 2072 … 2116  
+      – Then down the left edge (col=−23, row=+22…−23): …  
+
+    But we only need a few cells near (−22,+23).  Let’s tabulate carefully:
+
+      (−23,+22) is on the right‐edge vertical segment, one step above (−22,+22).  
+        – Right edge starts at (−23,+23)=2049 and goes up to (+23,+23)=2071.  
+        – Each step up increases row by 1 and decreases the number by 1?  No, it increases the number by 1.  
+        Actually we move UP from (−23,+23)=2049 to (−22,+23)=2050, so going DOWN decreases the number.  
+        Therefore going UP increases the number.  
+        But we want (−23,+22): that’s one column to the LEFT of (−23,+23).  
+        – On the bottom edge we went from (−23,−23)→…→(−23,+23)=2049.  
+        – To get to (−23,+22) we move LEFT from (−23,+23) → 2048.  
+        So (−23,+22)=2048.
+
+      (−23,+23)=2049  
+      (−23,+24) does not exist in layer 23 (col only goes to +23 on the bottom edge).  But in our neighbor list we had (−23,+24)?  Wait no: our neighbors are
+        (−23,+22), (−23,+23), (−23,+24)   ← but col max on layer 23 is +23, so (−23,+24) is outside the ring 23, i.e. part of layer 24.  
+        Actually that cell is two steps right of (−23,+22) along row −23, but layer 23 only extends to col=+23.  So (−23,+24) is not yet filled by layer 23; it belongs to layer 24.  
+        We must compute it using the next layer.
+
+    Let’s re‐list the neighbors with their coordinates and deduce their numbers:
+
+      A=(−23,+22)   ← on layer 23, left of (−23,+23) on the bottom edge → 2048  
+      B=(−23,+23)   ← last of bottom edge of layer 23 → 2049  
+      C=(−23,+24)   ← not in layer 23; it is the first cell of the bottom edge of layer 24?  
+          Layer 24 starts at (−24,−24) and its bottom edge runs from (−24,−24) to (−24,+24).  
+          But actually the spiral turns so that the bottom edge of layer 24 is at row=−24.  
+          Alternatively, observe that the cell immediately to the right of (−23,+23) is (−23,+24), which would be the first cell of the “right” edge of layer 24?  
+          Let’s compute k for (−23,+24): k=max(23,24)=24.  
+          m=(2·24−1)²=47²=2209.  
+          Since r=−23< c=+24, we are in the “top half‐plane” branch:
+            n = m + 3·24 + (c + 24 − r)
+               =2209 +72 + (24 +24 −(−23))
+               =2281 + (48+23)=2281+71=2352.
+          So (−23,+24)=2352.
+
+      D=(−22,+22)=2025  
+      E=(−22,+24): one to the right of 2026 → 2027  
+      F=(−21,+22): one down from (−22,+22) along the leftmost column of layer 23’s right‐edge segment?  
+          Actually (−21,+22) is on the right edge of layer 23, one step down from (−22,+22)?  
+          But the right edge runs from (−23,+23)→…→(+23,+23).  
+          (−21,+22) is not on that vertical.  Let’s use the formula for (−21,+22):  
+          k=max(21,22)=22 → wait no, |r|=21,|c|=22 → k=22?  But layer 22 ended at 2025, and 2026 is layer 23.  
+          Actually for (−21,+22): max(|−21|,|+22|)=22, but since 2026 is already in layer 23, any cell with k≥23 belongs to layer ≥23.  
+          However (−21,+22) is inside the square from −22…+22, so it belongs to layer 22.  
+          On layer 22 the rightmost column is col=+22, and the top of that column is (−22,+22)=2025, then going down we decrease the row index (become less negative), so  
+            (−21,+22)=2024  
+          (−20,+22)=2023 … etc.
+
+      G=(−21,+23): on the right edge of layer 23, one step down from (−22,+23)=2050 → 2049?  No, moving down decreases the row index (toward zero), and on the right edge we increase the number as we go up.  
+          Actually the right edge runs upward: (−23,+23)=2049 → (−22,+23)=2050 → (−21,+23)=2051 → …  
+          So (−21,+23)=2051.
+
+      H=(−21,+24): use the formula with k=24:
+          r=−21,c=+24 → k=24  
+          r< c so top‐half branch:
+            n = 47² + 72 + (24+24 −(−21))
+              =2209+72+(48+21)=2281+69=2350.
+
+    Now we have:
+      A=(−23,+22)=2048  
+      B=(−23,+23)=2049  
+      C=(−23,+24)=2352  
+      D=(−22,+22)=2025  
+      E=(−22,+24)=2027  
+      F=(−21,+22)=2024  
+      G=(−21,+23)=2051  
+      H=(−21,+24)=2350  
+
+    Sum them:
+      2048 + 2049 + 2352 + 2025 + 2027 + 2024 + 2051 + 2350
+    Group for ease:
+      (2048+2049)=4097
+      (2352+2025)=4377
+      (2027+2024)=4051
+      (2051+2350)=4401
+      subtotal = 4097+4377=8474; 4051+4401=8452; total = 8474+8452=16926
+
+    Let’s add directly to double‐check:
+      2048
+    +2049 → 4097
+    +2352 → 6449
+    +2025 → 8474
+    +2027 → 10501
+    +2024 → 12525
+    +2051 → 14576
+    +2350 → 16926
+
+Answer: 16926
+----
+Usage(input=121, output=2889, details={'estimated_cost': 0.0017576})

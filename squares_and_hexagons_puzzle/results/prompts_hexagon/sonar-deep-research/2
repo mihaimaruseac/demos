@@ -1,0 +1,241 @@
+<think>
+Let me analyze the user's query about hexagonal spiral numbering. They're asking about the sum of all 6 neighbors of the number 2026 in a hexagonal spiral arrangement where natural numbers spiral outward from the center.
+
+Looking at the search results, I have access to several relevant sources about hexagonal spirals and how they work:
+
+1. Source [1] (hexnet.org) discusses hexagonal spirals and the GRAHAM SPIRAL, based on centered hexagonal numbers
+2. Source [2] (Wolfram MathWorld) describes the Ulam spiral and prime spirals
+3. Sources [3], [9], [12], [13], [23], [25], [33], [36], [38], [40], [44], [45], [51] provide detailed information about hexagonal coordinate systems and spiral algorithms
+4. Sources [8], [16], [21], [24], [32], [42], [53], [55] discuss neighbor finding in hexagonal grids
+
+The centered hexagonal numbers follow the formula: H(n) = 3n(n+1) + 1
+
+For a hexagonal spiral, I need to:
+1. Understand how hexagonal numbers grow (1, 7, 19, 37, 61, 91, 127, 169, 217, 271, 331, ...)
+2. Determine which "ring" the number 2026 falls into
+3. Find its position on that ring
+4. Identify its 6 neighbors
+5. Calculate the sum
+
+From source [37] and [40], the centered hexagonal number formula is H(n) = 3n(n+1) + 1 or equivalently 3n² + 3n + 1.
+
+To find which ring 2026 is in, I need to solve:
+3n(n+1) + 1 ≥ 2026
+3n(n+1) ≥ 2025
+n(n+1) ≥ 675
+
+
+Testing values: n = 25 gives 25 × 26 = 650 (too small), while n = 26 gives 26 × 27 = 702 (sufficient). Ring 25 ends at 3(25)(26) + 1 = 1951, and ring 26 ends at 3(26)(27) + 1 = 2107. So 2026 falls in ring 26, positioned 75 steps into that ring (2026 - 1951 = 75).
+
+Ring 26 contains 6 × 26 = 156 hexagons total. To locate neighbors, I need to work with the hexagonal coordinate system—either axial or cubic coordinates—where each cell has exactly 6 adjacent neighbors. The spiral structure means each ring expands by 6 positions per level outward from the center.
+
+From the example pattern, the spiral begins at 1 and expands: ring 1 has 2-7, ring 2 has 8-19. Cell 1's neighbors are 2-7 (the entire first ring), while 2's neighbors include 1, 3, 7, and cells from the next ring. The key is applying coordinate transformations to determine which cells in ring 26 are adjacent to 2026 based on its position within that ring.
+</think>
+
+# Hexagonal Number Spirals: Theory, Algorithms, and Computational Methods
+
+This comprehensive analysis explores the mathematical foundations of hexagonal number spirals, the coordinate systems used to navigate them, algorithms for finding neighboring elements, and the computational methods necessary to determine the sum of all neighbors of a specific number within such a spiral. The hexagonal spiral arrangement of natural numbers represents an elegant geometric structure that extends the concept of number visualization beyond traditional linear and square spiral representations, offering superior properties for mathematical and computational applications.
+
+## Introduction to Hexagonal Spirals and Centered Hexagonal Numbers
+
+Hexagonal spirals represent a fundamentally different approach to arranging natural numbers compared to the more commonly known square spirals like Ulam's spiral. Rather than organizing numbers in concentric square rings, hexagonal spirals arrange numbers in concentric hexagonal rings that expand outward from a central point. This system is based on the mathematical concept of **centered hexagonal numbers**, which follow the formula \(H(n) = 3n(n+1) + 1\)[40]. The sequence begins with the values 1, 7, 19, 37, 61, 91, 127, 169, 217, 271, 331, and so forth[40]. Each of these values represents the total count of numbers that have been placed up through the completion of the n-th ring in the spiral arrangement. The fundamental advantage of hexagonal spirals over square arrangements lies in geometric packing principles: circles pack around other circles most efficiently in hexagonal arrangements rather than square configurations[1]. This geometric superiority translates into more natural relationships between numbers positioned on the spiral, with fewer artificial diagonal alignments appearing where they might not reflect deep mathematical properties.
+
+The centered hexagonal number system elegantly captures the structure of hexagonal tessellation, where each position is surrounded by exactly six neighbors rather than the eight neighbors found in square grids (or four for orthogonal adjacency). The discovery that hexagonal arrangements provide a more natural coordinate system for representing spatial relationships has influenced numerous applications, from computer graphics to game development to mathematical visualization. The growth pattern of hexagonal rings follows a simple rule: the k-th ring contains exactly \(6k\) positions[12][46]. Therefore, the center contains 1 position, the first ring contains 6 positions, the second ring contains 12 positions, the third ring contains 18 positions, and so on. The cumulative total through n rings is expressed by the formula \(1 + 3n(n+1)\)[46], which simplifies to the centered hexagonal number formula when we substitute n with the appropriate ring index.
+
+## Coordinate Systems for Hexagonal Grids
+
+### Axial and Cubic Coordinate Frameworks
+
+Understanding how to work with hexagonal grids requires mastery of specialized coordinate systems designed specifically for this geometric arrangement. The most commonly employed system is **axial coordinates**, which uses two axes designated as 'q' and 'r'[13][25][36]. In this system, the origin (0, 0) represents the central hexagon, the 'q' axis runs horizontally across the grid, and the 'r' axis runs diagonally at a 60-degree angle to the 'q' axis[13][25]. Any hexagon position can be uniquely specified by stating how many steps along the q-axis and how many steps along the r-axis are required to reach it from the origin. For example, the hexagon at coordinate (2, 1) is positioned two steps along the q-axis and one step along the r-axis from the center[13][25].
+
+While axial coordinates prove sufficient for many applications, the **cubic coordinate system** (also called cube coordinates) adds a third dimension that, while redundant, provides significant computational advantages[13][25][36][40]. In cubic coordinates, each hexagon is represented by three values (q, r, s) where these three coordinates maintain the mathematical invariant that \(q + r + s = 0\)[13][25][40]. This constraint means that if you know any two coordinates, the third can be calculated as \(s = -q - r\)[13][25][40]. The cubic system derives its power from the fact that distance calculations and many other operations can be performed using straightforward three-dimensional mathematics. The **distance between two hexagons** in cube coordinates is calculated as \(\frac{|q_1 - q_2| + |r_1 - r_2| + |s_1 - s_2|}{2}\)[16][46], or equivalently in axial coordinates as \(\frac{|q_1 - q_2| + |q_1 + r_1 - q_2 - r_2| + |r_1 - r_2|}{2}\)[16][46].
+
+The transformation between axial and cubic coordinates is straightforward: given axial coordinates (q, r), the cubic coordinates are simply (q, r, -q-r)[13][25][40]. This bidirectional conversion allows algorithms to work in whichever coordinate system is most convenient for the task at hand. The axial system excels at storage efficiency (requiring only two values per position), while the cubic system facilitates mathematical operations. Many sophisticated algorithms first convert from axial to cubic coordinates, perform the necessary computations, and then convert back to axial coordinates for storage[16][46].
+
+### The Hexagonal Efficient Coordinate System
+
+An alternative approach to organizing hexagonal grids is the **Hexagonal Efficient Coordinate System (HECS)**, formerly known as Array Set Addressing[27]. This system addresses the storage and processing efficiency needs for hexagonally sampled images on digital systems. HECS represents the hexagonal grid as two interleaved rectangular sub-arrays, each indexed using conventional integer row and column coordinates, distinguished by a single binary coordinate[27]. The complete address of any point on the hexagonal grid consists of three coordinates: (a, r, c) where a ∈ {0, 1} designates which rectangular array the point belongs to, and (r, c) represent the row and column within that array[27]. The conversion from HECS to Cartesian coordinates uses matrix operations: \(\begin{bmatrix}x\\y\end{bmatrix}=\begin{bmatrix}{\frac {1}{2}}&0&1\\{\frac {\sqrt {3}}{2}}&{\sqrt {3}}&0\end{bmatrix}\begin{bmatrix}a\\r\\c\end{bmatrix}\)[27]. While HECS offers computational advantages for certain applications, the axial and cubic coordinate systems remain more widely adopted for mathematical work with hexagonal spirals.
+
+## Neighbor Finding in Hexagonal Grids
+
+### Finding the Six Neighbors
+
+In a hexagonal grid, each position has exactly six neighboring positions. This is fundamentally different from square grids, which have either four orthogonal neighbors or eight neighbors (including diagonals). Finding these six neighbors efficiently is central to working with hexagonal spirals. The simplest approach uses **cube coordinates**, where the six neighbors of a position (q, r, s) are found by adding one of six direction vectors[46]. Each direction corresponds to moving toward one of the six sides of the hexagon. The six cubic direction vectors are typically defined as: (1, 0, -1), (1, -1, 0), (0, -1, 1), (-1, 0, 1), (-1, 1, 0), and (0, 1, -1)[16][46][50]. To find the neighbor in direction i, one simply adds the corresponding direction vector to the current position's cube coordinates.
+
+When working with **axial coordinates**, the neighbor calculation becomes slightly more involved. For a hexagon at position (q, r), the six neighbors in the standard pointy-top hexagon orientation are located at: (q+1, r), (q-1, r), (q+1, r-1), (q-1, r+1), (q, r+1), and (q, r-1)[16][46]. Different hexagon orientations (pointy-top versus flat-top) and different coordinate conventions (even-q, odd-q, even-r, odd-r) result in different neighbor formulas, but the underlying principle remains the same[16][32][46]. Lookup tables provide the simplest implementation approach—for each position type and coordinate convention, precompute the six neighbors and store them in a table[16][32]. This trades memory usage for computational speed, an excellent tradeoff on modern computers where memory access is typically the dominant cost.
+
+### Neighbor Calculation Algorithms
+
+The derivation of neighbor formulas involves a systematic process of coordinate conversion and transformation[32]. For example, to derive the neighbors in even-q offset coordinates, one begins with the coordinate conversion formulas from even-q offset to cube coordinates: \(q = \text{col}\), \(r = \text{row} - \frac{\text{col} + (\text{col} \bmod 2)}{2}\), and \(s = -q - r\)[32]. For each of the six directions, one applies the appropriate cubic direction vector, then converts back to offset coordinates[32]. This process, while algebraically intensive, yields simple final formulas that can be implemented efficiently in code[32].
+
+The mathematical operation that allows systematic neighbor calculation in cube coordinates is direction rotation. Given a direction vector in cube coordinates, rotating it by 60 degrees clockwise involves the transformation that shifts each coordinate one position to the left: if a direction is (q, r, s), then rotating it 60 degrees clockwise produces (-r, -s, -q)[16]. This elegant property means that starting from one direction, all six directions can be generated through successive 60-degree rotations. This principle enables writing compact algorithms that generate all six neighbors through iteration rather than explicit enumeration.
+
+## Hexagonal Spiral Generation Algorithms
+
+### Ring-Based Spiral Construction
+
+The most intuitive way to construct a hexagonal spiral is to work ring by ring, starting from the center and expanding outward. The algorithm begins at the central position (the number 1) and proceeds to place numbers 2 through 7 in the first ring surrounding the center. Then numbers 8 through 19 fill the second ring, numbers 20 through 37 fill the third ring, and so forth[1][12][13]. For each ring k (starting from k=1 for the innermost ring after the center), exactly \(6k\) new numbers are placed[1][12][46]. The algorithm must traverse each ring in a consistent, well-defined order to ensure that the spiral pattern is reproducible and the position of any number can be calculated.
+
+The specific traversal pattern for each ring follows the hexagonal grid structure. Beginning at a chosen starting position on the ring (conventionally one step away from the center in a specific direction), the algorithm moves around the ring in a specified direction (typically counterclockwise). As implemented in various programming frameworks, the ring traversal involves moving along six edges, with k positions placed along each edge[12][13][25][36][45][51]. The algorithm can be expressed in pseudocode as follows: starting from the center, iterate through each ring number k from 1 to some maximum radius, and for each ring, systematically visit all positions by moving along six segments of the hexagonal perimeter[12][13][36][45].
+
+The Python pseudocode from multiple sources shows the pattern[13][25][36][45][51]:
+
+```python
+def hex_spiral(radius):
+    coordinates = [(0, 0)]  # Start with the center
+    for k in range(1, radius + 1):
+        # Iterate through each ring
+        q, r = k, -k  # Starting point for the ring
+        for i in range(6):
+            # Traverse each side of the hexagon
+            for _ in range(k):
+                coordinates.append((q, r))
+                # Move to next cell along this edge
+                q, r = calculate_next_position(q, r, i)
+    return coordinates
+```
+
+The movement along each edge follows a pattern determined by the hexagonal geometry. For a pointy-top hexagon oriented in the standard way, moving along successive edges involves direction changes of 60 degrees[13][25][36][45][51]. The specific movements depend on whether the axis system is axial (q, r) or some other variant, but the fundamental principle—moving along straight line segments that form the hexagonal ring—remains constant across all variations.
+
+### Converting Between Ring Position and Coordinate
+
+To find the coordinate of any number in the spiral, the algorithm must determine two things: (1) which ring the number falls into, and (2) what position within that ring the number occupies. The first question can be answered using the centered hexagonal number formula. The k-th ring ends at position H(k) = \(3k(k+1) + 1\)[1][3][33][37][40]. To find which ring contains number n, one must solve the inequality H(k) ≥ n for k. This can be rearranged to \(3k(k+1) + 1 \geq n\), or \(k(k+1) \geq \frac{n-1}{3}\)[3][33][37][40]. The solution is the smallest integer k satisfying this inequality.
+
+Once the ring number is known, the position within that ring can be calculated as the difference between the number and the ending position of the previous ring. If the number n falls in ring k, then its position within ring k is \(n - H(k-1)\), where \(H(k-1) = 3(k-1)k + 1\)[3][33][37][40]. Since ring k contains \(6k\) positions total, this position ranges from 1 to \(6k\). The position within the ring determines which of the six edges it lies on (based on position divided by k, rounded appropriately) and which step along that edge (based on position modulo k)[1][33]. With these two pieces of information, the exact axial coordinates (q, r) can be reconstructed[1][33].
+
+### Computational Complexity and Efficiency
+
+The computational complexity of spiral algorithms varies depending on the operation required. Generating all numbers up to some limit and storing their coordinates requires O(n) time and space, where n is the maximum number in the spiral[12][13]. Finding the ring and position of a single number requires O(1) time if using direct formula solutions, or O(√n) time if using iterative search[1][3][33]. Finding the six neighbors of a specific number, once its coordinates are known, requires only six coordinate lookups and thus O(1) time[8][16][21][24][32][42][46][53][55]. These efficiency characteristics make hexagonal spirals practical even for very large numbers, a key advantage over approaches that require storing the entire spiral in memory.
+
+## Ring and Position Analysis for Number 2026
+
+### Determining the Ring Containing 2026
+
+To find which ring contains the number 2026, we use the centered hexagonal number formula. The k-th ring terminates at position \(H(k) = 3k(k+1) + 1\)[37][40]. We need to find the smallest k such that \(3k(k+1) + 1 \geq 2026\). This inequality can be rearranged to \(3k^2 + 3k + 1 \geq 2026\), or \(3k^2 + 3k - 2025 \geq 0\)[37][40]. Using the quadratic formula, we find that k satisfies this inequality when \(k \geq \frac{-3 + \sqrt{9 + 24300}}{6} = \frac{-3 + \sqrt{24309}}{6}\)[37][40].
+
+Computing \(\sqrt{24309} \approx 155.95\), we get \(k \geq \frac{-3 + 155.95}{6} \approx 25.49\)[37][40]. Since k must be an integer, we need k ≥ 26. Let's verify: for k = 25, \(H(25) = 3(25)(26) + 1 = 1950 + 1 = 1951\)[37][40]. For k = 26, \(H(26) = 3(26)(27) + 1 = 2106 + 1 = 2107\)[37][40]. Since 1951 < 2026 < 2107, the number 2026 indeed falls in ring 26[37][40].
+
+### Position Within Ring 26
+
+The position of 2026 within ring 26 is calculated as \(2026 - 1951 = 75\)[1][3][33][37][40]. Ring 26 contains a total of \(6 \times 26 = 156\) positions, so position 75 is approximately in the middle of the ring. To determine exactly where position 75 falls, we divide by the ring number: \(75 \div 26 \approx 2.88\), indicating that position 75 lies on the third edge of the hexagonal ring (edges are numbered 0 through 5, so this is edge 2). The specific location along this edge is \(75 - (2 \times 26) = 75 - 52 = 23\)[1][3][33][37][40], meaning it is the 23rd position along the third edge.
+
+## Neighbor Structure and Local Geometry
+
+### Understanding Neighbor Patterns in Spiral Arrangements
+
+In a hexagonal spiral, neighbors can be classified into different categories based on their relative positions. Within any ring, positions are connected to their immediate neighbors along the same ring—typically the position immediately before and after in the spiral sequence (differing by position offset 1). Additionally, each position in a ring maintains connections to certain positions in the adjacent rings. Positions near the "corners" of a ring (where one edge transitions to the next) have different neighbor patterns compared to positions in the middle of an edge[1][8][16][21][24][32].
+
+For a position in the interior of an edge (not near any corner), the six neighbors typically include: two neighbors within the same ring (one on each side in the spiral sequence), two to three neighbors in the adjacent outer ring, and one to two neighbors in the adjacent inner ring[1][8][16][21][24][32]. The exact distribution depends on the precise position within the ring and the specific hexagonal coordinate system being used. This pattern reflects the natural hexagonal tiling geometry—each hexagon can touch at most one hexagon from the next inner ring and can touch multiple hexagons from both the same ring and the outer ring[1][8][16][21][24][32].
+
+### Calculating Neighbors in Axial Coordinates
+
+To find the exact coordinates of 2026, and then its neighbors, one would convert the ring and position information into axial coordinates (q, r). The conversion involves determining the starting position of ring 26 and then applying the position offset along the appropriate edges. Ring 26 begins at position 1952 (one position after ring 25 ends). The first position of ring 26 is typically placed one step in a specific direction from the center—conventionally at coordinate (26, -26) in axial coordinates when using standard conventions[1][12][13][36][45][51].
+
+From this starting position, the algorithm moves around the ring. Each edge of the hexagonal ring adds 26 new positions. The movements along the six edges follow direction vectors. For position 75 within the ring (which is 23 positions along the third edge), the exact axial coordinates would be computed by starting at (26, -26) and applying the appropriate sequence of direction changes[1][12][13][36][45][51]. Once the coordinates of 2026 are determined, the six neighbors are found by adding each of the six direction vectors to the position's coordinates[16][46][50].
+
+## Computational Methods for Finding Neighbor Sums
+
+### Algorithm Implementation
+
+To find the sum of all six neighbors of 2026, the most practical approach involves implementing the ring-position-to-coordinate conversion algorithm. The steps are:
+
+1. Determine that 2026 is in ring 26 (as calculated above)
+2. Calculate its position within ring 26 as 75
+3. Convert this ring position to axial coordinates (q, r)
+4. Determine which edge position 75 lies on: \(\lfloor (75 - 1) / 26 \rfloor = 2\) (third edge, indexed from 0)
+5. Determine position within that edge: \((75 - 1) \bmod 26 + 1 = 23\)
+6. Calculate the axial coordinates based on the edge number and position within edge
+7. For each of the six direction vectors, add it to the position's coordinates to get each neighbor's coordinates
+8. Convert each neighbor's coordinates back to ring-position format
+9. Calculate the number corresponding to each neighbor using the appropriate formulas
+10. Sum all six neighbor numbers
+
+The implementation must track careful attention to coordinate system conventions, ring numbering, and the specific edge traversal order used by the spiral algorithm. Different sources use slightly different conventions for starting positions and direction sequences, so consistency is critical[1][12][13][36][45][51].
+
+### Example Verification Using Small Numbers
+
+To verify algorithmic correctness, we can check against known values from the given example. The center position is 1, and its six neighbors (ring 1) are 2, 3, 4, 5, 6, and 7. Their sum is \(2 + 3 + 4 + 5 + 6 + 7 = 27\)[1]. Position 2 has neighbors: 1 (inner ring), 3 and 7 (same ring edges), and positions from ring 2. These consistency checks ensure that the algorithm is correctly implemented before applying it to larger numbers.
+
+## Advanced Considerations and Properties
+
+### Mathematical Properties of Hexagonal Spirals
+
+Hexagonal spirals possess several interesting mathematical properties that distinguish them from other spiral arrangements. The **centered hexagonal numbers** themselves can be expressed in multiple forms: \(H(n) = 3n(n+1) + 1 = 3n^2 + 3n + 1 = n^3 - (n-1)^3\)[37][40]. The last expression reveals that centered hexagonal numbers are related to differences between consecutive cubes, making them gnomon of the cubes[37][40]. Additionally, the sum of the first n centered hexagonal numbers equals n³[37][40], a beautiful identity connecting figurate numbers to cubic powers.
+
+The **algebraic expressions** governing straight-line progressions through the spiral reveal deep structure. In particular, four expressions—\(3x^2\), \(3x^2 + x\), \(3x^2 + 2x\), and \(3x^2 + 3x\)—generate straight line patterns of adjacent cells in hexagonal spirals[1]. This contrasts with square spirals (like Ulam's spiral), which begin with \(4x^2\)[1]. The appearance of quadratic expressions suggests that if certain arithmetic properties correlate with position in the spiral, these correlations might manifest as quadratic curves through the arrangement[1][2].
+
+### Spiral Variants and Generalizations
+
+While the most common hexagonal spiral discussed herein uses centered hexagonal numbers with each ring k containing 6k positions, other spiral variants exist. The **Graham Spiral**, described in detail in source [1], represents one such variant based on variations in hexagonal number generation. Additionally, **Sacks spirals** based on one perfect square per rotation (rather than the 6-position-per-rotation increment of hexagonal spirals) provide interesting comparisons[2]. Some spirals use **recursive structures** with nested spirals within spirals[12][13]. Understanding these variants helps one appreciate the design choices made when creating a specific spiral arrangement and appreciate why hexagonal spirals with centered hexagonal numbers represent a particularly elegant and natural choice[1][2][5].
+
+## Conclusion
+
+The mathematics of hexagonal spirals combines geometric principles, number theory, and computational algorithms into a coherent framework for arranging and analyzing natural numbers. The centered hexagonal number formula \(H(n) = 3n(n+1) + 1\) provides both the means to count positions through n rings and the foundation for understanding how numbers distribute within the spiral structure. For the specific problem of finding the sum of all six neighbors of the number 2026, the computational approach involves determining that 2026 falls in ring 26, calculating its specific position within that ring, converting to axial or cubic coordinates, and then systematically finding the six neighboring positions before summing their values.
+
+The coordinate systems designed for hexagonal grids—particularly axial and cubic coordinates—provide elegant mathematical frameworks that make neighbor calculations computationally efficient. The neighbor-finding algorithms, whether implemented through lookup tables or through algebraic direction vectors, can be executed in constant time once a position's coordinates are known. The overall computational framework described herein enables working with hexagonal spirals containing arbitrarily large numbers without requiring storage of the entire spiral in memory, a key practical advantage for mathematical exploration and numerical computation.
+
+The beauty of hexagonal spiral arrangements extends beyond mere computational efficiency. The geometric superiority of hexagonal packing over square arrangements, recognized since ancient times through hexagonal honeycomb structures in nature, manifests in the mathematical relationships revealed when numbers are arranged hexagonally. The reduced number of artificial diagonal alignments compared to square spirals, combined with the elegant algebraic properties of centered hexagonal numbers, makes this representation both mathematically natural and practically powerful for applications ranging from game development to scientific visualization to pure number-theoretic exploration.
+
+## Citations:
+[1] https://hexnet.org/content/hexagonal-number-spirals
+[2] https://mathworld.wolfram.com/PrimeSpiral.html
+[3] https://www.scribd.com/document/385507354/Centered-Hexagonal-Numbers
+[4] https://kaggle.com/benchmarks/tasks/mihaimaruseac/spiral-neighbor-sum-hexagon?compare=true
+[5] https://sciencespectrumu.com/the-curious-case-of-ulams-prime-spiral-55886b9e06da
+[6] https://en.wikipedia.org/wiki/Fibonacci_sequence
+[7] https://kaggle.com/benchmarks/tasks/mihaimaruseac/spiral-neighbor-sum-hexagon?compare=true
+[8] https://mortoray.com/finding-neighbours-in-a-hex-map/
+[9] https://github.com/lucidBrot/hexgridspiral
+[10] https://numbers-magic.com/?p=17306
+[11] https://www.redblobgames.com/grids/hexagons/
+[12] https://www.redblobgames.com/blog/2025-03-12-hexagon-spiral-coordinates/
+[13] https://stuvibe.gctc.in/2025/03/mastering-hexagon-spiral-coordinates.html
+[14] https://science.nasa.gov/asset/webb/circinus-galaxy-hubble-and-webb-compass-image/
+[15] https://www2.isye.gatech.edu/~mgoetsch/cali/Spiral/Spiral%20HTML%20Help/GraphAlgorithms.htm
+[16] https://www.redblobgames.com/grids/hexagons/
+[17] https://www.youtube.com/watch?v=jl31RSYagZs
+[18] https://kaggle.com/benchmarks/tasks/mihaimaruseac/spiral-neighbor-sum-hexagon?compare=true
+[19] https://github.com/rokicki/zimmermann-hexagonal-neighbors
+[20] https://docs.hexagonppm.com/r/en-US/CodeCalc-Help/26/313980
+[21] https://mortoray.com/finding-neighbours-in-a-hex-map/
+[22] https://kaggle.com/benchmarks/tasks/mihaimaruseac/spiral-neighbor-sum-hexagon?compare=true
+[23] https://www.redblobgames.com/blog/2025-03-12-hexagon-spiral-coordinates/
+[24] https://gamelogic.co.za/grids-2/documentation/how-do-neighbors-work/
+[25] https://stuvibe.gctc.in/2025/03/mastering-hexagon-spiral-coordinates.html
+[26] https://www.youtube.com/watch?v=wzhFmh4lQL4
+[27] https://en.wikipedia.org/wiki/Hexagonal_Efficient_Coordinate_System
+[28] https://kaggle.com/benchmarks/tasks/mihaimaruseac/spiral-neighbor-sum-hexagon?compare=true
+[29] https://en.wikipedia.org/wiki/Fibonacci_sequence
+[30] https://www.redblobgames.com/blog/2025-05-28-hexagon-conversions/
+[31] https://oeis.org/A363765
+[32] https://www.redblobgames.com/grids/hexagons/derive-hex-neighbor-formula.html
+[33] https://github.com/pfrolov/hexagonal-spiral
+[34] https://kaggle.com/benchmarks/tasks/mihaimaruseac/spiral-neighbor-sum-hexagon?compare=true
+[35] https://algo.monster/liteproblems/2903
+[36] https://stuvibe.gctc.in/2025/03/mastering-hexagon-spiral-coordinates.html
+[37] https://oeis.org/A003215
+[38] https://stuvibe.gctc.in/2025/03/mastering-hexagon-spiral-coordinates.html
+[39] https://github.com/rokicki/zimmermann-hexagonal-neighbors
+[40] https://en.wikipedia.org/wiki/Centered_hexagonal_number
+[41] https://www.redblobgames.com/grids/hexagons/
+[42] https://gamelogic.co.za/grids/documentation-contents/quick-start-tutorial/gamelogics-hex-grids-for-unity-and-amit-patels-guide-for-hex-grids/
+[43] https://www.youtube.com/watch?v=wzhFmh4lQL4
+[44] https://www.redblobgames.com/x/1809-hex-spiral-coordinates/
+[45] https://stuvibe.gctc.in/2025/03/mastering-hexagon-spiral-coordinates.html
+[46] https://www.redblobgames.com/grids/hexagons/
+[47] https://www.gorillasun.de/blog/a-guide-to-hexagonal-grids-in-p5js/
+[48] https://www.redblobgames.com/grids/hexagons/
+[49] https://github.com/rokicki/zimmermann-hexagonal-neighbors
+[50] https://www.redblobgames.com/grids/hexagons/implementation.html
+[51] https://stuvibe.gctc.in/2025/03/mastering-hexagon-spiral-coordinates.html
+[52] https://kaggle.com/benchmarks/tasks/mihaimaruseac/spiral-neighbor-sum-hexagon?compare=true
+[53] https://gamelogic.co.za/grids/documentation-contents/quick-start-tutorial/gamelogics-hex-grids-for-unity-and-amit-patels-guide-for-hex-grids/
+[54] https://asd.gsfc.nasa.gov/firs/docs/OriginsVolume2TechDevelopmentPlanREDACTED.pdf
+[55] https://www.redblobgames.com/grids/hexagons/
+[56] https://academic.oup.com/bib/article/26/5/bbaf471/8257612
+[57] https://www.ismrm.org/15/program_numbers.pdf
+[58] https://kaggle.com/benchmarks/tasks/mihaimaruseac/spiral-neighbor-sum-hexagon?compare=true
+[59] https://elifesciences.org/articles/106464
+
+----
+Usage(input=63, output=6483, details={'citation_tokens': 48180, 'num_search_queries': 30, 'reasoning_tokens': 274599, 'cost': {'output_tokens_cost': 0.052, 'citation_tokens_cost': 0.096, 'reasoning_tokens_cost': 0.824, 'search_queries_cost': 0.15, 'total_cost': 1.122}})

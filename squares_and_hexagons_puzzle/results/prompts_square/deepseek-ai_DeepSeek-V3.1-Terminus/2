@@ -1,0 +1,273 @@
+Alright, let's break this down step-by-step.
+
+---
+
+## 1. Understanding the spiral pattern
+
+The spiral given is:
+
+```
+...  5   4   3  ...
+...  6   1   2  ...
+...  7   8   9  ...
+```
+
+This is the standard Ulam spiral starting at 1 in the center, moving right first, then up-left-down-right in a counterclockwise fashion (or possibly clockwise — let's check).
+
+From 1, go right to 2, then turn left (or counterclockwise) means: from 2, next step is up? Let's list coordinates to be sure.
+
+Better: Let's assign coordinates to numbers:
+
+Start: 1 at (0,0).
+
+Move right: 2 at (1,0).
+Move up: 3 at (1,1).
+Move left twice: 4 at (0,1), 5 at (-1,1).
+Move down twice: 6 at (-1,0), 7 at (-1,-1).
+Move right twice: 8 at (0,-1), 9 at (1,-1).
+Move up twice: 10 at (1,0)? Wait, that's occupied already — so no, let's track carefully.
+
+Actually, known pattern:  
+Number 1 at (0,0).  
+Right: 2 at (1,0).  
+Up: 3 at (1,1).  
+Left: 4 at (0,1), 5 at (-1,1).  
+Down: 6 at (-1,0), 7 at (-1,-1).  
+Right: 8 at (0,-1), 9 at (1,-1).  
+Up: 10 at (1,0)? That's wrong — 10 should be at (2,-1)? Let's check known sequence: Spiral goes:  
+
+1 center, step east 2, step north 3, step west 4-5, step south 6-7, step east 8-9, step north 10-11, step west 12-13, etc.
+
+Let's map small numbers:
+
+1: (0,0)  
+2: (1,0)  
+3: (1,1)  
+4: (0,1)  
+5: (-1,1)  
+6: (-1,0)  
+7: (-1,-1)  
+8: (0,-1)  
+9: (1,-1)  
+10: (2,-1)  
+11: (2,0)  
+12: (2,1)  
+13: (2,2)  
+14: (1,2)  
+15: (0,2)  
+16: (-1,2)  
+17: (-2,2)  
+18: (-2,1)  
+19: (-2,0)  
+20: (-2,-1)  
+21: (-2,-2)  
+22: (-1,-2)  
+23: (0,-2)  
+24: (1,-2)  
+25: (2,-2)  
+26: (3,-2)  
+...
+
+Yes — so direction order: East, North, West, South, East, North, West, South...  
+Step length: 1,1,2,2,3,3,4,4,...  
+
+---
+
+## 2. Locating 2026 in the spiral
+
+We can find which square layer (ring) 2026 is in.
+
+Ring k (k>=1) contains numbers from (2k-1)^2 + 1 to (2k+1)^2, centered around 1 at ring 0.
+
+Check:  
+Ring 1: 2 to 9 (max=3^2=9)  
+Ring 2: 10 to 25 (max=5^2=25)  
+Ring 3: 26 to 49 (max=7^2=49)  
+Ring n: start = (2n-1)^2 + 1, end = (2n+1)^2.
+
+Find n such that (2n-1)^2 < 2026 <= (2n+1)^2.
+
+Try n=22: (2n-1)=43, 43^2=1849.  
+Ring n=22: numbers 1850 to (45^2=2025). Wait — 2025 is max of ring 22.
+
+So 2026 is in ring 23? Let's check:
+
+Ring 23: start = 45^2+1=2026, end = (47^2=2209). Yes! So 2026 is the first number of ring 23.
+
+---
+
+## 3. Coordinates of 2026
+
+Ring k has side length = 2k+1, start position for ring k:  
+The first number of ring k is (2k-1)^2+1 at coordinate (k, 1-k) for k>=1? Let's check small k:
+
+Ring 1 (k=1): start=2 at (1,0) — yes: k=1: (1, 1-1)=(1,0).  
+Ring 2 (k=2): start=10 at (2,-1): formula (k,1-k)=(2,-1) yes.
+
+So for k=23: start number 2026 at (23, 1-23) = (23, -22).
+
+Direction at start of ring:  
+Ring k starts by going rightward? Actually, pattern:  
+After number (2k-1)^2 at (k-1, -(k-1)), we take 1 step to the right to start ring k:  
+From (k-1, -(k-1)) to (k, -(k-1))? Wait, check k=2:  
+Number 9 at (1,-1), step right to (2,-1) for 10 — yes.
+
+So start of ring k: coordinates = (k, -(k-1)) = (k, -k+1).
+
+Check k=23: (23, -22). Yes matches earlier.
+
+---
+
+## 4. Neighbors of 2026
+
+We need the 8 neighbors of (23,-22):
+
+Neighbors:  
+(22,-22), (24,-22) — left/right  
+(23,-21), (23,-23) — up/down  
+(22,-21), (24,-21), (22,-23), (24,-23) — diagonals.
+
+---
+
+## 5. Which numbers are at these positions?
+
+Ring k=23 contains numbers 2026 to 2209. Side length = 2k+1=47.
+
+We start at (23,-22) with 2026.
+
+Path for ring k:  
+1. Go right: from (k, -k+1) to (k, -k+1 + sideLength-1)? Wait, side length in grid = 2k+1, but number of steps per direction = 2k.
+
+Actually, movement:  
+East: from (k, -k+1) to (k, k) — length = 2k steps? Let's check k=2: start (2,-1) east to (2,2): steps: -1,0,1,2 → 4 numbers = 2k numbers indeed.
+
+So:  
+Segment 1 (East): from (k, -k+1) to (k, k), numbers increase by 1 each step.  
+Segment 2 (North): from (k, k) to (-k, k), length=2k steps.  
+Segment 3 (West): from (-k, k) to (-k, -k), length=2k steps.  
+Segment 4 (South): from (-k, -k) to (k, -k), length=2k steps.  
+But last segment ends just before start.
+
+---
+
+Let's find coordinates of 2026's neighbors by locating their positions relative to ring path.
+
+Better: Let's find exactly which numbers are at neighbor coords.
+
+---
+
+We can find coordinates difference from start:  
+At (23,-22): value=2026.
+
+Move east: next number 2027 at (23,-21).  
+So (23,-21) = 2027.  
+(23,-23) would be before start? That would be last part of ring: the south side.
+
+Actually south side: from (-23,-23) to (23,-23). Our point (23,-22) is on east side? Wait, start ring k: (k,-k+1) is top-right corner? Let's check k=2: (2,-1) is on east side, yes. So moving east means increasing y by 1.
+
+So indeed:  
+(23,-22): 2026  
+(23,-21): 2027  
+(23,-23): would be on south side: south side goes from (-23,-23) to (23,-23), increasing x. Which number is at (23,-23)? That's the last position of ring before reaching start again.
+
+Let's compute:  
+Start ring k=23: first number 2026 at (23,-22).  
+East: length=2k=46 steps: goes to (23,-22+46)=(23,24)? Wait, that's too far — mistake: step east: y increases from -22 to k=23: that's from -22 to 23: difference 45 steps? Actually number of points from y=-22 to y=23 inclusive = 46 points = 2k? Check: 23-(-22)=45, plus 1 = 46. Yes 2k=46.
+
+So east side: (23, y) for y from -22 to 23. Numbers 2026 to 2026+45=2071.
+
+So (23,-21) = 2027.
+
+---
+
+North side: start (23,23) with 2072, go north to (-23,23): length 46 steps: numbers 2072 to 2072+45=2117.
+
+West side: start (-23,23) with 2118, go west to (-23,-23): length 46 steps: numbers 2118 to 2118+45=2163.
+
+South side: start (-23,-23) with 2164, go south to (23,-23): length 46 steps: numbers 2164 to 2164+45=2209.
+
+---
+
+So coordinates:  
+(23,-23) is the end of south side: number = 2209.  
+(23,-21) = 2027.  
+(22,-22): is it on east side? No, east side x=23 fixed. So (22,-22) is inside the ring? Wait, ring is all points with max(|x|,|y|)=23. So (22,-22) has max=22, so it's in ring k=22 (previous ring). So its number is between 1850 and 2025.
+
+Similarly (24,-22) would be outside ring k=23 (max coord=23), so it's in ring k=24? Actually no, max(|x|,|y|)=24 means ring k=24, numbers from (47^2+1)=2026? Wait, 47^2=2209, so ring k=24 starts at 2210. So (24,-22) is in future ring, so empty? No, spiral covers all integers, so (24,-22) is a number in ring 24: first number 2210 at (24,-23) etc. So (24,-22) is 2211? Let's check later.
+
+Better approach: Let's find all 8 neighbors' values systematically.
+
+---
+
+## 6. Systematic neighbor finding
+
+We know 2026 at (23,-22).
+
+Neighbors:
+
+1. (23,-21) = 2027 (east neighbor on same east side)  
+2. (23,-23) = 2209 (south side end)  
+3. (22,-22): x=22, y=-22, max(|x|,|y|)=22 → ring k=22. Which side? Coordinate (22,-22): on south side of ring k=22: south side of ring k: from (-k,-k) to (k,-k). For k=22, south side: from (-22,-22) to (22,-22), increasing x. Number at (22,-22): start south side number = (2k-1)^2+1 + 3*2k? Let's compute:
+
+Ring k=22: start= (43^2+1)=1850 at (22,-21) [east side start].  
+East side: 1850 to 1850+43? Wait length=2k=44 steps: 1850 to 1893.  
+North side: 1894 to 1937.  
+West side: 1938 to 1981.  
+South side: 1982 to 1982+43=2025.
+
+South side: from (-22,-22) to (22,-22): start 1982 at (-22,-22), each step right increases x by 1.  
+At x=22, that's the last number of south side: 2025.
+
+So (22,-22) = 2025.
+
+4. (24,-22): max=24 → ring k=24, starts at 47^2+1=2210 at (24,-23). East side: (24,y) y from -23 to 24. At y=-22: second number? Start 2210 at (24,-23), next 2211 at (24,-22). So (24,-22)=2211.
+
+5. (22,-21): max=22 → ring k=22. Coordinate: on east side of ring 22: east side: x=22, y from -21 to 22. Start 1850 at (22,-21). So (22,-21)=1850.
+
+6. (24,-21): max=24 → ring k=24. East side: (24,y), y from -23 to 24. At y=-21: start y=-23: 2210, y=-22:2211, y=-21:2212. So (24,-21)=2212.
+
+7. (22,-23): max=23? Wait x=22,y=-23 → max=23 → ring k=23. Which side? West side: x=-23 fixed? No, here x=22, so not west. South side: y=-23 fixed, x from -23 to 23. At x=22: near end. South side numbers: start 2164 at (-23,-23), each step right: +1 to x. At x=22: that's 2164 + (22 - (-23)) = 2164 + 45 = 2209? Wait, that's same as (23,-23)? Check: south side: (-23,-23) to (23,-23), numbering: 2164 at (-23,-23), so at x=22: number = 2164 + [22 - (-23)] = 2164 + 45 = 2209. But (23,-23) also 2209? That would mean two points with same number? Mist: south side ends at (23,-23) with 2209, so at x=22: number = 2209 - 1 = 2208. Let's check count:  
+Points on south side: (-23,-23)..#(23,-23): 47 points. Numbers 2164 to 2164+46=2210? Wait, earlier I said length=46 steps (2k=46), so numbers 2164 to 2164+45=2209. That's 46 numbers. So first point (-23,-23)=2164, last point (23,-23)=2209. So at x=22: number = 2209 - 1 = 2208.
+
+So (22,-23)=2208.
+
+8. (24,-23): max=24 → ring k=24. Start ring 24: 2210 at (24,-23). So (24,-23)=2210.
+
+---
+
+## 7. List of neighbors:
+
+Up: (23,-21)=2027  
+Down: (23,-23)=2209  
+Left: (22,-22)=2025  
+Right: (24,-22)=2211  
+NW: (22,-21)=1850  
+NE: (24,-21)=2212  
+SW: (22,-23)=2208  
+SE: (24,-23)=2210
+
+---
+
+## 8. Sum of neighbors
+
+Sum = 2027 + 2209 + 2025 + 2211 + 1850 + 2212 + 2208 + 2210.
+
+Group:  
+2027+2025=4052  
+2209+2211=4420  
+1850+2212=4062  
+2208+2210=4418
+
+Now: 4052+4420=8472  
+4062+4418=8480  
+8472+8480=16952.
+
+---
+
+**Final answer:**
+
+\[
+\boxed{16952}
+\]
+----
+Usage(input=59, output=3683, details={'prompt_tokens_details': {'cached_tokens': 32}, 'estimated_cost': 0.0029206159999999996})

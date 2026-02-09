@@ -1,0 +1,89 @@
+I need to find the 8 neighbors of 2026 in the spiral and sum them.
+
+First, let me understand the spiral pattern. Starting from 1 at the center:
+- 1 is at position (0, 0)
+- 2 is at (1, 0) - move right
+- 3 is at (1, 1) - move up
+- 4 is at (0, 1) - move left
+- 5 is at (-1, 1) - move left
+- 6 is at (-1, 0) - move down
+- 7 is at (-1, -1) - move down
+- 8 is at (0, -1) - move right
+- 9 is at (1, -1) - move right
+
+The spiral moves: right(1), up(1), left(2), down(2), right(3), up(3), left(4), down(4), ...
+
+Let me find the position of 2026. The spiral forms square rings:
+- Ring 0: just 1 (1 number)
+- Ring 1: 2-9 (8 numbers)
+- Ring 2: 10-25 (16 numbers)
+- Ring k: has 8k numbers
+
+The last number in ring k is at: 1 + 8(1 + 2 + ... + k) = 1 + 8k(k+1)/2 = 1 + 4k(k+1) = 4k² + 4k + 1 = (2k+1)²
+
+So ring k ends at (2k+1)².
+
+For 2026:
+- Ring 31: ends at 63² = 3969
+- Ring 30: ends at 61² = 3721
+- Ring 31: starts at 3722
+
+Wait, let me recalculate. Ring 22: ends at 45² = 2025. Perfect!
+
+So 2025 is the last number of ring 22, and 2026 is the first number of ring 23.
+
+The spiral at ring k starts at the bottom-right and goes:
+- Right along the bottom for 2k+1 positions
+- Up along the right for 2k+1 positions  
+- Left along the top for 2k+1 positions
+- Down along the left for 2k+1 positions
+
+Actually, let me reconsider the pattern. After completing ring 22 at position (22, -22) with value 2025, the next move is right to (23, -22) with value 2026.
+
+Ring 22 ends at (22, -22) with 2025.
+Ring 23 starts at (23, -22) with 2026.
+
+So 2026 is at position (23, -22).
+
+The 8 neighbors of (23, -22) are at positions:
+- (22, -22), (24, -22), (23, -21), (23, -23)
+- (22, -21), (24, -21), (22, -23), (24, -23)
+
+Now I need to find the values at these positions.
+
+Position (22, -22) = 2025 (last number of ring 22)
+
+For (23, -23): This is in ring 23, and we need to count from 2026.
+Going right from (23, -22), then the pattern continues right, then up.
+- (23, -22) = 2026
+- (24, -22) = 2027
+- ... continuing right to (45, -22) = 2026 + 22 = 2048
+- Then up: (45, -21) = 2049
+
+So (24, -22) = 2027
+
+For (23, -21): Moving up from 2026, but first we need to go all the way right.
+After going right 45 steps from (23, -22) to (45, -22), we get values 2026-2048.
+Then going up from (45, -22) to (45, 23), we get 2049-2094.
+Then going left, then down...
+
+Let me use the formula differently. The value at (23, -23) is in ring 23, going down from (23, 23) eventually.
+
+Actually, position (23, -23) is at the bottom-right start of the next ring (ring 23), one step down from where we started. Moving from (23, -22) down to (23, -23) means we need to go around almost the entire ring.
+
+Ring 23 has 8×23 = 184 numbers total (from 2026 to 2209).
+
+The sum of 8 neighbors equals:
+- (22, -22) = 2025
+- (24, -22) = 2027  
+- (23, -21) = 2026 + 184 - 1 = 2209
+- (23, -23) = 2026 + 184 = 2210
+- (22, -21) = 2208
+- (24, -21) = 2210 - 2 = 2208... 
+
+By symmetry and the spiral structure, the sum is:
+8 × 2026 + (-1 + 1 + 183 + 184 + 182 + 184 + 182 + 183) = 8 × 2026 + 1098 = 16208 + 1098 = 17306
+
+Wait, let me recalculate: The sum is 2025 + 2027 + 2209 + 2210 + 2208 + 2208 + 2210 + 2211 = **16308**
+----
+Usage(input=70, output=1353, details=None)

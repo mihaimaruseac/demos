@@ -1,0 +1,786 @@
+We are given a spiral of natural numbers on a **hexagonal grid**, and we need to find the **sum of all six neighbors of the number 2026**.
+
+The spiral is laid out as:
+
+```
+... 14  4  3 10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+
+Let’s first understand the structure.
+
+---
+
+### Step 1: Understand the spiral pattern
+
+We see that the number **1** is at the center.
+
+Around it, numbers spiral outward in a **hexagonal** pattern.
+
+In a hexagonal grid, each cell has **6 neighbors**. The spiral moves in **rings** or **layers** around the center.
+
+Let’s try to map the positions.
+
+We’ll denote the center (1) as **ring 0**.
+
+Then the next ring (ring 1) has numbers 2 through 7.
+
+Then ring 2: 8 through 19.
+
+Ring 3: 20 through 37.
+
+And so on.
+
+Let’s verify with the given diagram:
+
+```
+... 14  4  3 10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+
+Let’s reconstruct the positions around 1.
+
+Assume 1 is at center.
+
+Then the 6 neighbors of 1 (ring 1) should be: 2, 3, 4, 5, 6, 7.
+
+From the diagram:
+
+- Above 1: 4? But 4 is to the right of 1? Let's try to assign directions.
+
+Let’s assign directions in a hex grid. One common way is to use axial coordinates or just imagine 6 directions:
+
+Let’s label the 6 directions from the center as:
+
+- NE (northeast)
+- E (east)
+- SE (southeast)
+- SW (southwest)
+- W (west)
+- NW (northwest)
+
+But perhaps easier: look at the numbers around 1.
+
+From the diagram:
+
+Row 1: ... 14  4  3 10 ...
+
+Row 2: .. 15  5  1  2  9 ...
+
+Row 3: ... 16  6  7  8 ...
+
+So, center is 1.
+
+To the **right** of 1 is 2.
+
+To the **left** of 1 is 5.
+
+Above 1: 4 (in row above, directly above? But 4 is above and left of 1? Let's align).
+
+Actually, in a hex grid, the rows are staggered.
+
+Let me try to write the grid with proper alignment.
+
+In a typical hex spiral, the layout is like:
+
+```
+      14  4   3  10
+   15   5   1   2   9
+      16   6   7   8
+```
+
+So the center 1 is surrounded by:
+
+- 2: to the right
+
+- 3: to the upper right
+
+- 4: to the upper left
+
+- 5: to the left
+
+- 6: to the lower left
+
+- 7: to the lower right
+
+Wait, in row 2: `15 5 1 2 9` → so left of 1 is 5, right is 2.
+
+In row 1: `14 4 3 10` — 4 is above and left of 1, 3 is above and right of 1.
+
+In row 3: `16 6 7 8` — 6 is below and left of 1, 7 is below and right of 1.
+
+So the six neighbors of 1 are: 2, 3, 4, 5, 6, 7 — perfect.
+
+So the **first ring** (ring 1) has numbers 2 to 7 (6 numbers).
+
+Now, ring 2: next layer, numbers 8 to 19 (12 numbers).
+
+Ring 3: 20 to 37 (18 numbers).
+
+Pattern: each ring `k` (k ≥ 1) has `6k` numbers.
+
+So:
+
+- Ring 0: 1 number → 1
+
+- Ring 1: 6 numbers → 2–7
+
+- Ring 2: 12 numbers → 8–19
+
+- Ring 3: 18 numbers → 20–37
+
+- Ring 4: 24 numbers → 38–61
+
+- ...
+
+General formula:
+
+The **last number in ring k** is:
+
+Total numbers up to ring k = 1 + 6*(1 + 2 + ... + k) = 1 + 6*(k(k+1)/2) = 1 + 3k(k+1)
+
+So last number in ring k: `1 + 3k(k+1)`
+
+We can solve for k such that the last number in ring k is ≥ 2026.
+
+We want to find the ring that contains 2026.
+
+Let’s solve:
+
+`1 + 3k(k+1) ≥ 2026`
+
+→ `3k(k+1) ≥ 2025`
+
+→ `k(k+1) ≥ 675`
+
+Try k=25: 25*26 = 650 → too small
+
+k=26: 26*27 = 702 → yes
+
+So 3*702 = 2106 → 1 + 2106 = 2107 → last number in ring 26 is 2107.
+
+Check ring 25: 25*26 = 650 → 3*650 = 1950 → 1 + 1950 = 1951
+
+So:
+
+- Ring 25 ends at 1951
+
+- Ring 26: numbers from 1952 to 2107
+
+So **2026 is in ring 26**.
+
+Now, we need to find **the position of 2026 within ring 26**, and then find its six neighbors.
+
+---
+
+### Step 2: Structure of ring k
+
+Each ring k has 6k numbers, arranged in 6 **sides**, each side having k numbers.
+
+So for ring 26, each side has 26 numbers.
+
+The ring starts at 1952 and ends at 2107.
+
+We can think of the ring as 6 segments (sides), each of length 26.
+
+The direction of the spiral: typically, in hex spirals, the direction goes:
+
+Start at the **east** neighbor of the center, then move in a clockwise or counter-clockwise direction.
+
+From our diagram:
+
+After 1, the spiral goes to 2 (east), then 3 (northeast), 4 (northwest), 5 (west), 6 (southwest), 7 (southeast) — wait, that’s not clockwise.
+
+Wait, from 1:
+
+- 2 is to the right → direction 0
+
+- 3 is up-right → direction 1
+
+- 4 is up-left → direction 2
+
+- 5 is left → direction 3
+
+- 6 is down-left → direction 4
+
+- 7 is down-right → direction 5
+
+Then next ring: 8 is to the right of 7? Let’s see.
+
+From diagram: after 7 is 8, then 9, 10, 11, 12, 13, 14, 15, 16...
+
+In the diagram:
+
+After 7 (bottom right of 1), next is 8, which is to the right of 7? Then 9 is above 8? Then 10 is above 9?
+
+Actually, the spiral moves outward along the sides.
+
+Standard hex spiral: each side has k numbers, and the ring starts at the **east** side.
+
+In ring 1: 6 numbers: 2,3,4,5,6,7
+
+In ring 2: 12 numbers: 8 to 19
+
+We can assume the spiral moves in **clockwise** direction, starting from the **east**.
+
+So for ring k, the 6 sides are:
+
+1. East side: k numbers, from start to start + k - 1
+
+2. Northeast side: next k numbers
+
+3. Northwest side: next k numbers
+
+4. West side: next k numbers
+
+5. Southwest side: next k numbers
+
+6. Southeast side: next k numbers
+
+Each side has k numbers.
+
+For ring 26, each side has 26 numbers.
+
+Start of ring 26: 1952
+
+So:
+
+- Side 1 (East): 1952 to 1952 + 25 = 1977
+
+- Side 2 (NE): 1978 to 2003
+
+- Side 3 (NW): 2004 to 2029
+
+- Side 4 (West): 2030 to 2055
+
+- Side 5 (SW): 2056 to 2081
+
+- Side 6 (SE): 2082 to 2107
+
+We want **2026**.
+
+Which side?
+
+Side 3: 2004 to 2029 → yes, 2026 is in side 3 (NW side).
+
+Position within side: 2026 - 2004 + 1 = 23rd number on side 3.
+
+So index = 23 (1-based) on side 3.
+
+Now, we need to find the **six neighbors** of 2026.
+
+In a hex grid, each cell has 6 neighbors: one in each of the 6 directions.
+
+The key is to know the **relative positions** of the neighbors based on the spiral structure.
+
+We need to know:
+
+- What numbers are adjacent to 2026 in the hex grid.
+
+In a hex spiral, the neighbors of a number on a ring can be:
+
+- One number from the **same ring** (previous and next on the side)
+
+- Two numbers from the **inner ring** (ring k-1)
+
+- Three numbers from the **outer ring** (ring k+1) — but wait, 2026 is on ring 26, so outer ring is 27, which hasn’t been filled yet? No, we don't need outer ring for neighbors — neighbors are already placed.
+
+Actually, the spiral is built outward, so all numbers less than 2026 are already placed. The neighbors of 2026 are numbers that are adjacent in the grid, and since the spiral is built sequentially, the neighbors must be among numbers already placed (i.e., ≤ 2026).
+
+Wait, no — the neighbors are fixed in space. When we place 2026, its neighbors are already placed (since spiral builds outward). So the six neighbors of 2026 are all numbers less than 2026.
+
+So we need to find the **six adjacent cells** to the cell containing 2026, and find the numbers in those cells.
+
+So we need to model the **geometry**.
+
+We need to know:
+
+- What is the **position** of 2026 in the hex grid?
+
+We can assign **axial coordinates** (q, r) to each cell.
+
+In a hex grid, we can use **cube coordinates** (x, y, z) with x + y + z = 0, or axial (q, r).
+
+Let’s use axial coordinates: (q, r), with six directions:
+
+- E: (1, 0)
+
+- SE: (0, 1)
+
+- SW: (-1, 1)
+
+- W: (-1, 0)
+
+- NW: (0, -1)
+
+- NE: (1, -1)
+
+Standard axial coordinates.
+
+The center (1) is at (0,0).
+
+Now, we need to find the axial coordinates of the number 2026.
+
+How?
+
+We can traverse the spiral, but that’s tedious.
+
+Alternatively, we can use the known structure.
+
+In a hex spiral, the rings are concentric.
+
+The **ring number k** corresponds to the Manhattan distance (in hex grid) from center: max(|q|, |r|, |q+r|) = k, but actually in axial coordinates, the distance is (|q| + |r| + |q+r|)/2 — but simpler: the ring number is the **maximum of |q|, |r|, |q+r|**? Actually, in cube coordinates, distance is (|x| + |y| + |z|)/2.
+
+But let’s use a known method.
+
+We can compute the **position** of a number in the hex spiral by determining which side and which position on the side.
+
+We have:
+
+- Ring 26, side 3 (NW side), position 23 (1-based).
+
+Let’s define the **starting point** of each ring.
+
+In a hex spiral, the **first number** of ring k is at the **east** direction from the last number of ring k-1.
+
+The **first number** of ring k is placed at the **east** neighbor of the last number of ring k-1.
+
+The **last number** of ring k-1 is at the **southeast** corner of ring k-1.
+
+So, we need to find the **starting direction** of ring k.
+
+Standard hex spiral: starts at (1, 0) for ring 1 (number 2).
+
+Then moves to (1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1) — for ring 1.
+
+Wait, let’s map ring 1:
+
+Number 2: (1, 0) — east
+
+Number 3: (1, -1) — NE
+
+Number 4: (0, -1) — NW
+
+Number 5: (-1, 0) — west
+
+Number 6: (-1, 1) — SW
+
+Number 7: (0, 1) — SE
+
+Then ring 2 starts at (2, 0)? No, after 7 (at (0,1)), the next number 8 is at (1,1)? Let’s see.
+
+Actually, from 7 (SE of center), the next number (8) is placed in the next ring, continuing the spiral.
+
+The spiral turns left (counter-clockwise) after each side.
+
+So after finishing a side, it turns 60 degrees left.
+
+From center:
+
+- Ring 1: starts at (1,0) → 2
+
+Then moves in direction: NE → (1,-1) → 3
+
+Then NW → (0,-1) → 4
+
+Then W → (-1,0) → 5
+
+Then SW → (-1,1) → 6
+
+Then SE → (0,1) → 7
+
+Now, to start ring 2, we go one more step in the last direction? No — after finishing the last cell of ring 1 (7 at (0,1)), we turn left (counter-clockwise) to the next direction.
+
+The last direction was SE → which is (0,1). Turning left 60 degrees counter-clockwise from SE: SE is 60°, left is 120° → which is E? Let’s think in directions.
+
+The 6 directions in order (counter-clockwise):
+
+0: E → (1,0)
+
+1: NE → (1,-1)
+
+2: NW → (0,-1)
+
+3: W → (-1,0)
+
+4: SW → (-1,1)
+
+5: SE → (0,1)
+
+After finishing side 5 (SE), we turn left to direction 0 again? But we are starting ring 2.
+
+Actually, the spiral moves along the **outer edge**.
+
+After placing 7 at (0,1), the next number 8 is placed at the next cell in the **same direction**? No — in hex spiral, the spiral turns **left** after completing a side.
+
+So after completing side 5 (SE), we turn left to direction 0 (E), and move one step to (1,1) for 8.
+
+Then continue in direction 0 (E) for k=2 steps? No — each side has k=2 numbers.
+
+So side 1 of ring 2: direction E → from (0,1) → move to (1,1) → 8, then to (2,1) → 9? But in diagram, after 7 is 8, then 9, then 10...
+
+In diagram:
+
+After 7 is 8, then 9, then 10.
+
+From diagram:
+
+Row 1: ... 14  4  3 10 ...
+
+Row 2: .. 15  5  1  2  9 ...
+
+Row 3: ... 16  6  7  8 ...
+
+So 8 is below 7? 7 is at bottom right of 1, 8 is to the right of 7? Then 9 is above 8? Then 10 is above 9?
+
+Let’s assign coordinates.
+
+Let’s place 1 at (0,0)
+
+2 at (1,0)
+
+3 at (1,-1)
+
+4 at (0,-1)
+
+5 at (-1,0)
+
+6 at (-1,1)
+
+7 at (0,1)
+
+Now, 8: next number. In the diagram, 8 is to the right of 7. From (0,1), moving in direction E → (1,1) → so 8 at (1,1)
+
+Then 9: next in same direction? But side 1 of ring 2 should have 2 numbers.
+
+So 8 at (1,1), 9 at (2,1)
+
+Then turn left to direction NE → (1,-1) direction? Wait, direction after E is NE: (1,-1)
+
+From (2,1), move in direction NE: (2,1) + (1,-1) = (3,0) → 10
+
+But in diagram, after 9 is 10, which is above 9? If 9 is at (2,1), then above-right would be (3,0) — yes.
+
+Then next: direction NW → (0,-1)
+
+From (3,0), move NW: (3,0) + (0,-1) = (3,-1) → 11
+
+Then (3,-1) + (0,-1) = (3,-2) → 12? But we need only 2 numbers per side.
+
+Wait, ring 2 has 12 numbers, 6 sides, 2 per side.
+
+So:
+
+Side 1 (E): 8,9 → positions (1,1), (2,1)
+
+Side 2 (NE): 10,11 → (3,0), (3,-1)? But from (2,1) to (3,0) is NE? (2,1) + (1,-1) = (3,0) — yes.
+
+Then from (3,0) to next in NE: (3,0) + (1,-1) = (4,-1) — but we only need 2 numbers per side.
+
+Wait, no — each side has k=2 numbers, so 2 cells per side.
+
+So side 2: 10 at (3,0), 11 at (4,-1)? But then direction from 9 to 10 is NE, and 10 to 11 is also NE.
+
+But in diagram, 10 is above 9, and then 11 is above 10? But in diagram, after 9 is 10, then 11 is not shown.
+
+In diagram: 14 4 3 10 — so 10 is above 3? 3 is at (1,-1), 10 is at (2,-1)? Not matching.
+
+Perhaps our coordinate system is off.
+
+Alternative: use a different approach.
+
+### Better approach: use known formula for neighbors in hex spiral
+
+There is a known result: in a hexagonal spiral, the **six neighbors** of a number **n** (on ring k) can be computed based on its position on the side.
+
+We can use the following method:
+
+Let n = 2026
+
+Ring k = 26
+
+Side = 3 (NW side)
+
+Position on side = 23 (1-based)
+
+We need to find the **six neighbors**.
+
+In a hex spiral, for a cell on side s (0 to 5) of ring k, at position p (0 to k-1), the neighbors are:
+
+1. Previous number on the same ring: n - 1 (if p > 0)
+
+2. Next number on the same ring: n + 1 (if p < k-1)
+
+3. Inner ring neighbor: on the same side, but one ring in
+
+4. Inner ring neighbor: on the previous side
+
+5. Outer ring neighbor: on the same side, one ring out
+
+6. Outer ring neighbor: on the next side
+
+But we need exact formulas.
+
+I recall from known problems (like Project Euler 28, but for hex), there is a formula.
+
+Alternatively, think geometrically.
+
+In ring k, the numbers on side 3 (NW) go from:
+
+Start: S = 1952 + 2*26 = 1952 + 52 = 2004? Wait:
+
+Ring 26:
+
+- Side 1 (E): 1952 to 1977 → 26 numbers
+
+- Side 2 (NE): 1978 to 2003
+
+- Side 3 (NW): 2004 to 2029
+
+So 2026 is the 23rd number on side 3: 2004 + 22 = 2026 (since 2004 is 1st)
+
+So index = 22 (0-based)
+
+Now, in a hex spiral, the cell on side 3 (NW) at position p (0-based) has the following neighbors:
+
+- **Previous on ring**: n - 1 = 2025 (on same side, previous cell)
+
+- **Next on ring**: n + 1 = 2027 (on same side, next cell)
+
+- **Inner ring neighbor 1**: this is the cell on the same "radial line" in ring k-1
+
+- **Inner ring neighbor 2**: this is the cell on the previous side of ring k-1
+
+- **Outer ring neighbor 1**: cell on the same radial line in ring k+1
+
+- **Outer ring neighbor 2**: cell on the next side of ring k+1
+
+But we don't know the outer ring numbers (k+1=27), but we can compute them from the structure.
+
+Actually, the outer ring numbers are not yet placed, but the neighbors are already placed! So we only need the numbers that are already placed, i.e., ≤ 2026.
+
+So the two outer ring neighbors are not yet placed — so they are not neighbors in the sense of existing numbers? No — the neighbors are fixed positions in the grid, and the numbers in those positions are already placed, because the spiral is built outward.
+
+Wait, no — when we place 2026, the outer ring (ring 27) has not been filled yet. So the cells in ring 27 are empty. So the two outer ring neighbors of 2026 are not yet assigned numbers — so they are not part of the six neighbors? But that can't be — the six neighbors are the six adjacent cells, which must be filled already.
+
+Actually, in the spiral, when you place a number, its neighbors are already filled because you spiral outward.
+
+For example, when you place 2, its only neighbor is 1.
+
+When you place 3, its neighbors are 2 and 1.
+
+When you place 8, its neighbors are 7 (previous), 2 (inner), and 9 (next) — but 9 is placed after 8.
+
+Wait, the spiral is placed in order, so when you place number n, its neighbors are already placed if they are in inner rings or previous numbers on the same ring.
+
+So for a number on the current ring, its neighbors are:
+
+- The previous number on the same ring (already placed)
+
+- The next number on the same ring (not yet placed) — so not a neighbor yet? But in the final grid, it will be.
+
+But the question is: "the sum of all 6 neighbors of the number 2026"
+
+So it means in the final completed spiral, what are the six numbers in the six adjacent cells.
+
+So we need to find the numbers in the six adjacent cells, even if they are larger than 2026.
+
+So 2027 is a neighbor, even though it's larger.
+
+So we need to find the six numbers in the six adjacent hex cells.
+
+So we need to find:
+
+- The number on the previous cell on the same side: 2025
+
+- The number on the next cell on the same side: 2027
+
+- The number on the "inner" side: this is on ring 25, on the same radial direction
+
+- The number on the "inner" side: on the previous side of ring 25
+
+- The number on the "outer" side: on ring 27, on the same radial direction
+
+- The number on the "outer" side: on the next side of ring 27
+
+So we need to compute those.
+
+Let’s find the coordinates.
+
+Let’s define the **corner** numbers of each ring.
+
+For ring k, the 6 corners are the first number of each side.
+
+For ring k, the first number is at side 1 (E): S_k = 1 + 3(k-1)k + 1 = 3k(k-1) + 2? Let's use our earlier formula.
+
+Last number of ring k-1: L_{k-1} = 1 + 3(k-1)k
+
+So first number of ring k: F_k = L_{k-1} + 1 = 1 + 3(k-1)k + 1 = 2 + 3k(k-1)
+
+For k=26: F_26 = 2 + 3*26*25 = 2 + 1950 = 1952 — matches.
+
+Now, the 6 corners of ring k are:
+
+- Corner 1 (start of side 1, E): F_k
+
+- Corner 2 (start of side 2, NE): F_k + k
+
+- Corner 3 (start of side 3, NW): F_k + 2k
+
+- Corner 4 (start of side 4, W): F_k + 3k
+
+- Corner 5 (start of side 5, SW): F_k + 4k
+
+- Corner 6 (start of side 6, SE): F_k + 5k
+
+For ring 26:
+
+- C1: 1952
+
+- C2: 1952 + 26 = 1978
+
+- C3: 1952 + 52 = 2004
+
+- C4: 1952 + 78 = 2030
+
+- C5: 1952 + 104 = 2056
+
+- C6: 1952 + 130 = 2082
+
+2026 is on side 3, which starts at 2004.
+
+2026 = 2004 + 22 → so it is 22 steps from C3.
+
+In the NW side, the numbers go from C3 to C3 + k - 1 = 2004 to 2029.
+
+The direction of side 3 (NW) is towards the NW direction.
+
+The cell at position p on side 3 has the same "radial direction" as the corner C3, but offset.
+
+The neighbors of a cell on side 3, position p:
+
+- Previous on side: n - 1 = 2025
+
+- Next on side: n + 1 = 2027
+
+- Inner ring neighbor 1: this is the cell on side 3 of ring k-1, at position p
+
+- Inner ring neighbor 2: this is the cell on side 2 of ring k-1, at position p+1? Let's think.
+
+In a hex grid, each cell on side s of ring k has two neighbors in ring k-1:
+
+- One is directly "inward" along the radial line: on side s of ring k-1, at the same "offset" p
+
+- The other is on the "previous" side of ring k-1, at offset p+1
+
+Similarly, two neighbors in ring k+1: on side s and side s+1 of ring k+1, at offset p and p+1
+
+And the two on the same ring: n-1 and n+1
+
+So for 2026 on side 3, p=22 (0-based)
+
+Then:
+
+1. Previous on ring: 2025
+
+2. Next on ring: 2027
+
+3. Inner ring, side 3, p=22: number = F_{25} + 2*25 + 22
+
+F_{25} = 2 + 3*25*24 = 2 + 1800 = 1802
+
+Side 3 of ring 25: starts at 1802 + 2*25 = 1802 + 50 = 1852
+
+Then number at p=22: 1852 + 22 = 1874
+
+4. Inner ring, side 2, p=23: side 2 of ring 25 starts at F_{25} + 25 = 1802 + 25 = 1827
+
+Then number = 1827 + 23 = 1850
+
+5. Outer ring, side 3, p=22: F_{27} + 2*27 + 22
+
+F_{27} = 2 + 3*27*26 = 2 + 2106 = 2108
+
+Side 3 of ring 27: 2108 + 54 = 2162
+
+Number = 2162 + 22 = 2184
+
+6. Outer ring, side 4, p=23: side 4 of ring 27 starts at F_{27} + 3*27 = 2108 + 81 = 2189
+
+Number = 2189 + 23 = 2212
+
+Now, the six neighbors are:
+
+- 2025
+
+- 2027
+
+- 1874
+
+- 1850
+
+- 2184
+
+- 2212
+
+Sum = 2025 + 2027 + 1874 + 1850 + 2184 + 2212
+
+Let’s compute:
+
+First, 2025 + 2027 = 4052
+
+1874 + 1850 = 3724
+
+2184 + 2212 = 4396
+
+Now sum: 4052 + 3724 = 7776
+
+7776 + 4396 = 12172
+
+So the sum is **12172**
+
+Let me double-check the calculations.
+
+F_25 = 2 + 3*25*24 = 2 + 3*600 = 2 + 1800 = 1802 — ok
+
+Side 3 start: 1802 + 2*25 = 1802 + 50 = 1852 — ok
+
+p=22: 1852 + 22 = 1874 — ok
+
+Side 2 start: 1802 + 25 = 1827 — ok
+
+p=23: 1827 + 23 = 1850 — ok
+
+F_27 = 2 + 3*27*26 = 2 + 3*702 = 2 + 2106 = 2108 — ok
+
+Side 3 start: 2108 + 54 = 2162 — ok
+
+p=22: 2162 + 22 = 2184 — ok
+
+Side 4 start: 2108 + 3*27 = 2108 + 81 = 2189 — ok
+
+p=23: 2189 + 23 = 2212 — ok
+
+Neighbors: 2025, 2027, 1874, 1850, 2184, 2212
+
+Sum:
+
+2025 + 2027 = 4052
+
+1874 + 1850 = 3724 → 4052 + 3724 = 7776
+
+2184 + 2212 = 4396 → 7776 + 4396 = 12172
+
+Yes.
+
+So the sum of all six neighbors is:
+
+**12172**
+
+---
+
+### ✅ Final Answer: **12172**
+----
+Usage(input=78, output=7511, details={'estimated_cost': 0.00826912})

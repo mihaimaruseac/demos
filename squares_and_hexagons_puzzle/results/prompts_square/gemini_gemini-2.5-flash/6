@@ -1,0 +1,110 @@
+The spiral layout is defined as follows (with 1 at the origin (0,0)):
+1 at (0,0)
+2 at (1,0) (Right)
+3 at (1,-1) (Down)
+4 at (0,-1) (Left)
+5 at (-1,-1) (Left)
+6 at (-1,0) (Up)
+7 at (-1,1) (Up)
+8 at (0,1) (Right)
+9 at (1,1) (Right)
+
+This is a clockwise spiral.
+
+Let's identify the layer of the number N.
+The maximum number in layer k (N_k_max) is (2k+1)^2, and its position is (k,k).
+For k=0, N_0_max = 1^2 = 1 at (0,0).
+For k=1, N_1_max = 3^2 = 9 at (1,1).
+For k=2, N_2_max = 5^2 = 25 at (2,2).
+
+We need to find the number 2026. Let's find its layer k.
+We look for k such that (2k-1)^2 < 2026 <= (2k+1)^2.
+sqrt(2026) is approximately 45.01.
+So, 2k+1 is around 45.
+If 2k+1 = 45, then k=22. N_22_max = 45^2 = 2025. This is at (22,22).
+Since 2026 > 2025, 2026 is in the next layer, layer k=23.
+
+The first number of layer k is (2(k-1)+1)^2 + 1 = (2k-1)^2 + 1.
+For k=23, the first number is (2*23-1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026.
+The position of the first number of layer k is (k, k-1).
+So, 2026 is at (23, 22).
+
+Let (X,Y) = (23,22) be the position of 2026. We need to find the values of its 8 neighbors:
+(X-1, Y-1), (X, Y-1), (X+1, Y-1)
+(X-1, Y),   (X, Y),   (X+1, Y)
+(X-1, Y+1), (X, Y+1), (X+1, Y+1)
+
+Let's determine the value at each neighboring position:
+
+The spiral path for layer k starts with (2k-1)^2+1 at (k, k-1) and proceeds clockwise:
+1. Down: From (k, k-1) to (k, -k). The value increases by 1 for each step down.
+   Value at (k, y) is (2k-1)^2 + 1 + ((k-1)-y).
+2. Left: From (k, -k) to (-k, -k). The value increases by 1 for each step left.
+   Value at (x, -k) is (2k-1)^2 + 1 + (2k-1) + (k-x).
+3. Up: From (-k, -k) to (-k, k). The value increases by 1 for each step up.
+   Value at (-k, y) is (2k-1)^2 + 1 + (2k-1) + (2k) + (k+y).
+4. Right: From (-k, k) to (k, k). The value increases by 1 for each step right.
+   Value at (x, k) is (2k-1)^2 + 1 + (2k-1) + (2k) + (2k) + (k+x).
+   The value at (k,k) is (2k-1)^2+1 + (2k-1) + (2k) + (2k) + (2k) = (2k-1)^2 + 8k = (2k+1)^2 = N_k_max.
+
+Our target number is 2026 at (23,22), so k=23.
+
+1.  **At (23,22):** This is (k,k-1) for k=23. Value is (2*23-1)^2+1 = 45^2+1 = 2026. (Our target)
+
+Neighbors:
+1.  **(23,21):** This is (k,k-2) for k=23.
+    It's one step down from 2026 (at (23,22)).
+    So, Value = 2026 + 1 = **2027**.
+
+2.  **(23,23):** This is (k,k) for k=23.
+    This is the end of layer 23, N_23_max = (2*23+1)^2 = 47^2 = **2209**.
+
+3.  **(22,22):** This is (k-1, k-1) for k=23.
+    This is the end of layer 22, N_22_max = (2*22+1)^2 = 45^2 = **2025**.
+
+4.  **(22,23):** This is (k-1, k) for k=23.
+    This position is on the 'right' segment of layer 23 (from (-k,k) to (k,k)).
+    The values go from (-23,23) to (23,23).
+    Value at (23,23) is 2209.
+    Value at (x,k) is N_k_max - (k-x).
+    So, Value at (22,23) = 2209 - (23-22) = 2209 - 1 = **2208**.
+
+5.  **(22,21):** This is (k-1, k-2) for k=23.
+    This is the starting point of layer 22 (k=22, (k,k-1)).
+    Value is N_22_first = (2*22-1)^2 + 1 = 43^2 + 1 = 1849 + 1 = **1850**.
+
+Now for numbers in layer k+1 (where k+1 = 24).
+The first number of layer 24 is N_23_max + 1 = 2209 + 1 = 2210.
+This value (2210) is at (24, 23) (which is (k',k'-1) for k'=24).
+
+6.  **(24,23):** This is (k+1, k) for k=23.
+    Value = **2210**. (The first number of layer 24)
+
+7.  **(24,22):** This is (k+1, k-1) for k=23.
+    This position is one step down from (24,23) in layer 24.
+    Value = 2210 + 1 = **2211**.
+
+8.  **(24,21):** This is (k+1, k-2) for k=23.
+    This position is two steps down from (24,23) in layer 24.
+    Value = 2210 + 2 = **2212**.
+
+So, the 8 neighbors of 2026 are:
+(22,21): 1850
+(23,21): 2027
+(24,21): 2212
+(22,22): 2025
+(24,22): 2211
+(22,23): 2208
+(23,23): 2209
+(24,23): 2210
+
+Sum of these 8 numbers:
+1850 + 2027 + 2212 + 2025 + 2211 + 2208 + 2209 + 2210
+= (1850 + 2025) + (2027 + 2208) + (2212 + 2209) + (2211 + 2210)
+= 3875 + 4235 + 4421 + 4421
+= 8110 + 8842
+= 16952
+
+The final answer is $\boxed{16952}$.
+----
+Usage(input=62, output=15470, details={'candidatesTokenCount': 2108, 'promptTokensDetails': [{'modality': 'TEXT', 'tokenCount': 62}], 'thoughtsTokenCount': 13362})

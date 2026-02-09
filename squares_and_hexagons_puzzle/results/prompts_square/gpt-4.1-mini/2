@@ -1,0 +1,585 @@
+We have a grid with numbers arranged in a spiral on a square lattice centered at 1, as shown:
+
+\[
+\begin{matrix}
+\cdots & 5 & 4 & 3 & \cdots \\
+\cdots & 6 & 1 & 2 & \cdots \\
+\cdots & 7 & 8 & 9 & \cdots \\
+\end{matrix}
+\]
+
+The numbers spiral outward starting from 1 in the center:
+- 1 is at (0, 0).
+- 2 is to the right (1, 0).
+- Then 3 above that (1,1).
+- Then 4 to the left (0,1).
+- Then 5 to the left (-1,1).
+- Then 6 below (-1,0).
+- Then 7 below (-1,-1).
+- Then 8 right (0,-1).
+- Then 9 right (1,-1) and so on.
+
+---
+
+### Step 1: Understand the spiral coordinates
+
+The pattern is a "square spiral".  
+Given a number \( n \), we want to find its coordinates \((x,y)\) in the grid.
+
+### Step 2: Known formula for coordinates in square spiral:
+
+The layers are squares of side length \( 1, 3, 5, 7, \cdots \).
+
+- Layer 0: \( n=1 \) at (0,0).
+- Layer 1: numbers 2 to 9 around it (side length 3).
+- Layer \(k\) has perimeter numbers from \((2k-1)^2+1\) up to \((2k+1)^2\).
+
+Specifically, layer \(k\) is the ring with side length \(2k+1\), and the maximum number in layer \(k\) is \((2k+1)^2\).
+
+---
+
+### Step 3: Find layer \(k\) containing 2026
+
+We solve \((2k+1)^2 \ge 2026\), and
+
+\[
+(2k+1)^2 \geq 2026 \Rightarrow 2k+1 \geq \sqrt{2026} \approx 45.01
+\]
+
+\[
+2k+1 \geq 46 \implies 2k \geq 45 \implies k \geq 22.5
+\]
+
+Since \(k\) is integer layer index starting at 0, layer \(k=23\) contains 2026.
+
+- Max number in layer 22:
+
+\[
+(2 \times 22 + 1)^2 = 45^2 = 2025
+\]
+
+- Max number in layer 23:
+
+\[
+(2 \times 23 + 1)^2 = 47^2 = 2209
+\]
+
+So 2026 is in layer 23, and is the first number of that layer (since the last of layer 22 is 2025).
+
+---
+
+### Step 4: Coordinates of layer \(k\) maximum
+
+The maximum number at layer \(k\) is at the bottom-right corner of the square, coordinates \((k, -k)\).
+
+So at layer 22, max number 2025 is at \((22, -22)\).
+
+Layer 23 maximum (2209) at \((23, -23)\).
+
+---
+
+### Step 5: The layout of numbers in the layer
+
+For layer \(k\), numbers go around the square with side length \(2k+1\), starting from \((k-1, - (k-1)) + 1\) = the next number after the previous layer max.
+
+At layer \(k\), the ring has length:
+
+\[
+L = 8k
+\]
+
+Because the perimeter of the square excluding corners (or total steps around the square) is \( 8k \).
+
+The first number in layer \(k\) is:
+
+\[
+(2(k-1) + 1)^2 + 1 = (2k - 1)^2 + 1
+\]
+
+For \(k=23\):
+
+\[
+(2 \times 22 + 1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026
+\]
+
+So 2026 is the first number in the 23rd layer.
+
+---
+
+### Step 6: The spiral segment order (starting at bottom right corner of previous layer +1 and moving ccw)
+
+Usually, these square spirals are built as follows for layer \(k\):
+
+- Starting at position \((k, -(k-1))\), moving up along the right side
+- Then left along the top side
+- Then down along the left side
+- Then right along the bottom side
+
+But from the example spiral:
+
+At layer 1:
+
+- 2's position is (1,0)
+- 3 is at (1,1)
+- 4 at (0,1)
+- 5 at (-1,1)
+- 6 at (-1,0)
+- 7 at (-1,-1)
+- 8 at (0,-1)
+- 9 at (1,-1)
+
+So the order for layer 1 (numbers 2 to 9) is:
+
+- start at (1,0), number 2
+- go up: (1,1), number 3
+- go left: (0,1) number 4, (-1,1) number 5
+- go down: (-1,0) number 6, (-1,-1) number 7
+- go right: (0,-1) number 8, (1,-1) number 9
+
+In coordinates for layer \(k\):
+
+- starting point for layer \(k\) is \((k, -(k-1))\), number \((2k-1)^2+1\)
+
+At layer 1:
+
+- \(k=1\)
+- starting point at (1, 0), which matches number 2
+
+Then we go:
+
+- **up:** side length \(2k\) steps minus 1
+- **left:** side length \(2k\) steps
+- **down:** side length \(2k\) steps
+- **right:** side length \(2k\) steps
+
+For \(k=1\), the steps are:
+
+- up: \(2 \times 1 - 1 = 1\) step
+- left: 2 steps
+- down: 2 steps
+- right: 2 steps
+
+Total steps = 1 + 2 + 2 + 2 = 7 steps, which matches the count from 2 to 9.
+
+So for layer \(k\):
+
+- Lengths per side:  \(2k\) except the first "up" which is \(2k-1\)
+
+---
+
+### Step 7: Find coordinate of number 2026 in layer 23
+
+For \(k=23\):
+
+- Side length = \(2 \times 23 = 46\)
+- Steps on first side (up) = 46 - 1 = 45
+- Then left: 46 steps
+- Then down: 46 steps
+- Then right: 46 steps
+- Total steps: 45 + 46 + 46 + 46 = 183 steps (which is \(8k = 8 \times 23 = 184\) but we start counting from 1 so maybe off by 1)
+
+Number 2026 is the first number of the 23rd layer, at starting point.
+
+- Starting coordinate: \((k, -(k-1)) = (23, -22)\)
+
+This corresponds to number 2026.
+
+---
+
+### Step 8: Walk the layer steps and number increase
+
+For \(s=0\) steps, number is 2026 at \((23, -22)\).
+
+- Going up 45 steps: increment \(s = 0 \ldots 44\), coordinates go \((23, -22 + s)\), numbers go from 2026 to \(2026 + 44 = 2070\).
+
+- After up steps, at \(s=45\), we change direction left:
+
+- Left \(46\) steps: \(s = 45 \ldots 90\), coordinates: \((23 - (s - 45 + 1), -22 + 45)\)
+
+When \(s=45\), coordinate: \((23 - 1, -22 + 45) = (22, 23)\)
+
+When \(s=90\), coordinate: \((23 - 46, -22 + 45) = (-23, 23)\)
+
+- Then down 46 steps: \(s=91 \ldots 136\)
+
+Coordinates: \((-23, 23 - (s-91+1))\)
+
+At \(s=91\), coordinate \((-23, 22)\)
+
+At \(s=136\), coordinate \((-23, -23)\)
+
+- Then right 46 steps: \(s=137 \ldots 182\)
+
+Coordinates: \((-23 + (s-137+1), -23)\)
+
+At \(s=137\), coordinate \((-22, -23)\)
+
+At \(s=182\), coordinate \((23, -23)\)
+
+---
+
+### Step 9: Coordinates summary:
+
+- Number \( n = 2026 + s \)
+
+- \(s = n - 2026\), \(0 \leq s \leq 183\)
+
+Depending on \(s\), coordinate of \(n\) is:
+
+- If \(0 \leq s < 45\), up side:
+
+\[
+(x,y) = (23, -22 + s)
+\]
+
+- If \(45 \leq s < 91\), left side:
+
+\[
+(x,y) = (23 - (s - 45 + 1), 23)
+= (22 - (s - 45), 23)
+\]
+
+- If \(91 \leq s < 137\), down side:
+
+\[
+(x,y) = (-23, 23 - (s - 91 + 1)) = (-23, 22 - (s - 91))
+\]
+
+- If \(137 \leq s < 183\), right side:
+
+\[
+(x,y) = (-23 + (s - 137 + 1), -23) = (-22 + (s - 137), -23)
+\]
+
+---
+
+### Step 10: Find the neighbors of 2026
+
+We want to find the 8 neighbors of the number 2026.
+
+Neighbors are all cells surrounding 2026, i.e. coordinates:
+
+\[
+(x \pm 1, y), (x, y \pm 1), (x \pm 1, y \pm 1)
+\]
+
+---
+
+### Step 11: Coordinate of 2026
+
+As above:
+
+\[
+2026: s=0 \Rightarrow (x,y) = (23, -22)
+\]
+
+Neighbors coordinates:
+
+\[
+(22, -23), (22, -22), (22, -21), (23, -23), (23, -21), (24, -23), (24, -22), (24, -21)
+\]
+
+---
+
+### Step 12: Find numbers at these neighbor coordinates
+
+We will find the number corresponding to each of these 8 neighbors.
+
+---
+
+### Step 13: For each neighbor coordinate \((x,y)\), find its number \(n\):
+
+**Idea:** determine layer \(k'\) of that neighbor by
+
+\[
+k' = \max(|x|, |y|)
+\]
+
+Then find their number on layer \(k'\).
+
+---
+
+### Step 14: Start with neighbors:
+
+---
+
+#### Neighbor 1: (22, -23)
+
+- \(k' = \max(22, 23) = 23\) (layer 23)
+
+Find \(n\) at \((22, -23)\) on layer 23.
+
+Step \(s'\) on layer 23 is what?
+
+Recall layer 23 coordinate rules:
+
+Sides:
+
+- Up: \(x=23\), \(y = -22 + s\), \(s \in [0,44]\)
+- Left: \(x = 22 - (s - 45)\), \(y=23\), \(s \in [45,90]\)
+- Down: \(x = -23\), \(y=22 - (s - 91)\), \(s \in [91,136]\)
+- Right: \(x = -22 + (s - 137)\), \(y = -23\), \(s \in [137,182]\)
+
+Find \(s'\) such that \((x,y) = (22, -23)\).
+
+Possible side?
+
+- Check side "right" since \(y = -23\):
+
+On right side,
+
+\[
+x = -22 + (s - 137), \quad s \in [137, 182]
+\]
+
+Set
+
+\[
+22 = -22 + (s - 137) \Rightarrow s - 137 = 44 \Rightarrow s = 181
+\]
+
+Check if \(s=181 \in [137, 182]\) yes.
+
+Therefore,
+
+\[
+n = 2026 + s = 2026 + 181 = 2207
+\]
+
+---
+
+#### Neighbor 2: (22, -22)
+
+\(k' = 23\) (since \(|y|=22\))
+
+Check if point on layer 23 or inside layer 22.
+
+- \(k' = \max(22, 22) = 22\)
+
+So layer 22 maximum number:
+
+\[
+(2 \times 22 + 1)^2 = 45^2 = 2025
+\]
+
+Check if coordinate belongs to layer 22 or 23.
+
+Layer 22 bounds:
+
+\[
+-22 \leq x,y \leq 22
+\]
+
+Coordinate (22, -22) is on the edge of layer 22 (max abs coordinate 22).
+
+So it is in layer 22.
+
+---
+
+### Step 15: Coordinates of layer \(k=22\)
+
+- Max number at layer 22: 2025 at \((22, -22)\).
+
+So
+
+\[
+(22, -22) \text{ at layer } 22 \text{ is max number } = 2025.
+\]
+
+---
+
+#### Neighbor 3: (22, -21)
+
+\(k'=\max(22,21) = 22\)
+
+Layer 22 with max 2025 at (22,-22)
+
+Find \(s'\) within layer 22 for coordinate (22, -21).
+
+---
+
+Layer 22 side lengths:
+
+\[
+2k = 44
+\]
+
+Sides:
+
+- Up: \(x=22, y=-21, -22 + 1 = -21\)
+
+But more systematic:
+
+Layer 22 start number:
+
+\[
+(2(k-1) + 1)^2 + 1 = (2 \times 21 + 1)^2 + 1 = 43^2 + 1 = 1849 + 1 = 1850
+\]
+
+Starting coordinate of layer 22:
+
+\[
+(k, -(k-1)) = (22, -21)
+\]
+
+Wait! Our neighbor (22,-21) matches the starting coordinate of layer 22.
+
+So it has number 1850.
+
+---
+
+Neighbor 3 number = 1850
+
+---
+
+#### Neighbor 4: (23, -23)
+
+\(k' = \max(23, 23) = 23\)
+
+Layer 23 max = 2209 at (23, -23)
+
+So (23, -23): max number 2209.
+
+Neighbor 4 number = 2209
+
+---
+
+#### Neighbor 5: (23, -21)
+
+\(k' = 23\)
+
+Find number at (23, -21) in layer 23.
+
+Layer 23 rules:
+
+- Up side: coordinates with \(x=23, y = -22 + s\), \(s \in [0, 44]\)
+- Since \(y = -21\), difference from \(-22\) is \(1\)
+
+So,
+
+\[
+s = y - (-22) = -21 + 22 = 1
+\]
+
+\(s=1\) valid
+
+Number:
+
+\[
+n = 2026 + s = 2027
+\]
+
+---
+
+#### Neighbor 6: (24, -23)
+
+\(k' = 24\) (since abs(24) > 23)
+
+Layer 23 max is 2209 at (23,-23)
+
+Layer 24 max number:
+
+\[
+(2 \times 24 + 1)^2 = 49^2 = 2401
+\]
+
+Layer 24 start number:
+
+\[
+(2 \times 23 + 1)^2 + 1 = 47^2 + 1 = 2209 + 1 = 2210
+\]
+
+Starting coordinate of layer 24:
+
+\[
+(k, -(k-1)) = (24, -23)
+\]
+
+Our coordinate (24, -23) is exactly the start of layer 24.
+
+Number = 2210
+
+---
+
+#### Neighbor 7: (24, -22)
+
+\(k' = 24\)
+
+Layer 24 first number at (24, -23) = 2210
+
+Check if (24, -22) is on up side:
+
+Up side coordinates for layer 24:
+
+\[
+x = 24, y = -23 + s, s \in [0, 2 \times 24 - 2 = 46]
+\]
+
+Calculate \(s\):
+
+\[
+s = y - (-23) = -22 + 23 = 1
+\]
+
+\(s = 1 \leq 46\) valid
+
+Number:
+
+\[
+n = 2210 + s = 2211
+\]
+
+---
+
+#### Neighbor 8: (24, -21)
+
+\(k' = 24\)
+
+On up side again with \(y = -21\):
+
+\[
+s = y - (-23) = -21 + 23 = 2
+\]
+
+Number:
+
+\[
+n = 2210 + 2 = 2212
+\]
+
+---
+
+### Step 16: Compute the sum of all 8 neighbors:
+
+\[
+2207 + 2025 + 1850 + 2209 + 2027 + 2210 + 2211 + 2212
+\]
+
+Calculate step-by-step:
+
+- \(2207 + 2025 = 4232\)
+- \(4232 + 1850 = 6082\)
+- \(6082 + 2209 = 8291\)
+- \(8291 + 2027 = 10318\)
+- \(10318 + 2210 = 12528\)
+- \(12528 + 2211 = 14739\)
+- \(14739 + 2212 = 16951\)
+
+---
+
+### Final answer:
+
+\[
+\boxed{16951}
+\]
+
+---
+
+### Summary:
+
+- The number 2026 is at position \((23, -22)\) on layer 23.
+- Found coordinates of its 8 neighbors.
+- Computed the corresponding number for each neighbor.
+- Summed those numbers for the final answer \(16951\).
+----
+Usage(input=62, output=4105, details={})

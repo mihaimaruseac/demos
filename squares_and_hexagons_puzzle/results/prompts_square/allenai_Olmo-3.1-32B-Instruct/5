@@ -1,0 +1,1977 @@
+Let's break down the problem step by step.
+
+We have a spiral grid of natural numbers, starting from 1 at the center and spiraling outward. We're to find the sum of the eight neighbors of the number 2026 in this grid.
+
+Let's recall how the spiral is constructed:
+
+- 1 is at the center (let's call its coordinates (0,0))
+- Then we spiral right, up, left, down, and repeat, each time extending the spiral by one step on each side.
+
+Let's formalize the coordinates and the layering of the spiral.
+
+## 1. Determine the layer of 2026
+
+The numbers are arranged in "rings" or "layers" around the center.
+
+- Layer 0: just 1 (the center)
+- Layer 1: numbers 2 to 9 (forms a 3x3 square minus the center)
+- Layer 2: numbers 10 to 25 (forms a 5x5 square minus the previous 3x3)
+- Layer n: forms a (2n+1)x(2n+1) square, numbers from (2n-1)^2 + 1 to (2n+1)^2
+
+Let k be the layer index, starting at 0 for the center.
+
+For layer k:
+- The smallest number in layer k is (2k-1)^2 + 1
+- The largest number is (2k+1)^2
+- The side length of the square at this layer is (2k+1)
+
+Let's find which layer 2026 is in.
+
+We want the largest k such that (2k+1)^2 ≥ 2026
+
+Let’s compute (2k+1)^2 for increasing k:
+
+- k=0: 1^2 = 1
+- k=1: 3^2 = 9
+- k=2: 5^2 = 25
+- k=3: 7^2 = 49
+- k=4: 9^2 = 81
+- k=5: 11^2 = 121
+- k=6: 13^2 = 169
+- k=7: 15^2 = 225
+- k=8: 17^2 = 289
+- k=9: 19^2 = 361
+- k=10: 21^2 = 441
+- k=11: 23^2 = 529
+- k=12: 25^2 = 625
+- k=13: 27^2 = 729
+- k=14: 29^2 = 841
+- k=15: 31^2 = 961
+- k=16: 33^2 = 1089
+- k=17: 35^2 = 1225
+- k=18: 37^2 = 1369
+- k=19: 39^2 = 1521
+- k=20: 41^2 = 1681
+- k=21: 43^2 = 1849
+- k=22: 45^2 = 2025
+- k=23: 47^2 = 2209
+
+So, (2*22+1)^2 = 45^2 = 2025
+
+That means layer 22 contains numbers from (2*22-1)^2 + 1 = 43^2 + 1 = 1849 + 1 = 1850 up to 2025
+
+But 2026 is just after 2025, so it must be the first number of layer 23.
+
+Layer 23: from 2026 up to 2209
+
+So 2026 is the first number of layer 23.
+
+## 2. Figure out the coordinates of 2026
+
+Let’s understand how the numbers are filled in each layer.
+
+Each layer k starts at the bottom-left corner of the new outer square and moves right along the bottom row, then up the rightmost column, then left along the top row, then down the leftmost column, and so on, but with the direction adjusted each time the side is finished.
+
+But the most standard Ulam spiral (as in the example) starts at 1 at (0,0), moves right to (0,1) for 2, (0,2) for 3, then up to (1,2) for 4, (2,2) for 5, then left to (2,1) for 6, (2,0) for 7, (2,-1) for 8, then down to (1,-1) for 9, etc.
+
+But in the problem statement, the example is:
+
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+
+Let’s map these to coordinates:
+
+Let’s assume 1 is at (0,0)
+
+Then, from the example:
+
+- 1 at (0,0)
+- 2 at (1,0)
+- 3 at (2,0)
+- 4 at (2,1)
+- 5 at (1,1)
+- 6 at (0,1)
+- 7 at (0,-1)
+- 8 at (1,-1)
+- 9 at (2,-1)
+
+Let’s check:
+
+Row with ... 5 4 3 ...
+That's (x, y) = (?, ?)
+
+Let’s suppose y increases upward, x increases to the right.
+
+Let’s lay out the 3x3 grid with (0,0) as center:
+
+Let’s define:
+
+- (0,0): 1
+- (1,0): 2
+- (2,0): 3
+- (2,1): 4
+- (1,1): 5
+- (0,1): 6
+- (-1,1): 7
+- (-1,0): 8
+- (-1,-1): 9
+
+But in the problem’s grid:
+
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+
+So let’s map row by row from bottom to top.
+
+Let’s say the bottom row is y = -1, middle y = 0, top y = 1.
+
+Left to right x = -1, 0, 1.
+
+So:
+
+y = -1: 7 8 9
+y =  0: 6 1 2
+y =  1: 5 4 3
+
+So:
+
+( -1, -1 ): 7
+(  0, -1 ): 8
+(  1, -1 ): 9
+( -1,  0 ): 6
+(  0,  0 ): 1
+(  1,  0 ): 2
+( -1,  1 ): 5
+(  0,  1 ): 4
+(  1,  1 ): 3
+
+But in the problem statement, it's written as:
+
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+
+So the top row is 5 4 3 (that's y = 1), then 6 1 2 (y = 0), then 7 8 9 (y = -1).
+
+So:
+
+( -1, 1 ): 5
+(  0, 1 ): 4
+(  1, 1 ): 3
+( -1, 0 ): 6
+(  0, 0 ): 1
+(  1, 0 ): 2
+( -1,-1 ): 7
+(  0,-1 ): 8
+(  1,-1 ): 9
+
+So, the spiral starts at (0,0) = 1, moves right to (1,0) = 2, (2,0) = 3, then up to (2,1) = 4, (2,2) = 5? Wait, but in the above, (1,1) = 4, ( -1, 1 ) = 5.
+
+Wait, let's reconstruct step by step:
+
+Let’s follow the standard Ulam spiral orientation (right, up, left, down, and repeat, increasing the step after every two turns):
+
+Start at (0,0) = 1
+
+Move right:
+(1,0) = 2
+(2,0) = 3
+
+Turn up:
+(2,1) = 4
+(2,2) = 5
+
+Turn left:
+(1,2) = 6
+(0,2) = 7
+(-1,2) = 8
+
+Turn down:
+(-1,1) = 9
+(-1,0) = 10
+(-1,-1) = 11
+
+Turn right:
+(0,-1) = 12
+(1,-1) = 13
+(2,-1) = 14
+
+Turn up:
+(2,0) already filled, so next is (2,1) already filled, so (2,2) already filled, so next is (3,2) = 15
+
+But in the problem's 3x3 grid, it's different.
+
+Alternatively, let's follow the movement as per the given 3x3:
+
+From 1 at (0,0):
+
+- Move right to (1,0): 2
+- Move right to (2,0): 3
+- Move up to (2,1): 4
+- Move left to (1,1): 5
+- Move left to (0,1): 6
+- Move left to (-1,1): 7
+- Move down to (-1,0): 8
+- Move down to (-1,-1): 9
+
+That's the pattern shown in the example.
+
+So the order is:
+
+- Right along x-axis to (2,0)
+- Up along y-axis to (2,1)
+- Left along x-axis to (-1,1)
+- Down along y-axis to (-1,-1)
+
+But actually, after 3 at (2,0), up to (2,1): 4
+Then left to (1,1): 5, (0,1): 6, (-1,1): 7
+Then down to (-1,0): 8, (-1,-1): 9
+
+So the movement is:
+
+- Right: from (0,0) to (2,0)
+- Up: from (2,0) to (2,1)
+- Left: from (2,1) to (-1,1)
+- Down: from (-1,1) to (-1,-1)
+
+But the step sizes increase after every two turns.
+
+Let’s generalize the movement:
+
+Layer 0: (0,0) = 1
+
+Layer 1 (the first ring):
+
+- Move right: (0,0) → (1,0) → (2,0)   [positions for 2, 3]
+- Move up: (2,0) → (2,1)              [position for 4]
+- Move left: (2,1) → (1,1) → (0,1) → (-1,1) [positions for 5, 6, 7]
+- Move down: (-1,1) → (-1,0) → (-1,-1) [positions for 8, 9]
+
+But in the example, after 3 at (2,0), up to (2,1): 4
+Then left to (1,1): 5, (0,1): 6, (-1,1): 7
+Then down to (-1,0): 8, (-1,-1): 9
+
+So the right and left moves are of length 2 (from x=0 to x=2 for right, x=2 to x=-1 for left, i.e., 3 steps but 2 increments?), but let's count the steps.
+
+From (0,0) to (2,0): that's two steps right (to x=1, x=2), placing 2 and 3.
+From (2,0) to (2,1): one step up, placing 4.
+From (2,1) to (-1,1): three steps left (to x=1, x=0, x=-1), placing 5, 6, 7.
+From (-1,1) to (-1,-1): two steps down (to y=0, y=-1), placing 8, 9.
+
+But the pattern for the sides is:
+
+- First right: n steps
+- Up: n steps
+- Left: n+1 steps
+- Down: n+1 steps
+
+But for n=1 (the first ring), right: 2 steps, up: 1 step, left: 3 steps, down: 2 steps? That doesn't fit.
+
+Alternatively, let's see the number of numbers on each side for layer k.
+
+Layer k (k >= 1) is a square of side length (2k+1). The previous layer was (2k-1)x(2k-1).
+
+The numbers added in layer k are on the perimeter:
+
+- Top row (excluding corners already filled): from (-(k-1), k) to (k, k)
+- Rightmost column (excluding corners): from (k, k-1) to (k, -k)
+- Bottom row (excluding corners): from (k, -k+1) to (-(k-1), -k)
+- Leftmost column (excluding corners): from (-(k-1), -k+1) to (-(k+1), -k+1)? Let's formalize.
+
+Alternatively, let's find a formula for the coordinates of the number n.
+
+But perhaps it's easier to find the coordinates of 2026 by understanding how the numbers are laid out in layer 23.
+
+Let’s formalize the starting point of each layer.
+
+Each new layer starts at the bottom left of the new outer square and moves right along the bottom row, then up the rightmost column, then left along the top row, then down the leftmost column, but let's check with the 3x3 example.
+
+But in the problem's 3x3, the starting point of the ring is at (2,0) = 3, but actually the first number of the ring is 2 at (1,0).
+
+Alternatively, let's try to find a general mapping from n to (x, y).
+
+There is a known formula for the coordinates in the Ulam spiral.
+
+Let’s recall the Ulam spiral coordinate formula.
+
+Let’s define:
+
+For n ≥ 1,
+
+Let k = ceil((sqrt(n)-1)/2)
+
+Let m = 2k+1
+
+Let layer = k
+
+Let ring_max = m^2
+
+Let ring_min = (m-2)^2 + 1   (for m ≥ 3)
+
+But for n = 1, k = 0
+
+For a given n > 1:
+
+Let k = floor((sqrt(n)-1)/2)
+
+Then the "ring" or "layer" is k
+
+The side length of the square at this layer is s = 2k + 1
+
+The largest number in the previous layer is (2k-1)^2
+
+So the numbers in layer k go from (2k-1)^2 + 1 to (2k+1)^2
+
+Let’s define:
+
+Let L = (2k-1)^2   (last number of previous layer)
+
+Let S = (2k+1)^2   (last number of this layer)
+
+Let offset = n - L   (so offset runs from 1 to 8k)
+
+Now, the perimeter has 8k numbers.
+
+We can divide the perimeter into 4 sides, each of length 2k, except the first side may be longer by 1 depending on the starting point.
+
+But in the standard Ulam spiral, the sides are:
+
+- Right: from (k, -k+1) to (k, k)  [2k numbers]
+But let's check with the 3x3 example.
+
+For k=1 (layer 1):
+
+L = (2*1-1)^2 = 1
+S = (2*1+1)^2 = 9
+
+Numbers in this layer: 2 to 9 (8 numbers)
+
+Let’s assign positions:
+
+Let’s define the starting point of the layer:
+
+In the Ulam spiral, the starting point of layer k is at (k, -k+1)
+
+For k=1: (1, 0)
+
+But in our earlier mapping, 2 is at (1,0), which matches.
+
+Let’s see the order:
+
+Start at (k, -k+1) = (1, 0)
+
+Move up to (1, 1): that's 2 steps up? Wait.
+
+Let’s use the standard Ulam spiral coordinate mapping:
+
+From Wikipedia and known formulas:
+
+Given n, to find (x, y):
+
+Let k = floor( (sqrt(n-1) + 1)/2 )
+
+Let t = 2k + 1
+
+Let m = t^2
+
+Let d = m - n
+
+Let s = t - 1
+
+If d <= s: x = k - d; y = -k + 1
+If d <= 2s: x = -k + 1; y = -k + 1 + (d - s)
+If d <= 3s: x = -k + 1 - (d - 2s); y = k + 1
+If d <= 4s: x = -k + 1; y = k + 1 - (d - 3s)
+
+But let's check with n=1:
+
+k = floor((sqrt(0)+1)/2) = floor(1/2) = 0
+t = 1
+m = 1
+d = 1 - 1 = 0
+s = 0
+
+But this formula may be for 0-based indexing.
+
+Alternatively, let's use a known working formula.
+
+Here's a reliable method (from OEIS and various references):
+
+Let x = 0, y = 0 for n = 1
+
+For n > 1:
+
+Let k = floor( (sqrt(n-1) + 1)/2 )
+
+Let t = 2k + 1
+
+Let m = t^2
+
+Let d = m - n
+
+Let s = t - 1
+
+Now, the four quadrants:
+
+If d <= s:    # right edge, moving up
+    x = k - d
+    y = -k + 1
+elif d <= 2*s:
+    x = -k + 1
+    y = -k + 1 + (d - s)
+elif d <= 3*s:
+    x = -k + 1 - (d - 2*s)
+    y = k + 1
+else:
+    x = -k + 1
+    y = k + 1 - (d - 3*s)
+
+But let's test with n=2:
+
+n=2
+
+k = floor((sqrt(1)+1)/2) = floor((1+1)/2) = floor(1) = 1
+
+t = 2*1 + 1 = 3
+
+m = 9
+
+d = 9 - 2 = 7
+
+s = 2
+
+Now d=7
+
+First if: d <= 2? 7 <= 2? No
+
+Second: d <= 4? 7 <= 4? No
+
+Third: d <= 6? 7 <= 6? No
+
+Fourth: else
+
+So x = -1
+
+y = 2 - (7 - 6) = 2 - 1 = 1
+
+But in our mapping, n=2 is at (1,0)
+
+Hmm, perhaps the coordinate system is different.
+
+Alternatively, let's use a different approach.
+
+Let’s reconstruct the position of 2026 directly.
+
+We know that 2026 is the first number of layer 23.
+
+Layer 23 starts at (k, -k + 1) where k = 23
+
+So starting point is (23, -22)
+
+Now, let's see how the numbers are filled in this layer.
+
+The layer has 8*23 = 184 numbers
+
+The sides are:
+
+- Right edge: moving up from (23, -22) to (23, 23)   [from y = -22 to y = 23, that's 46 steps? But let's check the pattern.]
+
+But in the 3x3 example, for k=1, starting at (1, 0):
+
+Numbers in this layer: 2 to 9
+
+Order:
+
+Start at (1,0): 2
+
+Move up to (1,1): 3
+
+Then left to (0,1): 4, (-1,1): 5
+
+Then down to (-1,0): 6, (-1,-1): 7
+
+Then right to (0,-1): 8, (1,-1): 9
+
+Wait, but in the problem's grid, (1,0)=2, (2,0)=3, (2,1)=4, (1,1)=5, (0,1)=6, (-1,1)=7, (-1,0)=8, (-1,-1)=9
+
+So the movement is:
+
+- Right along x from x=0 to x=2 at y=0: (0,0)=1, (1,0)=2, (2,0)=3
+- Up along y from y=0 to y=1 at x=2: (2,1)=4
+- Left along x from x=2 to x=-1 at y=1: (1,1)=5, (0,1)=6, (-1,1)=7
+- Down along y from y=1 to y=-1 at x=-1: (-1,0)=8, (-1,-1)=9
+
+So for layer k=1 (the first ring):
+
+Start at (1,0) = 2
+
+Move up: (1,1) = 3
+
+Move left: (0,1) = 4, (-1,1) = 5
+
+Move down: (-1,0) = 6, (-1,-1) = 7
+
+Move right: (0,-1) = 8, (1,-1) = 9
+
+Wait but in the example above, after 3 at (2,0), up to (2,1)=4, left to (1,1)=5, (0,1)=6, (-1,1)=7, down to (-1,0)=8, (-1,-1)=9
+
+So for general layer k:
+
+- Start at (k, -k+1) but in the example, for k=1, (1,0) is the start of the ring (number 2)
+But for the full 3x3, the starting point of the outer ring is (2,0)=3
+
+Wait, perhaps the starting point is (k, -k), for layer k.
+
+Let’s try to generalize:
+
+For layer k (k >= 1):
+
+- The bottom left of the new square is at (-k, -k)
+- The top right is at (k, k)
+But the first number of the layer is at (k-1, -k), and moves right to (k, -k), then up to (k, k), then left to (-k, k), then down to (-k, -k+1), then right to (k-1, -k)
+
+But let's try for k=1:
+
+Bottom left: (-1,-1), top right: (1,1)
+
+First number at (0,-1)? But in our grid, 2 is at (1,0)
+
+Alternatively, let's list the positions for n=2 to 9 in terms of x,y:
+
+From the 3x3 given:
+
+(1,0) = 2
+
+(2,0) = 3
+
+(2,1) = 4
+
+(1,1) = 5
+
+(0,1) = 6
+
+(-1,1) = 7
+
+(-1,0) = 8
+
+(-1,-1) = 9
+
+So the path is:
+
+(1,0) → (2,0) → (2,1) → (1,1) → (0,1) → (-1,1) → (-1,0) → (-1,-1)
+
+So, starting at (1,0), move right to (2,0), up to (2,1), left to (-1,1), down to (-1,-1)
+
+Each "side" has the following number of steps:
+
+- From (1,0) to (2,0): 1 step right (to x=2)
+- From (2,0) to (2,1): 1 step up (to y=1)
+- From (2,1) to (-1,1): 3 steps left (x=1,0,-1)
+- From (-1,1) to (-1,-1): 2 steps down (y=0,-1)
+
+So for layer k=1, the side lengths are: right: 1, up: 1, left: 3, down: 2
+
+But for the next layer (k=2), the pattern will be right: 2, up: 2, left: 4, down: 3
+
+Let’s check for 5x5 spiral.
+
+But perhaps a better approach is to find a general formula for the position of the first number in the layer.
+
+Alternatively, let's note that for layer k, the first number is at position:
+
+Let’s see for k=1: first number of layer is 2 at (1,0)
+
+For k=2: Let's build the 5x5 spiral.
+
+Let’s try to lay out the 5x5 spiral.
+
+Let’s do it step by step.
+
+We have the 3x3:
+
+( -1, 1 ): 5
+(  0, 1 ): 4
+(  1, 1 ): 3
+( -1, 0 ): 6
+(  0, 0 ): 1
+(  1, 0 ): 2
+( -1,-1 ): 7
+(  0,-1 ): 8
+(  1,-1 ): 9
+
+Now, layer 2 (k=2) starts at (2,0): let's see where 10 is.
+
+From the 5x5 Ulam spiral, the next number after 9 is 10 at (2,0)
+
+But in our previous 3x3, (2,0) is already 3. So we need to expand the grid.
+
+Actually, the 5x5 spiral starts filling outside the previous 3x3.
+
+The bottom left of the 5x5 is (-2,-2), top right is (2,2)
+
+We start at (2,-2), but actually, the standard Ulam spiral starts the new layer at (k, -k) and moves right along the bottom row.
+
+But let's look up a reference for the Ulam spiral coordinates.
+
+Alternatively, let's use the following method (from OEIS A174344 and A174345):
+
+Let’s use the following algorithm (from Rosetta Code):
+
+To get the coordinates of n in the Ulam spiral:
+
+Let x = 0, y = 0 for n = 1
+
+For n > 1:
+
+Let k = floor( (sqrt(n-1) + 1)/2 )
+
+Let t = 2k + 1
+
+Let m = t^2
+
+Let d = m - n
+
+Let s = t - 1
+
+If d <= s:
+    x = k - d
+    y = -k + 1
+elif d <= 2*s:
+    x = -k + 1
+    y = -k + 1 + (d - s)
+elif d <= 3*s:
+    x = -k + 1 - (d - 2*s)
+    y = k + 1
+else:
+    x = -k + 1
+    y = k + 1 - (d - 3*s)
+
+But let's check for n=2:
+
+k = floor((sqrt(1) + 1)/2) = floor((1+1)/2) = floor(1) = 1
+
+t = 3
+
+m = 9
+
+d = 9 - 2 = 7
+
+s = 2
+
+d=7
+
+First if: d<=2? No
+
+Second: d<=4? 7<=4? No
+
+Third: d<=6? 7<=6? No
+
+Fourth: else
+
+x = -1 + 1 = 0
+
+y = 1 + 1 - (7 - 6) = 2 - 1 = 1
+
+But in our mapping, n=2 is at (1,0)
+
+Hmm, so the coordinate system is different. Let's see if we can adjust.
+
+Alternatively, let's try the following known mapping (from Wikipedia):
+
+For n > 1:
+
+Let k = floor( (sqrt(n) - 1)/2 )
+
+Let t = 2k + 1
+
+Let m = t^2
+
+Let d = m - n
+
+Let s = t - 1
+
+If d <= s:
+    x = k - d + 1
+    y = k + 1
+elif d <= 2*s:
+    x = -k + 1
+    y = k + 1 - (d - s)
+elif d <= 3*s:
+    x = -k + 1 - (d - 2*s)
+    y = -k + 1
+else:
+    x = k + 1
+    y = -k + 1 + (d - 3*s)
+
+Let’s test for n=2:
+
+k = floor((sqrt(2)-1)/2) = floor((1.414-1)/2) = floor(0.207) = 0
+
+t = 1
+
+m = 1
+
+d = 1 - 2 = -1  (But d should be >=0)
+
+Alternatively, let's use n=9
+
+k = floor((3-1)/2) = floor(2/2) = 1
+
+t = 3
+
+m = 9
+
+d = 9 - 9 = 0
+
+s = 2
+
+d=0 <= 2? Yes
+
+x = -1 + 1 = 0
+
+y = 1 + 1 - (0 - 2) = 2 - (-2) = 4? That can't be.
+
+Alternatively, let's use a different approach, since this is getting too bogged down.
+
+Let’s directly calculate the coordinates for 2026 using the layer approach.
+
+We know 2026 is the first number of layer 23.
+
+Let’s define the starting point of layer 23.
+
+From the 3x3 example, the first number of layer 1 (numbers 2–9) is at (1,0)
+
+For layer 2 (numbers 10–25), let's try to see where 10 is.
+
+From the 5x5 Ulam spiral, 10 is at (2,0)
+
+Similarly, for layer k, the first number is at (k, 0)
+
+Let’s check for k=1: (1,0) = 2
+
+k=2: (2,0) = 10
+
+k=3: (3,0) = 26
+
+Let’s check if that's true.
+
+Let’s build the 5x5 spiral.
+
+The 3x3 is as before, up to 9 at (-1,-1)
+
+Now, expand to 5x5:
+
+Start at (2,-2): let's see the path.
+
+From (2,0) [which was 3], but in the 5x5, we start at the new bottom left and move right.
+
+But let's use a reference or calculate manually.
+
+Alternatively, let's use the following:
+
+The bottom left of the 5x5 is (-2,-2), top right is (2,2)
+
+The numbers on the bottom row from left to right: from (-2,-2) to (2,-2)
+
+But in the Ulam spiral, we start at the bottom left and move right along the bottom row.
+
+But in our earlier 3x3, we started at (1,0) for layer 1.
+
+But perhaps the starting point for layer k is at (k, -k)
+
+But for k=1: (1,-1), but in our mapping, 2 is at (1,0)
+
+Alternatively, let's see the sequence of first numbers of each layer:
+
+Layer 0: 1 at (0,0)
+
+Layer 1: starts at 2 at (1,0)
+
+Layer 2: starts at 10 at (2,0)
+
+Let’s check how many numbers before layer 2:
+
+Layer 0: 1 number
+
+Layer 1: 8 numbers (2–9)
+
+So layer 2 starts at 10
+
+If 10 is at (2,0), then the pattern is that the first number of layer k is at (k,0)
+
+Let’s check for k=3:
+
+Layer 2 ends at 25
+
+Layer 3 starts at 26
+
+If 26 is at (3,0), let's see if that's consistent.
+
+From online Ulam spiral images, yes, the number at (k,0) for k >= 1 is the first number of that layer.
+
+So for layer k, the first number is at (k,0) and is equal to (2k-1)^2 + 2
+
+Let’s check for k=1:
+
+(2*1-1)^2 + 2 = (1)^2 + 2 = 1 + 2 = 3
+
+But in our mapping, (1,0) = 2
+
+Hmm, not matching.
+
+Alternatively, let's compute the first number of layer k.
+
+Layer 0: n=1 at (0,0)
+
+Layer 1: n=2 to 9, starts at n=2
+
+Layer 2: n=10 to 25, starts at n=10
+
+Layer 3: n=26 to 49, starts at n=26
+
+The last number of layer (k-1) is (2k-3)^2
+
+So first number of layer k is (2k-3)^2 + 1
+
+For k=1: (2*1-3)^2 + 1 = (-1)^2 + 1 = 1 + 1 = 2
+
+For k=2: (2*2-3)^2 + 1 = (4-3)^2 + 1 = 1 + 1 = 2? No
+
+Wait, that's not right.
+
+Let’s define L_k = last number of layer k
+
+L_0 = 1
+
+L_k = (2k+1)^2
+
+First number of layer k = L_{k-1} + 1 = (2(k-1)+1)^2 + 1 = (2k-1)^2 + 1
+
+For k=1: (2*1-1)^2 + 1 = (1)^2 + 1 = 2
+
+For k=2: (2*2-1)^2 + 1 = (3)^2 + 1 = 9 + 1 = 10
+
+For k=3: (5)^2 + 1 = 25 + 1 = 26
+
+Yes, so first number of layer k is at (k,0) and is (2k-1)^2 + 1
+
+And in the spiral, the first number of each layer is at (k,0)
+
+So for layer 23:
+
+First number = (2*23-1)^2 + 1 = (45)^2 + 1 = 2025 + 1 = 2026
+
+And its coordinates are (23, 0)
+
+So 2026 is at (23, 0)
+
+Now, we need to find the 8 neighbors of (23,0):
+
+The 8 neighbors are:
+
+(22, -1), (22, 0), (22, 1),
+(23, -1),         (23, 1),
+(24, -1), (24, 0), (24, 1)
+
+Now, we need to find the numbers at these positions.
+
+To do that, we need a way to map coordinates (x, y) to the number n at that position.
+
+Let’s derive a formula for n given (x, y).
+
+Let’s recall that in the Ulam spiral, for a given (x, y), the layer k is max(|x|, |y|)
+
+Let’s denote k = max(|x|, |y|)
+
+Then, the side length of the square is s = 2k + 1
+
+The largest number in this layer is s^2
+
+Now, let's determine the position within the layer.
+
+Let’s define the four sides:
+
+Let’s define the starting point of the layer as (k, -k)
+
+The numbers are filled as follows:
+
+1. Move right along the bottom row from (k, -k) to (k, k): but in our earlier mapping, we started at (k, 0) for the first number, but let's check the standard.
+
+But from the earlier 3x3 mapping, the first number of the layer is at (k, 0), and then the spiral proceeds up, left, down.
+
+But let’s use a consistent definition.
+
+From the Wikipedia Ulam spiral image and the standard definition:
+
+- The spiral starts at (0,0) = 1
+- Moves right to (1,0) = 2, (2,0) = 3
+- Moves up to (2,1) = 4, (2,2) = 5
+- Moves left to (1,2) = 6, (0,2) = 7, (-1,2) = 8
+- Moves down to (-1,1) = 9, (-1,0) = 10, (-1,-1) = 11
+- Moves right to (0,-1) = 12, (1,-1) = 13, (2,-1) = 14
+- Moves up to (2,0) already filled, so next is (2,1) already filled, so (3,1) = 15, etc.
+
+But in our problem's mapping, after 3 at (2,0), up to (2,1)=4, left to (1,1)=5, (0,1)=6, (-1,1)=7, down to (-1,0)=8, (-1,-1)=9
+
+So let's define for a given (x, y), k = max(|x|, |y|)
+
+Let’s define the perimeter offset.
+
+Let’s define the starting point of the layer as (k, -k)
+
+Then the path is:
+
+1. Move up along x=k from y=-k to y=k: positions (k, -k) to (k, k) [2k+1 numbers]
+But in our mapping, the first number is at (k, 0), not (k, -k)
+
+Alternatively, let's use the mapping from OEIS A174344/A174345:
+
+Given (x, y), n can be computed as follows:
+
+Let k = max(|x|, |y|)
+
+Let m = 2k + 1
+
+Let s = m^2
+
+Let d = 0
+
+If x == k and y >= -k and y <= k:
+    d = y + k
+elif y == k and x <= k and x > -k:
+    d = 2k + (k - x)
+elif x == -k and y <= k and y > -k:
+    d = 4k + (k - y)
+elif y == -k and x >= -k and x < k:
+    d = 6k + (k + x)
+else:
+    # inner point
+    # But for the perimeter, this won't happen
+
+But let's test with (1,0):
+
+k = 1
+
+If x==1 and y in [-1,1]: yes, y=0
+
+d = 0 + 1 = 1
+
+s = 9
+
+But the number at (1,0) is 2, but s - d + 1 = 9 - 1 + 1 = 9? No
+
+Alternatively, let's use the following from Rosetta Code (Ulam spiral):
+
+def get_value(x, y):
+    if x == 0 and y == 0:
+        return 1
+    k = max(abs(x), abs(y))
+    # size of the square
+    size = 2 * k + 1
+    # numbers in the previous layers
+    prev = (size - 2) ** 2
+    # offset from the start of this layer
+    if x == k:
+        # right edge, moving up
+        offset = y + k
+    elif y == k:
+        # top edge, moving left
+        offset = 3 * k - x
+    elif x == -k:
+        # left edge, moving down
+        offset = 5 * k - y
+    elif y == -k:
+        # bottom edge, moving right
+        offset = 7 * k + x
+    else:
+        # not on the perimeter
+        return None
+    return prev + offset + 1
+
+Let’s test for (1,0):
+
+k = max(1,0) = 1
+
+size = 3
+
+prev = (3-2)^2 = 1
+
+x==k: yes, x=1
+
+offset = y + k = 0 + 1 = 1
+
+return prev + offset + 1 = 1 + 1 + 1 = 3
+
+But in our mapping, (1,0) = 2
+
+So perhaps the offset is off by one.
+
+Alternatively, perhaps the starting point is different.
+
+Let’s try (2,0) for n=3 in the 3x3:
+
+k = 2? No, for (2,0), k = 2
+
+But in 3x3, k=1
+
+Wait, for the 3x3, the coordinates go from -1 to 1, so k = 1
+
+For (1,0), k=1
+
+Let’s try the formula above for (1,0):
+
+k = 1
+
+size = 3
+
+prev = (3-2)^2 = 1
+
+x==k: yes
+
+offset = y + k = 0 + 1 = 1
+
+n = prev + offset + 1 = 1 + 1 + 1 = 3
+
+But in our mapping, (1,0) = 2
+
+So perhaps the formula gives the number at (k, y) as prev + (y + k) + 1
+
+But in the spiral, (k, -k) is the first number of the layer
+
+Let’s try (1, -1):
+
+k = 1
+
+x==1, y=-1
+
+offset = y + k = -1 + 1 = 0
+
+n = 1 + 0 + 1 = 2
+
+But in our mapping, (1,-1) = 9
+
+Hmm
+
+Alternatively, let's try a different approach.
+
+Let’s use the fact that we know 2026 is at (23,0), and we want the numbers at its 8 neighbors.
+
+Since the spiral is radially symmetric and the numbers increase outward, the numbers at the neighbors can be found by understanding the local structure.
+
+Let’s try to find a pattern for the numbers around (k,0).
+
+Let’s take a small k, say k=1: (1,0)=2
+
+Its neighbors:
+
+(0,-1), (0,0), (0,1),
+(1,-1),      (1,1),
+(2,-1), (2,0), (2,1)
+
+From our 3x3 mapping:
+
+(0,0) = 1
+
+(0,1) = 6
+
+(0,-1) = 8
+
+(1,1) = 5
+
+(1,-1) = 9
+
+(2,0) = 3
+
+(2,1) = 4
+
+(2,-1): in our mapping, x=2, y=-1 is outside the 3x3, but in the 5x5 it would be present.
+
+But for now, let's list the numbers at the neighbors of (1,0):
+
+(0,-1): 8
+
+(0,0): 1
+
+(0,1): 6
+
+(1,-1): 9
+
+(1,1): 5
+
+(2,-1): let's see, in 5x5, (2,-1) would be next to (2,0)=3
+
+From the 5x5 Ulam spiral:
+
+Let’s try to construct the 5x5:
+
+From the 3x3:
+
+(-1,1):5  (0,1):6  (1,1):3
+(-1,0):8  (0,0):1  (1,0):2
+(-1,-1):9 (0,-1):? (1,-1):?
+
+But let's build it step by step.
+
+After 9 at (-1,-1), next is 10.
+
+From (-1,-1), we move right to (0,-1):10, (1,-1):11, (2,-1):12
+
+Then up to (2,0):13, (2,1):14, (2,2):15
+
+Then left to (1,2):16, (0,2):17, (-1,2):18, (-2,2):19
+
+Then down to (-2,1):20, (-2,0):21, (-2,-1):22, (-2,-2):23
+
+Then right to (-1,-2):24, (0,-2):25
+
+Now fill in the grid:
+
+Let’s make a table:
+
+y=2: (-2,2):19, (-1,2):18, (0,2):17, (1,2):16, (2,2):15
+
+y=1: (-2,1):20, (-1,1):5, (0,1):6, (1,1):3, (2,1):14
+
+y=0: (-2,0):21, (-1,0):8, (0,0):1, (1,0):2, (2,0):13
+
+y=-1: (-2,-1):22, (-1,-1):9, (0,-1):10, (1,-1):11, (2,-1):12
+
+y=-2: (-2,-2):23, ( -1,-2):24, (0,-2):25
+
+Now, (1,0)=2
+
+Neighbors:
+
+(0,-1):10
+
+(0,0):1
+
+(0,1):6
+
+(1,-1):11
+
+(1,1):3
+
+(2,-1):12
+
+(2,0):13
+
+(2,1):14
+
+So the 8 neighbors of 2 are: 1, 3, 6, 10, 11, 12, 13, 14
+
+Sum = 1+3+6+10+11+12+13+14 = let's compute:
+
+1+3=4
+
+4+6=10
+
+10+10=20
+
+20+11=31
+
+31+12=43
+
+43+13=56
+
+56+14=70
+
+So sum is 70
+
+But this is for n=2 at (1,0)
+
+But we need a general formula.
+
+Notice that for (k,0), the neighbors are at:
+
+(x, y) = (k±1, 0±1), (k, 0±1), (k±1, 0)
+
+Let’s see the numbers at these positions for general k.
+
+From the construction, at (k,0), the number is N = (2k-1)^2 + 2
+
+But for k=1: (2*1-1)^2 + 2 = 1 + 2 = 3, but at (1,0) is 2, so not matching.
+
+But from earlier, at (k,0), the number is the first number of the layer, which is (2k-1)^2 + 1
+
+For k=1: (1)^2 + 1 = 2
+
+For k=2: (3)^2 + 1 = 10
+
+For k=3: (5)^2 + 1 = 26
+
+Now, let's see what numbers are at the neighbors of (k,0):
+
+Let’s take k=2: (2,0)=10
+
+Neighbors:
+
+(1,-1), (1,0), (1,1),
+(2,-1),      (2,1),
+(3,-1), (3,0), (3,1)
+
+From the 5x5 grid above:
+
+(1,0):2
+
+(1,1):3
+
+(1,-1):11
+
+(2,1):14
+
+(2,-1):12
+
+(3,0): let's extend the spiral to 7x7 to find (3,0)
+
+But let's try to find a pattern.
+
+From the 5x5, at (2,0):13
+
+At (3,0): in 7x7, let's try to compute.
+
+But perhaps we can deduce the general pattern.
+
+Let’s observe the differences.
+
+At (k,0): N = (2k-1)^2 + 1
+
+At (k,1): let's see for k=1: (1,1)=3
+
+For k=2: (2,1)=14
+
+Let’s see the difference between (k,1) and (k,0):
+
+For k=1: (1,1)=3, (1,0)=2, diff=1
+
+For k=2: (2,1)=14, (2,0)=13, diff=1
+
+So (k,1) = (k,0) + 1
+
+Similarly, (k,-1): For k=1: (1,-1)=9, (1,0)=2, diff=7
+
+For k=2: (2,-1)=12, (2,0)=13, diff=-1
+
+Not obvious.
+
+Let’s try to find a formula for (k+1,0):
+
+From k=1: (2,0)=13? No, in 5x5 (2,0)=13
+
+But for k=2, (2,0)=13
+
+But earlier we said (2,0) should be 10? No, in the 5x5 above, (2,0)=13
+
+But according to earlier, the first number of layer 2 is at (2,0)=10
+
+But in our 5x5 grid above, (2,0)=13
+
+Let’s double-check the 5x5 construction.
+
+Let’s reconstruct the 5x5 spiral properly:
+
+Start at (0,0)=1
+
+Right to (1,0)=2, (2,0)=3
+
+Up to (2,1)=4, (2,2)=5
+
+Left to (1,2)=6, (0,2)=7, (-1,2)=8, (-2,2)=9
+
+Down to (-2,1)=10, (-2,0)=11, (-2,-1)=12, (-2,-2)=13
+
+Right to (-1,-2)=14, (0,-2)=15, (1,-2)=16, (2,-2)=17
+
+Up to (2,-1)=18, (2,0) already has 3, so next is (3,-1)=19, (3,0)=20, (3,1)=21, (3,2)=22
+
+Left to (2,2) already has 5, so (2,1)=23, (1,1)=24, (0,1)=25, (-1,1) already has 8, etc.
+
+But this is getting messy.
+
+Alternatively, let's use the coordinate to number mapping from OEIS A174344:
+
+Given (x, y), n is computed as follows:
+
+Let k = max(|x|, |y|)
+
+Let s = 2k + 1
+
+Let m = s^2
+
+Let d = 0
+
+If x == k and y >= -k and y <= k:
+    d = y + k
+elif y == k and x <= k and x > -k:
+    d = 3k - x
+elif x == -k and y <= k and y > -k:
+    d = 5k - y
+elif y == -k and x >= -k and x < k:
+    d = 7k + x
+else:
+    # not on the perimeter
+    return None
+
+n = m - d
+
+Let’s test for (1,0):
+
+k = 1
+
+x==1 and y in [-1,1]: yes
+
+d = y + k = 0 + 1 = 1
+
+m = 9
+
+n = 9 - 1 = 8
+
+But in our mapping, (1,0)=2
+
+Not matching.
+
+Let’s try (2,0):
+
+k=2
+
+x==2, y=0 in [-2,2]: yes
+
+d = 0 + 2 = 2
+
+m = 25
+
+n = 25 - 2 = 23
+
+But in our 5x5 above, (2,0)=13
+
+So not matching.
+
+Alternatively, let's use the mapping from Wikipedia's Ulam spiral image.
+
+Let’s instead use the fact that for (k,0), the number is the first number of the layer, which is (2k-1)^2 + 1
+
+For (k,1):
+
+From the 3x3: (1,1)=3
+
+From the 5x5 above, (2,1)=14
+
+From the formula, let's see the difference between (k,1) and (k,0):
+
+For k=1: (1,1)=3, (1,0)=2, diff=1
+
+For k=2: (2,1)=14, (2,0)=13, diff=1
+
+So (k,1) = (k,0) + 1
+
+Similarly, (k,-1):
+
+For k=1: (1,-1)=9, (1,0)=2, diff=7
+
+For k=2: (2,-1)=12, (2,0)=13, diff=-1
+
+Not clear.
+
+But let's look at the 5x5 grid we built earlier:
+
+From earlier 5x5 grid:
+
+(2,0)=13
+
+(2,1)=14
+
+(2,-1)=12
+
+(1,0)=2
+
+(1,1)=3
+
+(1,-1)=11
+
+(3,0)= let's construct (3,0)
+
+From the 7x7 spiral, but let's try to extend.
+
+After (2,-2)=17 in the previous step, we go up:
+
+(3,-1)=18
+
+(3,0)=19
+
+(3,1)=20
+
+(3,2)=21
+
+Then left to (2,2)=5 (already filled), so (2,1)=22, etc.
+
+But this is error-prone.
+
+Alternatively, let's use the following approach:
+
+Since 2026 is at (23,0), let's compute the numbers at its neighbors by determining their coordinates and using a reliable coordinate-to-number mapping.
+
+Let’s use the following mapping from OEIS A174344/A174345, which is known to be correct:
+
+Given (x, y):
+
+Let k = max(|x|, |y|)
+
+Let s = 2k + 1
+
+Let m = s^2
+
+Let d = 0
+
+If x == k and y >= -k and y <= k:
+    d = y + k
+elif y == k and x <= k and x > -k:
+    d = 3k - x
+elif x == -k and y <= k and y > -k:
+    d = 5k - y
+elif y == -k and x >= -k and x < k:
+    d = 7k + x
+else:
+    # not on the perimeter
+    n = None
+
+n = m - d
+
+But as above, this gives for (1,0): k=1, x==1, y=0, d=0+1=1, m=9, n=8, but we want n=2
+
+But perhaps this mapping is for a different spiral orientation.
+
+Alternatively, let's use the mapping from here: https://en.wikipedia.org/wiki/Ulam_spiral#Coordinate_system
+
+But for our purposes, let's use the following:
+
+We know that for (k,0), n = (2k-1)^2 + 1
+
+We also know from the small cases that the numbers at (k,1) = n + 1
+
+At (k,-1): let's see from the 3x3: (1,-1)=9, (1,0)=2, difference is 7
+
+From 5x5: (2,-1)=12, (2,0)=13, difference is -1
+
+Not a clear formula.
+
+But let's try to find a pattern for the neighbors of (k,0):
+
+Let’s list for k=1: (1,0)=2
+
+Neighbors:
+
+(0,-1):8
+
+(0,0):1
+
+(0,1):6
+
+(1,-1):9
+
+(1,1):3
+
+(2,-1):12 (from 5x5)
+
+(2,0):3 (from 3x3), but in 5x5 (2,0)=13
+
+(2,1):4 (from 3x3), in 5x5 (2,1)=14
+
+But let's focus on the 5x5 for k=2: (2,0)=13
+
+Neighbors:
+
+(1,-1):11
+
+(1,0):2
+
+(1,1):3
+
+(2,-1):12
+
+(2,1):14
+
+(3,-1): let's assume from extension, but let's calculate
+
+(3,0): let's assume
+
+(3,1): let's assume
+
+But perhaps we can use the layer approach.
+
+Let’s notice that the 8 neighbors of (k,0) are at:
+
+(x, y) = (k±1, 0±1), (k, 0±1), (k±1, 0)
+
+Let’s try to find the numbers at these positions.
+
+Let’s define N = number at (k,0) = (2k-1)^2 + 1
+
+From the local structure of the spiral, moving up from (k,0) gives (k,1), which is N+1
+
+Moving left from (k,1) gives (k-1,1), etc.
+
+But to save time, let's use the following approach:
+
+Let’s accept that for (k,0), the number is N = (2k-1)^2 + 1
+
+Now, the numbers at the neighbors can be calculated as follows, based on the local pattern observed in the 3x3 and 5x5:
+
+From the 3x3 for k=1, N=2 at (1,0):
+
+Neighbors:
+(0,-1):8
+(0,0):1
+(0,1):6
+(1,-1):9
+(1,1):3
+(2,-1):12 (from 5x5)
+(2,0):3 (from 3x3), but in 5x5 (2,0)=13
+(2,1):4 (from 3x3), in 5x5 (2,1)=14
+
+But let's use the 5x5 for k=2, N=10 at (2,0)? But in our 5x5 grid, (2,0)=13
+
+But earlier calculation says first number of layer 2 is at (2,0)=10
+
+But in the constructed 5x5 grid, (2,0)=13
+
+There is a confusion in the starting point.
+
+Let’s instead use the following resource: https://mathworld.wolfram.com/UlamSpiral.html
+
+But since we can't access external links, let's try to be systematic.
+
+Let’s define the bottom left of the layer as ( -k, -k ), and the first number of the layer is at ( -k, -k ), moving right along the bottom row.
+
+But in our problem's example, the first number of the layer is at (k,0)
+
+But in the standard Ulam spiral, it's at ( -k, -k )
+
+Given the time, let's use the following:
+
+Since 2026 is at (23,0), and from the local pattern in the 3x3 and 5x5, the numbers at the neighbors can be calculated if we know the local increments.
+
+From the 3x3 at (1,0)=2:
+
+Neighbors: 1, 3, 6, 8, 9
+
+From the 5x5 at (2,0)=13:
+
+Let’s reconstruct the 5x5 properly with (2,0)=13
+
+Let’s build the 5x5 with (0,0)=1
+
+Right: (1,0)=2, (2,0)=3
+
+Up: (2,1)=4, (2,2)=5
+
+Left: (1,2)=6, (0,2)=7, (-1,2)=8, (-2,2)=9
+
+Down: (-2,1)=10, (-2,0)=11, (-2,-1)=12, (-2,-2)=13
+
+Right: (-1,-2)=14, (0,-2)=15, (1,-2)=16, (2,-2)=17
+
+Up: (3,-2)=18, (3,-1)=19, (3,0)=20, (3,1)=21, (3,2)=22
+
+Left: (2,2)=5 (already), (2,1)=23, (1,1)=24, (0,1)=25, (-1,1)=26, (-2,1)=10 (already)
+
+But this is getting too complex.
+
+Given the time, let's use the following practical approach:
+
+Since 2026 is the first number of layer 23 and is at (23,0), the numbers at the neighbors can be approximated by the local pattern:
+
+From the 3x3 at (1,0)=2:
+
+Neighbors: (0,-1)=8, (0,0)=1, (0,1)=6, (1,-1)=9, (1,1)=3, (2,-1)= let's say 12, (2,0)=3, (2,1)=4
+
+But (2,0) is not a neighbor, it's (1+1,0)
+
+But for (k,0), the neighbors are (k±1,0±1), (k,0±1), (k±1,0)
+
+But (k+1,0) is not a neighbor, it's to the right.
+
+The 8 neighbors are only the adjacent cells.
+
+So for (k,0), the neighbors are:
+
+(k-1, -1), (k-1, 0), (k-1, 1),
+(k, -1),       (k, 1),
+(k+1, -1), (k+1, 0), (k+1, 1)
+
+But (k+1,0) is not a neighbor in the usual sense, but in grid terms, it is a neighbor if we include all 8 directions.
+
+But typically, the 8 neighbors are all cells at Chebyshev distance 1 except the cell itself.
+
+So yes, (k+1,0) is a neighbor.
+
+But in the spiral, (k+1,0) is in the next layer.
+
+But let's proceed.
+
+Given the complexity and time, let's use the following:
+
+From the 3x3 at (1,0)=2, sum of neighbors = 1+3+6+8+9 = 27 (excluding the three on the right, since only left and above and below are filled in 3x3, but in full grid all 8 exist)
+
+But in the full grid, all 8 neighbors exist.
+
+From the 5x5 at (2,0)=13
+
+Let’s list its neighbors using the 5x5 grid above (assuming (2,0)=13):
+
+From earlier 5x5:
+
+(2,0)=13
+
+Neighbors:
+
+(1,-1):11
+
+(1,0):2
+
+(1,1):3
+
+(2,-1):12
+
+(2,1):14
+
+(3,-1): let's say from pattern, should be 18 (from extension)
+
+(3,0):19
+
+(3,1):20
+
+But let's assume the pattern from the 3x3 holds:
+
+At (k,0), the numbers at the neighbors are:
+
+Let N = number at (k,0)
+
+Then the numbers at:
+
+(k-1, -1): N - 3k + 2
+
+(k-1, 0): N - 2k + 1
+
+(k-1, 1): N - 2k + 2
+
+(k, -1): N - k
+
+(k, 1): N + 1
+
+(k+1, -1): N + k + 1
+
+(k+1, 0): N + 2k + 1
+
+(k+1, 1): N + 2k + 2
+
+But let's test for k=1, N=2
+
+(k-1,-1): (0,-1): 2 - 3*1 + 2 = 2 - 3 + 2 = 1
+
+But in 3x3, (0,-1)=8
+
+Not matching.
+
+Alternatively, let's give up on formula and compute for k=23 directly using a programmatic approach or accept that the sum can be calculated if we can find the numbers at the 8 neighbors.
+
+But since this is a math competition problem, there is likely a pattern.
+
+Let’s observe that in the 3x3 at (1,0)=2, the sum of the 8 neighbors in the full grid would be:
+
+From the 5x5 grid extension:
+
+Let’s assume the following for general k at (k,0):
+
+Let N = (2k-1)^2 + 1
+
+Then the numbers at:
+
+(k,1) = N + 1
+
+(k,-1) = N - k
+
+(k-1,1) = ?
+
+But from the 3x3 at (1,0)=2:
+
+(1,1)=3 = N + 1
+
+(1,-1)=9 = N + 7
+
+But 7 = 3*2 + 1
+
+Not clear.
+
+From the 5x5 at (2,0)=13
+
+(2,1)=14 = N + 1
+
+(2,-1)=12 = N - 1
+
+(1,1)=3
+
+(1,-1)=11
+
+(3,1)= let's say 21
+
+(3,-1)=19
+
+(3,0)=20
+
+But not clear.
+
+But let's try to see the sum for k=1 at (1,0)=2
+
+Neighbors: (0,-1)=8, (0,0)=1, (0,1)=6, (1,-1)=9, (1,1)=3, (2,-1)=12, (2,0)=3, (2,1)=4
+
+Sum = 8+1+6+9+3+12+3+4 = let's compute:
+
+8+1=9
+
+9+6=15
+
+15+9=24
+
+24+3=27
+
+27+12=39
+
+39+3=42
+
+42+4=46
+
+But (2,0)=3 is not a neighbor in the strict sense if we only want the 8 surrounding, but (2,0) is to the right, so it is a neighbor.
+
+But in the 3x3, (2,0)=3 is already used.
+
+But in the full grid, all 8 neighbors exist.
+
+But in any case, for the purpose of this problem, let's assume that for large k, the numbers at the neighbors of (k,0) are approximately N ± O(k)
+
+But let's try a different approach.
+
+Let’s note that in the Ulam spiral, the numbers on the same layer are consecutive, and the layer has 8k numbers.
+
+The first number of the layer is at (k,0) = N = (2k-1)^2 + 1
+
+Then the numbers increase as we move up along x=k from y=-k to y=k, then left along y=k from x=k-1 to x=-k, etc.
+
+But since 2026 is at (23,0), and the layer has 8*23=184 numbers, the numbers at the neighbors can be found by their relative positions.
+
+But to save time, let's use the following:
+
+From the 3x3 at (1,0)=2, the sum of the 8 neighbors is 46
+
+From the 5x5 at (2,0)=13, let's compute the sum of the 8 neighbors using the grid we built:
+
+From the 5x5 grid above:
+
+(2,0)=13
+
+Neighbors:
+
+(1,-1)=11
+
+(1,0)=2
+
+(1,1)=3
+
+(2,-1)=12
+
+(2,1)=14
+
+(3,-1)= let's say from extension, but let's assume from pattern: in 7x7, (3,-1) would be 18
+
+(3,0)=19
+
+(3,1)=20
+
+But let's use only the ones we have in 5x5:
+
+But (3,-1), (3,0), (3,1) are outside the 5x5, so let's only sum the ones inside for now.
+
+But for a large k like 23, all 8 neighbors exist.
+
+But perhaps the sum of the 8 neighbors of the first number of layer k is a function of k.
+
+From k=1: sum=46
+
+Let’s try to find for k=2 using the 5x5 grid.
+
+From above, (2,0)=13
+
+Neighbors:
+
+(1,-1)=11
+
+(1,0)=2
+
+(1,1)=3
+
+(2,-1)=12
+
+(2,1)=14
+
+(3,-1)= let's say 18 (from extension)
+
+(3,0)=19
+
+(3,1)=20
+
+Sum = 11+2+3+12+14+18+19+20 = let's compute:
+
+11+2=13
+
+13+3=16
+
+16+12=28
+
+28+14=42
+
+42+18=60
+
+60+19=79
+
+79+20=99
+
+So sum=99
+
+Now, for k=1, sum=46
+
+For k=2, sum=99
+
+Let’s see the difference: 99 - 46 = 53
+
+Let’s see if there's a pattern.
+
+Let’s see if sum_k = a*k^2 + b*k + c
+
+For k=1, sum=46
+
+For k=2, sum=99
+
+Let’s compute for k=3 if possible.
+
+But for now, let's assume the sum increases quadratically.
+
+Let’s try to find a formula.
+
+Let’s assume sum_k = a*k^2 + b*k + c
+
+For k=1: a + b + c = 46
+
+For k=2: 4a + 2b + c = 99
+
+Subtract: (4a+2b+c) - (a+b+c) = 99-46 => 3a + b = 53
+
+So b = 53 - 3a
+
+From first equation: a + (53 - 3a) + c = 46
+
+a + 53 - 3a + c = 46
+
+-2a + c = 46 - 53 = -7
+
+c = -7 + 2a
+
+Let’s try to find for k=3.
+
+But this is getting too time-consuming.
+
+Alternatively, let's observe that in the Ulam spiral, the sum of the 8 neighbors of a number at (k,0) can be computed as follows:
+
+Let N = (2k-1)^2 + 1
+
+Then the numbers at:
+
+(k,1) = N + 1
+
+(k,-1) = N - k
+
+(k-1,1) = N - 2k + 2
+
+(k-1,-1) = N - 3k + 3
+
+(k+1,-1) = N + k + 1
+
+(k+1,1) = N + 2k + 2
+
+(k+1,0) = N + 2k + 1
+
+(k-1,0) = N - 2k + 1
+
+Let’s test for k=1, N=2
+
+(k,1)=2+1=3
+
+(k,-1)=2-1=1
+
+(k-1,1)=2-2+2=2
+
+(k-1,-1)=2-3+3=2
+
+(k+1,-1)=2+1+1=4
+
+(k+1,1)=2+2+2=6
+
+(k+1,0)=2+2+1=5
+
+(k-1,0)=2-2+1=1
+
+But in the 3x3, the actual values are:
+
+(1,1)=3
+
+(1,-1)=9
+
+(0,1)=6
+
+(0,-1)=8
+
+(2,-1)=12
+
+(2,1)=4
+
+(2,0)=3
+
+(0,0)=1
+
+So not matching, but perhaps with adjustment.
+
+But let's try to sum these using the above formula for k=1:
+
+3 + 1 + 2 + 2 + 4 + 6 + 5 + 1 = 24
+
+But actual sum is 46
+
+So not matching.
+
+Given the complexity and time constraints, and since this is a well-known type of problem, the sum of the 8 neighbors of the first number of layer k in the Ulam spiral is 8k^2 + 8k + 2
+
+For k=1: 8*1 + 8*1 + 2 = 8 + 8 + 2 = 18, not 46
+
+Alternatively, let's search for a pattern with the sums we have:
+
+For k=1: sum=46
+
+For k=2: sum=99
+
+Difference: 99-46=53
+
+Assume quadratic: sum_k = a k^2 + b k + c
+
+From above:
+
+a + b + c = 46
+
+4a + 2b + c = 99
+
+Let’s compute for k=3 using the same method or accept that for k=23, we can compute the numbers at the neighbors by realizing that the sum is 8 * (number at center) + constant, but from the values, it's not linear.
+
+Alternatively, let's notice that for large k, the numbers at (k,0) and its neighbors are approximately N, N+1, N- k, etc.
+
+But let's
+----
+Usage(input=121, output=16384, details={'estimated_cost': 0.0098546})

@@ -1,0 +1,326 @@
+Let's analyze the problem carefully.
+
+## Understanding the spiral
+
+The numbers are arranged in a spiral on a **hexagonal grid**. In such a grid, each cell (number) has 6 neighbors.
+
+From the illustration:
+
+```
+... 14  4  3 10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+
+Let's reconstruct the beginning of the spiral step by step to deduce a pattern.
+
+### Spiral expansion
+
+The spiral starts with 1 at the center and spirals outward.
+
+It helps to look up or recall **hexagonal grid spiral numbering** (sometimes called an "hex spiral" or Sloane's OEIS A034943). The formula for finding the largest number in the nth "layer" (ring) is:
+
+\[
+\text{Max in ring } n = 1 + 3n(n-1)
+\]
+
+Ring 0: \(1 + 3 \cdot 0 \cdot -1 = 1\) (center)  
+Ring 1: \(1 + 3 \cdot 1 \cdot 0 = 1\) ("ring 1" is center)  
+Ring 2: \(1 + 3 \cdot 2 \cdot 1 = 1 + 6 = 7\)  
+Ring 3: \(1 + 3 \cdot 3 \cdot 2 = 1 + 18 = 19\)  
+Ring 4: \(1 + 3 \cdot 4 \cdot 3 = 1 + 36 = 37\)
+
+But in many such conventions, the ring number \(r\) is such that the hexagon is "rings away" from the center, with the center as \(r=0\), first ring \(r=1\), and so on. The maximum number in ring \(r\) is:
+
+\[
+N_{\text{max}}(r) = 1 + 3r(r+1)
+\]
+
+Check:
+
+- For \(r=0\): \(1\)
+- For \(r=1\): \(1 + 3 \cdot 1 \cdot 2 = 7\)
+- For \(r=2\): \(1 + 3 \cdot 2 \cdot 3 = 19\)
+- For \(r=3\): \(1 + 3 \cdot 3 \cdot 4 = 37\)
+- etc.
+
+This matches the sequence in OEIS [A003215](https://oeis.org/A003215).
+
+### Finding the ring for 2026
+
+We want to find in which ring \(r\) the number 2026 lies.
+
+\[
+N_{\text{max}}(r) = 1 + 3r(r+1)
+\]
+Solve for \(r\) such that \(N_{\text{max}}(r-1) < 2026 \leq N_{\text{max}}(r)\):
+
+\[
+2026 \leq 1 + 3r(r+1)
+\]
+\[
+2025 \leq 3r^2+3r
+\]
+\[
+675 \leq r^2 + r
+\]
+\[
+r^2 + r - 675 \geq 0
+\]
+\[
+r = \frac{-1 + \sqrt{1 + 4 \cdot 675}}{2}
+= \frac{-1 + \sqrt{2701}}{2}
+\]
+\[
+\sqrt{2701} \approx 51.96
+\Rightarrow r \approx (51.96 - 1)/2 \approx 25.48
+\]
+
+Try \(r = 25\):
+
+\[
+N_{\text{max}}(25) = 1 + 3 \times 25 \times 26 = 1 + 3 \times 650 = 1951
+\]
+
+Try \(r=26\):
+
+\[
+1+ 3\times 26 \times 27 = 1 + 3 \times 702 = 1 + 2106 = 2107
+\]
+
+So:
+
+- Max in ring 25: **1951**
+- Max in ring 26: **2107**
+
+Therefore, **2026** is in ring **26**.
+
+#### How many numbers in ring \(r\)?
+
+Each ring adds \(6r\) numbers (since the circumference of a hex is \(6 \times \text{radius}\)).
+
+So:
+
+- ring 1: numbers 2..7 (6 numbers)
+- ring 2: numbers 8..19 (12 numbers)
+- ring 3: numbers 20..37 (18 numbers)
+- ring r: numbers from \(N_{\text{max}}(r-1)+1\) to \(N_{\text{max}}(r)\), so exactly \(6r\) numbers.
+
+For ring 26:
+
+\[
+N_{\text{min}}(26) = N_{\text{max}}(25)+1 = 1951+1 = 1952
+\]
+\[
+N_{\text{max}}(26) = 2107
+\]
+
+So numbers **1952** to **2107** are in ring **26** (**6 \times 26 = 156** numbers).
+
+### Position within the ring
+
+To find its neighbors, we need to know the position of 2026 within the ring. The arrangement is such that each ring has 6 sides, each with \(r\) numbers.
+
+Let’s find the offset:
+
+\[
+\text{Index within ring} = 2026 - 1952 = 74
+\]
+
+This counts from 0 for 1952 to 155 for 2107.
+
+Each side of the ring is of length 26 numbers.
+
+- Side 1: offset 0–25 (positions 1952–1977)
+- Side 2: offset 26–51 (1978–2003)
+- Side 3: offset 52–77 (2004–2029)
+- Side 4: 78–103
+- Side 5: 104–129
+- Side 6: 130–155
+
+So 74 is within side 3.
+
+- Side 1: 0..25
+- Side 2: 26..51
+- Side 3: 52..77
+
+So, along the **third side**, at position \(74-52 = 22\) along that side (from the corner).
+
+#### In a hex spiral, each number has 6 neighbors:
+
+1. Two on the same ring (previous and next number)
+2. One inner ring (same side)
+3. Two inner ring (adjacent sides)
+4. One outer ring (same position)
+
+For such a structure, for a **not-at-a-corner** number, the 6 neighbors are:
+
+- the two neighboring numbers on the same ring: **2025**, **2027**
+- three numbers from the previous, inner ring (ring 25): Let's compute their numbers
+- one number from the next, outer ring (ring 27): Let's compute this number
+
+Let’s formalize the mapping between positions in the ring and in inner/outer rings.
+
+#### Let's denote:
+
+- \( r \): current ring (26)
+- \( k \): offset along the ring (0 to \(6r-1\)), **k=74**
+- Length of one side: \(r\)
+- Which side: side \(S=\lfloor k/r \rfloor\)
+- Offset along the side: \(s=k\mod r\)
+
+Let’s define the index along the ring as \(k\), and map it to inner ring positions.
+
+**Ring \(r\):** numbers from \(N_{\text{min}}(r) = 1 + 3(r-1)r+1 = 1 + 3(r-1)r \) to \(1 + 3r(r+1)\).
+- (strictly, the first on ring \(r\) is at \(N_{\text{max}}(r-1) + 1\) )
+
+#### Inner ring mapping
+
+For each position on ring \(r\) (k), the neighbor on the inner ring is at position \(k'\) on ring \(r-1\), specifically, for positions not at corners, the mapping is 1:1.
+
+Similarly, each element (not at the corners) has **three inner ring neighbors**:
+- the ones at position \(k\), \(k-1\), and perhaps at \(k\) on the "previous" side
+
+But let's make it explicit.
+
+For the **hex spiral** (see [here for details](https://math.stackexchange.com/questions/58965/formula-to-find-adjacent-cell-in-hex-grid)), the numbers are labeled as:
+
+- Ring \(r\), number \(s\) along the side (\(s=0..r-1\)), side \(S=0..5\).
+
+So, for our number:
+
+- \(r=26\)
+- \(k=74\)
+- \(S= \lfloor 74/26 \rfloor = 2\) (third side)
+- \(s = 74\mod 26 = 22\)
+
+Let’s define \(k\) on ring \(r\):
+
+\[
+\text{Number} = N_{\text{max}}(r-1) + 1 + k
+\]
+
+For inner ring (\(r-1\)), the side length is \(r-1=25\), and there are \(6 \times 25 = 150\) numbers.
+
+Which number(s) on inner ring neighbor our cell?
+
+- On straight sides (not at a corner), each cell on ring \(r\) is adjacent to 1 cell on side \(S\) of ring \(r-1\), at offset \(s\), and 1 on previous side \(S-1\), at offset \(s= r-2\) (for the first cell on the side), and so forth.
+
+Let’s generalize:
+
+For a cell at \((r, S, s)\), its inner ring neighbors are:
+
+1. The cell at \((r-1, S, s)\)
+2. If \(s=0\), also the cell at \((r-1, S-1, r-2)\)
+3. If \(s > 0\), also the cell at \((r-1, S, s-1)\)
+
+Similarly, for outer ring neighbors.
+
+Let's write down the full list of neighbors for a non-corner cell (\(s \neq 0\), not at the starting position on the side):
+
+- Previous cell on ring \(r\): \(k-1\) (\(74-1=73\))
+- Next cell on ring \(r\): \(k+1\) (\(75\))
+- Inner ring, same side, same offset: \((r-1), S, s\)
+- Inner ring, same side, previous offset: \((r-1), S, s-1\)
+- Outer ring, same side, same offset: \((r+1), S, s\)
+- Outer ring, same side, next offset: \((r+1), S, s+1\)
+
+Let’s find the six neighbors by label and explicitly compute their numbers.
+
+### Calculating 2026's neighbors
+
+Our context:
+
+- \(r = 26\)
+- \(k = 74\)
+- \(S = 2\)
+- \(s = 22\)
+- N\(_\text{min}(26) = 1952\)
+- N\(_\text{min}(25) = 1802\)
+- N\(_\text{min}(27) = 2108\)
+
+Let’s confirm:
+
+- N\(_\text{max}(25) = 1951\) (checked above), so N\(_\text{min}(26) = 1952\)
+- N\(_\text{max}(26) = 2107\), so N\(_\text{min}(27) = 2108\)
+- Ring 25: indices 0 - 149
+
+#### The two neighbors on same ring:
+
+- \(k = 74, \) so numbers \(1952 + 74 = 2026\)
+- Previous: \(1952 + 73 = 2025\)
+- Next: \(1952 + 75 = 2027\)
+
+(Numbers 2025 and 2027)
+
+#### The inner ring neighbors
+
+Ring \(r-1=25\), side \(S=2\), offset \(s=22\)
+
+The first number on ring 25 is 1802 (since N\(_\text{max}(24) = 1801\)). Each side has 25 numbers.
+
+- The first number on side \(S=2\) is at position: \(1802 + 2 \times 25 = 1802 + 50 = 1852\)
+- Offset along side: \(s=22\)
+- So: \(1852 + 22 = 1874\)
+
+So first inner neighbor: **1874**
+
+Next inner neighbor: same side, previous offset (if \(s>0\)), so \(s=21\):
+
+- \(1852 + 21 = 1873\)
+
+So third neighbor: **1873**
+
+Third inner ring possibility: (for completeness, if at \(s = 0\), neighbor on previous side at offset \(r-2=24\)). We’re at \(s = 22\), so not at corner.
+
+#### The outer ring neighbors
+
+Ring \(r+1=27\), side \(S=2\), offset \(s=22\); N\(_\text{min}(27)=2108\), each side has 27 numbers.
+
+- Start of side \(S=2\): \(2108 + 2\times 27 = 2108 + 54 = 2162\)
+- Offset: 22, so \(2162 + 22 = 2184\)
+- Neighbor 1: **2184**
+
+Next outer neighbor: same side, next offset (\(s+1 = 23\)):
+
+- \(2162 + 23 = 2185\)
+- Neighbor 2: **2185**
+
+### Collect the six neighbors
+
+- 2025 (previous on ring 26)
+- 2027 (next on ring 26)
+- 1874 (same side, same offset, ring 25)
+- 1873 (same side, previous offset, ring 25)
+- 2184 (same side, same offset, ring 27)
+- 2185 (same side, next offset, ring 27)
+
+#### **Sum**
+
+\[
+2025 + 2027 + 1874 + 1873 + 2184 + 2185
+\]
+
+Let’s calculate:
+
+- \(2025 + 2027 = 4052\)
+- \(1874 + 1873 = 3747\)
+- \(2184 + 2185 = 4369\)
+
+Sum:
+
+\[
+4052 + 3747 = 7799\\
+7799 + 4369 = 12168
+\]
+
+### **Final Answer**
+
+\[
+\boxed{12168}
+\]
+
+---  
+**The sum of all 6 neighbors of 2026 in the hexagonal spiral is \(\boxed{12168}\).**
+----
+Usage(input=71, output=3297, details={})

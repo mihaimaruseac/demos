@@ -1,0 +1,335 @@
+Alright, let's tackle this problem step by step. I'm going to approach it methodically to ensure I understand the spiral layout and how to find the neighbors of the number 2026.
+
+### Understanding the Spiral Layout
+
+First, let's visualize the given spiral to understand how the numbers are arranged:
+
+```
+... 5  4  3 ...
+... 6  1  2 ...
+... 7  8  9 ...
+```
+
+From this, we can see that the number `1` is at the center. The numbers increase as we move outward in a counterclockwise spiral:
+
+- To the right of `1` is `2`.
+- Above `2` is `3`.
+- To the left of `3` is `4`, and so on.
+
+This is a classic Ulam spiral, where numbers are arranged in a square grid spiraling outward from the center.
+
+### Determining the Position of a Number in the Spiral
+
+To find the neighbors of `2026`, we first need to determine its position in the grid. That is, we need to find out which "layer" or "ring" it's in and its coordinates within that ring.
+
+**Layers of the Spiral:**
+
+The spiral can be thought of as concentric squares (layers) around the center (`1`). Each layer `n` (where `n >= 1`) is a square with side length `2n + 1`. The number of elements in layer `n` is `(2n + 1)^2 - (2n - 1)^2 = 8n` (for `n >= 1`).
+
+Let's find out which layer `2026` is in.
+
+The number at the bottom-right corner of layer `n` is `(2n + 1)^2`. For example:
+
+- Layer 0: `(2*0 + 1)^2 = 1` (just the center)
+- Layer 1: `(2*1 + 1)^2 = 9` (numbers 2 to 9)
+- Layer 2: `(2*2 + 1)^2 = 25` (numbers 10 to 25)
+- ...
+- Layer `k`: `(2k + 1)^2`
+
+We need to find the smallest `k` such that `(2k + 1)^2 >= 2026`.
+
+Let's solve for `k`:
+
+`(2k + 1)^2 >= 2026`
+`2k + 1 >= sqrt(2026)`
+`2k + 1 >= 45.011...` (since 45^2 = 2025, 46^2 = 2116)
+`2k >= 44.011...`
+`k >= 22.005...`
+
+So, `k = 22`.
+
+This means `2026` is in layer `22`.
+
+The largest number in layer `21` is `(2*21 + 1)^2 = 43^2 = 1849`.
+The largest number in layer `22` is `(2*22 + 1)^2 = 45^2 = 2025`.
+
+Wait a minute, this suggests that `2026` is the first number in layer `23`, not layer `22`, because `2025` is the last number in layer `22` (since `45^2 = 2025`), and `2026` starts layer `23`.
+
+Let me re-examine:
+
+Layer `n` starts at `(2n - 1)^2 + 1` and ends at `(2n + 1)^2`.
+
+So, layer `22` starts at `(2*22 - 1)^2 + 1 = 43^2 + 1 = 1849 + 1 = 1850` and ends at `45^2 = 2025`.
+
+Layer `23` starts at `45^2 + 1 = 2026` and ends at `47^2 = 2209`.
+
+Therefore, `2026` is the first number in layer `23`.
+
+### Finding the Coordinates of 2026
+
+Now, let's assign coordinates to the numbers. We'll place `1` at `(0, 0)`. Then:
+
+- Right: `(1, 0)` is `2`
+- Up: `(1, 1)` is `3`
+- Left: `(0, 1)` is `4`, `(-1, 1)` is `5`, etc.
+- Down: `(-1, 0)` is `6`, `(-1, -1)` is `7`, etc.
+- Right: `(0, -1)` is `8`, `(1, -1)` is `9`, etc.
+
+This pattern continues outward.
+
+To find the coordinates of `2026`, we can observe that each layer starts one step to the right of the bottom-right corner of the previous layer.
+
+The bottom-right corner of layer `n` is `(n, -n)` with value `(2n + 1)^2`.
+
+So, layer `22` ends at `(22, -22)` with value `2025`.
+Layer `23` starts at `(23, -22)` with value `2026`.
+
+Therefore, `2026` is at `(23, -22)`.
+
+### Verifying the Position
+
+Let's verify this by checking the positions around `2026`:
+
+- The number before `2026` is `2025` at `(22, -22)`.
+- Moving right from `(22, -22)` to `(23, -22)` gives `2026`.
+
+This seems correct.
+
+### Finding the 8 Neighbors of 2026
+
+The 8 neighbors of a number in the grid are the cells surrounding it, including diagonals. For `(x, y)`, the neighbors are:
+
+- `(x-1, y-1)`, `(x, y-1)`, `(x+1, y-1)`
+- `(x-1, y)`, `(x+1, y)`
+- `(x-1, y+1)`, `(x, y+1)`, `(x+1, y+1)`
+
+So, for `(23, -22)`, the neighbors are:
+
+1. `(22, -23)`
+2. `(23, -23)`
+3. `(24, -23)`
+4. `(22, -22)`
+5. `(24, -22)`
+6. `(22, -21)`
+7. `(23, -21)`
+8. `(24, -21)`
+
+Now, we need to find out what numbers these coordinates correspond to.
+
+### Determining the Numbers at Neighboring Coordinates
+
+To find the number at a given `(x, y)`, we can trace the spiral path. However, this can be time-consuming for large coordinates. Instead, we can use the fact that the spiral is built in layers and find the number based on its position in the layer.
+
+Given that `2026` is at `(23, -22)`, which is the first number in layer `23`, let's see how the numbers progress in layer `23`:
+
+Layer `23` starts at `(23, -22)` with `2026` and goes up to `(23, 23)` with `2209`.
+
+The sequence in layer `23` is:
+
+1. Right: `(23, -22)` to `(23, 23)`: `2026` to `2026 + 45 = 2071` (since we move up 45 steps in y from -22 to 23)
+2. Up: `(22, 23)` to `(-23, 23)`: `2072` to `2072 + 45 = 2117`
+3. Left: `(-23, 22)` to `(-23, -23)`: `2118` to `2118 + 45 = 2163`
+4. Down: `(-22, -23)` to `(23, -23)`: `2164` to `2164 + 45 = 2209`
+
+But we don't need the entire layer; we just need the numbers around `2026` at `(23, -22)`.
+
+Let's find each neighbor:
+
+1. `(22, -23)`: This is the last number in the "down" segment of layer `22`, which is `(22, -22)` is `2025`, so `(22, -23)` is `2025 - 1 = 2024`.
+   Wait, no. `(22, -22)` is `2025`, and `(22, -23)` is the next in the down direction, which would be `2025 + 1 = 2026`? Wait, no, `(23, -22)` is `2026`, so `(22, -23)` is before that in the spiral.
+
+   Actually, the spiral goes:
+   - `(22, -22)`: `2025`
+   - `(23, -22)`: `2026`
+   - `(23, -21)`: `2027`
+   - ...
+   So `(22, -23)` is not directly before `(23, -22)`. It's the one below `(22, -22)`.
+
+   The number at `(22, -23)` is `(22, -22)` is `2025`, and moving down decreases y by 1, which in the spiral corresponds to adding 1 to the number (since after `(22, -22)` we go right to `(23, -22)`). Wait, no, the spiral goes right, then up, then left, then down.
+
+   Actually, the sequence is:
+   - `(22, -22)`: `2025`
+   - `(23, -22)`: `2026`
+   - `(23, -21)`: `2027`
+   - ...
+   So `(22, -23)` is not directly in the sequence. It's part of the previous layer's down segment.
+
+   The down segment of layer `n` goes from `(n, -n)` to `(-n, -n)` to `(-n, -n+1)` to `(n, -n+1)` to `(n, -n+2)`, etc., but actually, the down segment is from `(n, -n+1)` to `(n, -n)` to `(n-1, -n)` to `(-n, -n)` to `(-n, -n+1)` to `(-n+1, -n+1)`, etc.
+
+   This is getting confusing. Maybe a better approach is to find the number at each neighbor coordinate by tracing the spiral.
+
+Given the complexity, let's try to find a general formula or pattern.
+
+### General Approach to Find Number at (x, y)
+
+There's a mathematical way to determine the number at any coordinate `(x, y)` in the spiral. Here's how:
+
+1. Determine the layer `n` where the point lies. `n = max(|x|, |y|)`.
+2. The largest number in layer `n-1` is `(2(n-1) + 1)^2 = (2n - 1)^2`.
+3. The smallest number in layer `n` is `(2n - 1)^2 + 1`.
+4. The layer `n` starts at `(n, -(n-1))` with number `(2n - 1)^2 + 1`.
+5. The sequence in layer `n` is:
+   - Right: `(n, -(n-1))` to `(n, n)`: `(2n-1)^2 + 1` to `(2n-1)^2 + 2n`
+   - Up: `(n-1, n)` to `(-n, n)`: `(2n-1)^2 + 2n + 1` to `(2n-1)^2 + 4n`
+   - Left: `(-n, n-1)` to `(-n, -n)`: `(2n-1)^2 + 4n + 1` to `(2n-1)^2 + 6n`
+   - Down: `(-n+1, -n)` to `(n, -n)`: `(2n-1)^2 + 6n + 1` to `(2n-1)^2 + 8n` = `(2n+1)^2`
+
+Given `(x, y) = (23, -22)`, `n = max(23, 22) = 23`.
+
+The largest number in layer `22` is `(2*22 - 1)^2 = 43^2 = 1849`.
+The smallest number in layer `23` is `1849 + 1 = 1850`.
+
+But we have `2026` at `(23, -22)`, which is in layer `23`.
+
+Wait, earlier we saw that `(23, -22)` is `2026`, which is the first number in layer `23` (since `2025` is at `(22, -22)`).
+
+But `(2n-1)^2 + 1 = (2*23 - 1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026`. So `(23, -22)` is indeed `2026`.
+
+Now, let's find the numbers at the neighboring coordinates.
+
+#### Neighbor 1: `(22, -23)`
+
+This is in layer `n = max(22, 23) = 23`.
+
+The down segment of layer `23` goes from `(23, -22)` to `(23, -23)` to `(22, -23)` to `(-23, -23)` to `(-23, -22)`.
+
+The numbers in the down segment are:
+
+`(2n-1)^2 + 6n + 1` to `(2n+1)^2`.
+
+For `n=23`:
+
+`(2*23 - 1)^2 + 6*23 + 1 = 45^2 + 138 + 1 = 2025 + 139 = 2164` to `47^2 = 2209`.
+
+The sequence is:
+
+`(23, -22)`: `2026` (but this is the start of the layer, not the down segment)
+Wait, no, the down segment starts after the left segment.
+
+Actually, the order is:
+
+1. Right: `(23, -22)` to `(23, 23)`: `2026` to `2026 + 45 = 2071`
+2. Up: `(22, 23)` to `(-23, 23)`: `2072` to `2072 + 45 = 2117`
+3. Left: `(-23, 22)` to `(-23, -23)`: `2118` to `2118 + 45 = 2163`
+4. Down: `(-22, -23)` to `(23, -23)`: `2164` to `2164 + 45 = 2209`
+
+So `(22, -23)` is in the down segment.
+
+The down segment starts at `(-22, -23)` with `2164` and goes right to `(23, -23)` with `2209`.
+
+The number at `(x, -23)` in the down segment is `2164 + (x - (-22)) = 2164 + (x + 22)`.
+
+So `(22, -23)`: `2164 + (22 + 22) = 2164 + 44 = 2208`.
+
+Wait, let's check:
+
+`(-22, -23)`: `2164`
+`(-21, -23)`: `2165`
+...
+`(0, -23)`: `2164 + 22 = 2186`
+...
+`(22, -23)`: `2164 + 44 = 2208`
+`(23, -23)`: `2164 + 45 = 2209`
+
+So `(22, -23)` is `2208`.
+
+#### Neighbor 2: `(23, -23)`
+
+This is the last number in the down segment: `2209`.
+
+#### Neighbor 3: `(24, -23)`
+
+This is outside layer `23`, so it's in layer `24`.
+
+The first number in layer `24` is `(2*24 - 1)^2 + 1 = 47^2 + 1 = 2209 + 1 = 2210` at `(24, -23)`.
+
+So `(24, -23)` is `2210`.
+
+#### Neighbor 4: `(22, -22)`
+
+This is in layer `22`.
+
+The largest number in layer `21` is `(2*21 + 1)^2 = 43^2 = 1849`.
+The largest number in layer `22` is `(2*22 + 1)^2 = 45^2 = 2025`.
+
+`(22, -22)` is the bottom-right corner of layer `22`, so it's `2025`.
+
+#### Neighbor 5: `(24, -22)`
+
+This is in layer `24`.
+
+The first number in layer `24` is `2210` at `(24, -23)`.
+The next is `(24, -22)`: `2211`.
+
+#### Neighbor 6: `(22, -21)`
+
+This is in layer `22`.
+
+The right segment of layer `22` is `(22, -21)` to `(22, 22)`: `(2*22 - 1)^2 + 1 = 43^2 + 1 = 1850` to `1850 + 44 = 1894`.
+
+`(22, -21)` is the first in this segment: `1850`.
+
+#### Neighbor 7: `(23, -21)`
+
+This is in layer `23`.
+
+The right segment of layer `23` is `(23, -22)` to `(23, 23)`: `2026` to `2026 + 45 = 2071`.
+
+`(23, -21)` is the second in this segment: `2026 + 1 = 2027`.
+
+#### Neighbor 8: `(24, -21)`
+
+This is in layer `24`.
+
+The right segment of layer `24` is `(24, -23)` to `(24, 24)`: `2210` to `2210 + 47 = 2257`.
+
+`(24, -21)` is the third in this segment: `2210 + 2 = 2212`.
+
+### Listing All Neighbors and Their Numbers
+
+Now, let's list all 8 neighbors with their numbers:
+
+1. `(22, -23)`: `2208`
+2. `(23, -23)`: `2209`
+3. `(24, -23)`: `2210`
+4. `(22, -22)`: `2025`
+5. `(24, -22)`: `2211`
+6. `(22, -21)`: `1850`
+7. `(23, -21)`: `2027`
+8. `(24, -21)`: `2212`
+
+### Calculating the Sum of the Neighbors
+
+Now, sum all these numbers:
+
+`2208 + 2209 + 2210 + 2025 + 2211 + 1850 + 2027 + 2212`
+
+Let's add them step by step:
+
+- `2208 + 2209 = 4417`
+- `4417 + 2210 = 6627`
+- `6627 + 2025 = 8652`
+- `8652 + 2211 = 10863`
+- `10863 + 1850 = 12713`
+- `12713 + 2027 = 14740`
+- `14740 + 2212 = 16952`
+
+### Verifying the Sum
+
+Let me double-check the addition to ensure no mistakes:
+
+`2208 + 2209 = 4417`
+`4417 + 2210 = 6627`
+`6627 + 2025 = 8652`
+`8652 + 2211 = 10863`
+`10863 + 1850 = 12713`
+`12713 + 2027 = 14740`
+`14740 + 2212 = 16952`
+
+The sum checks out.
+
+### Final Answer
+
+The sum of all 8 neighbors of the number `2026` in the spiral is **16952**.
+----
+Usage(input=60, output=4998, details=None)

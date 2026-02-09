@@ -1,0 +1,351 @@
+We are given a pattern of natural numbers laid out on a hexagonal grid in a spiral:
+
+Example segment:
+```
+... 14  4  3 10 ...
+..  15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+
+We want to find the sum of all 6 neighbors of the number **2026**.
+
+---
+
+### Step 1: Understanding the hexagonal spiral numbering scheme
+
+From the small example, the numbering starts at 1 in the center and spirals outward in rings of hexagons:
+
+- Number 1 is the center.
+- The first ring around 1 contains numbers 2 to 7 (6 neighbors).
+- The second ring contains numbers 8 to 19 (next 12 numbers).
+- The third ring contains numbers 20 to 37 (next 18 numbers).
+- ...
+
+The number of cells in the nth ring (n >= 1) is **6 * n**.
+
+---
+
+### Step 2: Identify which ring the number 2026 is in
+
+The total number of elements up to and including the nth ring is:
+
+\[
+1 + \sum_{k=1}^n 6k = 1 + 3 n (n+1)
+\]
+
+Because:
+
+\[
+\sum_{k=1}^n k = \frac{n(n+1)}{2}
+\]
+
+So total cells up to ring n:
+
+\[
+1 + 6 \times \frac{n(n+1)}{2} = 1 + 3 n (n+1)
+\]
+
+We want to find \(n\) such that:
+
+\[
+1 + 3 n (n+1) \geq 2026
+\]
+
+and
+
+\[
+1 + 3 (n-1) n < 2026
+\]
+
+---
+
+Solve \(1 + 3 n (n+1) \geq 2026\):
+
+\[
+3 n^2 + 3 n + 1 \geq 2026 \implies 3 n^2 + 3n \geq 2025 \implies n^2 + n \geq 675
+\]
+
+Solve quadratic inequality:
+
+\[
+n^2 + n -675 \geq 0
+\]
+
+The roots of \( n^2 + n -675 = 0 \):
+
+\[
+n = \frac{-1 \pm \sqrt{1 + 4 \times 675}}{2} = \frac{-1 \pm \sqrt{2701}}{2}
+\]
+
+\[
+\sqrt{2701} \approx 51.97
+\]
+
+Positive root:
+
+\[
+n = \frac{-1 + 51.97}{2} \approx \frac{50.97}{2} = 25.485
+\]
+
+So \(n \geq 26\).
+
+Check rings:
+
+- Up to ring 25:
+\[
+1 + 3 \times 25 \times 26 = 1 + 3 \times 650 = 1 + 1950 = 1951 < 2026
+\]
+
+- Up to ring 26:
+\[
+1 + 3 \times 26 \times 27 = 1 + 3 \times 702 = 1 + 2106 = 2107 \geq 2026
+\]
+
+So 2026 lies in ring 26.
+
+---
+
+### Step 3: Position of 2026 within ring 26
+
+- The first number in ring 26 is:
+
+\[
+\text{first}_\text{ring26} = 1952 \quad ( = 1 + 3 \times 25 \times 26)
+\]
+
+- The last number in ring 26 is 2107.
+
+So 2026's offset in ring 26 is:
+
+\[
+2026 - 1952 = 74
+\]
+
+Counting from zero (offset 0 corresponds to 1952), the 2026 is the 75th element in the ring (offset 74).
+
+---
+
+### Step 4: Layout of ring 26 on hex grid
+
+A ring has \(6 \times 26 = 156\) cells, arranged as 6 sides with 26 cells each.
+
+Offset 0 = start of ring (side 1, position 0)
+Positions on sides:
+
+- Side 1: offsets 0 to 25
+- Side 2: offsets 26 to 51
+- Side 3: offsets 52 to 77
+- Side 4: offsets 78 to 103
+- Side 5: offsets 104 to 129
+- Side 6: offsets 130 to 155
+
+Our offset 74 lies on **side 3** (offset 52 to 77)
+
+Position along side 3:
+
+\[
+74 - 52 = 22
+\]
+
+---
+
+### Step 5: The neighbors of a cell in ring n
+
+Each cell has 6 neighbors in a hex grid. For a cell in ring \(n\), neighbors can be in rings \(n-1\), \(n\), or \(n+1\).
+
+From hexagonal spiral theory, neighbors are at:
+
+- The previous and next cell in the same ring \(n\)
+- The corresponding two neighbors in the inner ring \(n-1\)
+- The corresponding two neighbors in the outer ring \(n+1\)
+
+---
+
+### Step 6: Identifying neighbors for cell at ring 26, offset 74
+
+- Neighbors on the same ring (ring 26):
+
+  - Offset 73 (previous cell)
+  - Offset 75 (next cell)
+
+- Inner ring is ring 25:
+
+  - First number in ring 25:
+
+  \[
+  1 + 3 \times 24 \times 25 = 1 + 3 \times 600 = 1801
+  \]
+
+  Ring 25 has \(6 \times 25 = 150\) cells.
+
+  We need to find neighbor positions relative to offset 74 in ring 26.
+
+- Outer ring is ring 27:
+
+  - First number in ring 27:
+
+  \[
+  1 + 3 \times 26 \times 27 = 2107 + 1 = 2108
+  \]
+
+  (Wait, we had ring 26 ending at 2107, so ring 27 starts at 2108.)
+
+  Ring 27 has \(6 \times 27 = 162\) cells.
+
+---
+
+### Step 7: Neighbor offset mapping
+
+For an offset \(k\) in ring \(n\) (0 ≤ k < 6n), neighbors indices are:
+
+- Same ring: \((k-1) \mod 6n\), and \((k+1) \mod 6n\)
+- Inner ring: two neighbors, the floor and ceiling of \(\frac{k}{n}\) times (n-1):
+  
+  Let \(side = \lfloor k / n \rfloor\), and \(pos = k \mod n\)
+
+  Then inner ring neighbors' offsets (in ring n-1, with 6(n-1) cells) are:
+
+  \[
+  \text{inner1} = side \times (n-1) + pos - 1 \quad (\text{mod } 6(n-1))
+  \]
+  \[
+  \text{inner2} = side \times (n-1) + pos \quad (\text{mod } 6(n-1))
+  \]
+
+- Outer ring: two neighbors for each cell similarly:
+
+  \[
+  \text{outer1} = side \times (n+1) + pos \quad (\text{mod } 6(n+1))
+  \]
+  \[
+  \text{outer2} = side \times (n+1) + pos + 1 \quad (\text{mod } 6(n+1))
+  \]
+
+Double-checking if \(pos - 1\) is valid (negative) we use modulo.
+
+Let's apply this to \(n=26\), \(k=74\).
+
+---
+
+### Step 8: Calculate \(side\) and \(pos\)
+
+\[
+side = \lfloor \frac{74}{26} \rfloor = \lfloor 2.846 \rfloor = 2
+\]
+\[
+pos = 74 \mod 26 = 74 - 2 \times 26 = 74 - 52 = 22
+\]
+
+---
+
+### Step 9: Calculate neighbors offsets
+
+- **Same ring neighbors:**
+
+\[
+k_{prev} = (74 - 1) \mod 156 = 73
+\]
+\[
+k_{next} = (74 + 1) \mod 156 = 75
+\]
+
+- **Inner ring neighbors:**
+
+Ring 25 has \(6 \times 25 = 150\) cells.
+
+\[
+inner1 = (side \times 25) + (pos - 1) = 2 \times 25 + 21 = 50 + 21 = 71
+\]
+\[
+inner2 = (side \times 25) + pos = 2 \times 25 + 22 = 50 + 22 = 72
+\]
+
+Check that 0 ≤ inner1, inner2 < 150; yes.
+
+- **Outer ring neighbors:**
+
+Ring 27 has \(6 \times 27 = 162\) cells.
+
+\[
+outer1 = (side \times 27) + pos = 2 \times 27 + 22 = 54 + 22 = 76
+\]
+\[
+outer2 = (side \times 27) + (pos + 1) = 54 + 23 = 77
+\]
+
+Check 0 ≤ outer1, outer2 < 162; yes.
+
+---
+
+### Step 10: Convert neighbor offsets back to absolute numbers
+
+- Ring 26 starts at 1952 (offset 0).
+- Ring 25 starts at 1801.
+- Ring 27 starts at 2108.
+
+Neighbors:
+
+- In ring 26 (same ring):
+
+\[
+1952 + 73 = 2025
+\]
+\[
+1952 + 75 = 2027
+\]
+
+- In ring 25 (inner ring):
+
+\[
+1801 + 71 = 1872
+\]
+\[
+1801 + 72 = 1873
+\]
+
+- In ring 27 (outer ring):
+
+\[
+2108 + 76 = 2184
+\]
+\[
+2108 + 77 = 2185
+\]
+
+---
+
+### Step 11: Sum all 6 neighbors
+
+\[
+2025 + 2027 + 1872 + 1873 + 2184 + 2185
+\]
+
+Calculate stepwise:
+
+\[
+(2025 + 2027) = 4052
+\]
+\[
+(1872 + 1873) = 3745
+\]
+\[
+(2184 + 2185) = 4369
+\]
+
+Sum all:
+
+\[
+4052 + 3745 + 4369 = 4052 + (3745 + 4369) = 4052 + 8114 = 12166
+\]
+
+---
+
+### **Final answer:**
+
+\[
+\boxed{12166}
+\]
+
+The sum of all 6 neighbors of the number 2026 is **12166**.
+----
+Usage(input=71, output=2416, details={})

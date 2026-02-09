@@ -1,0 +1,1020 @@
+We have a hexagonal grid with natural numbers spiraling outward:
+
+Given partial layout near 1:
+
+```
+... 14  4   3  10 ...
+..  15  5   1   2  9 ...
+... 16  6   7   8 ...
+```
+
+We need to find the sum of the 6 neighbors of the number 2026.
+
+---
+
+### Step 1: Understand the Hexagonal Spiral Numbering
+
+The numbering starts at the center with 1, surrounded by layers of hexagonal rings:
+
+- Ring 0: 1 (center)
+- Ring 1: numbers 2 to 7 (6 numbers)
+- Ring 2: numbers 8 to 19 (12 numbers)
+- Ring 3: 20 to 37 (18 numbers)
+- Ring \(k\): \(6k\) numbers on ring \(k\)
+  
+Number of numbers from center up to and including ring \(k\):
+
+\[
+1 + 6(1 + 2 + \cdots + k) = 1 + 3k(k+1)
+\]
+
+since \(1 + 2 + \cdots + k = \frac{k(k+1)}{2}\).
+
+---
+
+### Step 2: Find the ring in which 2026 lies
+
+Find \(k\) such that
+
+\[
+1 + 3k(k+1) \geq 2026 > 1 + 3(k-1)k
+\]
+
+Simplify:
+
+\[
+3k(k+1) \geq 2025
+\]
+\[
+k(k+1) \geq \frac{2025}{3} = 675
+\]
+
+Check some values:
+
+- \(k=25\): \(25 \times 26 = 650 < 675\)
+- \(k=26\): \(26 \times 27 = 702 \geq 675\)
+
+So ring \(k=26\) contains 2026.
+
+---
+
+### Step 3: Find the start and position of number 2026 in ring 26
+
+- Max number in ring 25 is 
+
+\[
+1 + 3 \times 25 \times 26 = 1 + 3 \times 650 = 1 + 1950 = 1951
+\]
+
+- Ring 26 covers numbers:
+
+\[
+1952, 1953, \ldots, 1951 + 6 \times 26 = 1951 + 156 = 2107
+\]
+
+Number 2026 is in ring 26 at position:
+
+\[
+2026 - 1951 = 75^{th}
+\]
+
+number in ring 26.
+
+---
+
+### Step 4: Hexagonal ring structure and positions
+
+Each ring has 6 sides, each with \(k\) elements per side.
+
+For ring \(k=26\), number of elements = \(6 \times 26 = 156\).
+
+Positions 1 to 156 number the elements around the ring.
+
+Positions 1 to 26: side 1
+
+Positions 27 to 52: side 2
+
+Positions 53 to 78: side 3
+
+Positions 79 to 104: side 4
+
+Positions 105 to 130: side 5
+
+Positions 131 to 156: side 6
+
+2026 is position 75 in ring 26, which is on side 3:
+
+- side 3 starts at 53 ends at 78
+
+Position on side 3:
+
+\[
+75 - 53 + 1 = 23
+\]
+
+---
+
+### Step 5: Coordinates system for hex grid
+
+We'll use an **axial coordinate system** for the hex grid, where 
+
+- the center (number 1) is at \((0,0)\),
+- rings increase by moving in the 6 directions.
+
+The 6 directions (in axial coordinates \((q,r)\)):
+
+1. East: \((+1, 0)\)
+2. NorthEast: \((0, +1)\)
+3. NorthWest: \((-1, +1)\)
+4. West: \((-1, 0)\)
+5. SouthWest: \((0, -1)\)
+6. SouthEast: \((+1, -1)\)
+
+---
+
+### Step 6: Starting point on ring \(k\)
+
+The smallest number on ring \(k\) is at coordinates:
+
+\[
+\text{start}_k = (k, 0)
+\]
+
+Number 2 (start of ring 1) is at \((1,0)\), number 8 (start of ring 2) at \((2,0)\), etc.
+
+The points along the ring are traced by walking around the 6 edges, \(k\) steps each in the 6 directions in order:
+
+1. Move in direction 4: west \((-1,0)\) \(k\) times
+2. Move in direction 5: southwest \((0,-1)\) \(k\) times
+3. Move in direction 6: southeast \((+1,-1)\) \(k\) times
+4. Move in direction 1: east \((+1,0)\) \(k\) times
+5. Move in direction 2: northeast \((0,+1)\) \(k\) times
+6. Move in direction 3: northwest \((-1,+1)\) \(k\) times
+
+(Or equivalently start at \((k,0)\) and move around the hexagon counterclockwise as above.)
+
+---
+
+### Step 7: Find coordinates of number 2026
+
+Start position for ring 26:
+
+\[
+(26, 0)
+\]
+
+Positions 1 to 26: moving west \((-1,0)\)
+
+Positions 27 to 52: moving southwest \((0,-1)\)
+
+Positions 53 to 78: moving southeast \((+1,-1)\)
+
+Positions 79 to 104: moving east \((+1,0)\)
+
+Positions 105 to 130: moving northeast \((0,+1)\)
+
+Positions 131 to 156: moving northwest \((-1,+1)\)
+
+Position 75 lies in the third segment (53 to 78), so:
+
+- offset in third edge segment:
+
+\[
+75 - 53 = 22 \quad (\text{0-based offset})
+\]
+
+Coordinates:
+
+\[
+(26,0) + \underbrace{26 \times (-1,0)}_{\text{edge 1}} + \underbrace{26 \times (0,-1)}_{\text{edge 2}} + (22 + 1) \times (1,-1)
+\]
+
+Wait, careful: The first 26 steps walk from start position:
+
+- Start: \((26,0)\)
+
+- After 26 steps west:
+
+\[
+(26, 0) + 26 \times (-1, 0) = (0, 0)
+\]
+
+- Then 26 steps southwest:
+
+\[
+(0, 0) + 26 \times (0, -1) = (0, -26)
+\]
+
+- Now, position 53 corresponds to \((0, -26) + 1 \times (1, -1) = (1, -27)\) (since the first position after southwest edge starts at 53, that is first step on the southeast edge).
+
+Position 75 is 22 steps after 53 (0-based offset 22).
+
+So full coordinate is:
+
+\[
+(0, -26) + (22 + 1) \times (1, -1) = (0, -26) + 23 \times (1, -1) = (23, -26 - 23) = (23, -49)
+\]
+
+---
+
+### Step 8: Summary of position of 2026
+
+\[
+\boxed{
+\text{number } 2026 \text{ coordinates} = (23, -49)
+}
+\]
+
+---
+
+### Step 9: Neighbors of a hex at \((q,r)\)
+
+Neighbors in axial coordinates:
+
+\[
+( q+1, r ), ( q, r+1 ), ( q-1, r+1 ), ( q-1, r ), ( q, r-1 ), ( q+1, r-1 )
+\]
+
+---
+
+### Step 10: Need a function to convert coordinates \((q,r)\) back to the number
+
+To compute neighbors, convert coordinates \(\to\) number.
+
+---
+
+### Step 11: Radial distance (= ring number) of point \((q,r)\)
+
+Distance from \((0,0)\) in hex axial:
+
+\[
+\text{ring } k = \max(|q|, |r|, | -q - r|)
+\]
+
+Calculate for \(2026\):
+
+\[
+q=23, r=-49, s = -q - r = -23 + 49 = 26
+\]
+
+\[
+k = \max(23, 49, 26) = 49
+\]
+
+Wait, this contradicts our ring 26. This is because the ring is the maximal absolute coordinate among \(|q|, |r|, |s|\), check carefully.
+
+Earlier, we found \(k=26\) for the ring. But now the coordinate \((23, -49)\) shows \(k=49\)
+
+This suggests an error in direction vectors or the interpretation of start positions and directions.
+
+---
+
+### Step 12: Reconsider direction vectors and movements
+
+Let me clarify axial directions:
+
+From the usual standard axial coordinates:
+
+Neighbors from \((q, r)\):
+
+- \( (q+1, r) \) East
+- \( (q+1, r-1) \) Southeast
+- \( (q, r-1) \) Southwest
+- \( (q-1, r) \) West
+- \( (q-1, r+1) \) Northwest
+- \( (q, r+1) \) Northeast
+
+So the six neighbors are:
+
+\[
+E = (1, 0), SE = (1, -1), SW = (0, -1), W = (-1, 0), NW = (-1, 1), NE = (0, 1)
+\]
+
+---
+
+### Step 13: Path around ring \(k\)
+
+Starting point ring k is at \((q, r) = (k, 0)\).
+
+Then walk in directions in order:
+
+1. **NW:** \((-1, +1)\) multiplied by k steps  
+2. **W:** \((-1, 0)\) k steps  
+3. **SW:** \((0, -1)\) k steps  
+4. **SE:** \((1, -1)\) k steps  
+5. **E:** \((1, 0)\) k steps  
+6. **NE:** \((0, 1)\) k steps
+
+Meaning the ring is traced counterclockwise starting from \((k, 0)\) by moving:
+
+- NW k steps
+- W k steps
+- SW k steps
+- SE k steps
+- E k steps
+- NE k steps
+
+---
+
+### Step 14: Positions along ring 26
+
+Ring has \(6 \times 26 = 156\) vertices.
+
+Positions:
+
+- 1 to 26: NW (-1,1)
+- 27 to 52: W (-1,0)
+- 53 to 78: SW (0,-1)
+- 79 to 104: SE (1,-1)
+- 105 to 130: E (1,0)
+- 131 to 156: NE (0,1)
+
+Position 75 lies in segment 53 to 78 (SW)
+
+Position in segment:
+
+\[
+75 - 53 = 22 \quad\text{(0-based offset)}
+\]
+
+Coordinates:
+
+\[
+(26, 0) + 26 \times (-1,1) + 26 \times (-1,0) + 22 \times (0,-1) + (for offset, 0-based counting so add 1 or not?)
+
+\]
+
+Check carefully:
+
+Actually, positions 53 to 78 correspond to the SW moves along the ring:
+
+- At position 53 (start of SW edge):
+
+\[
+(26, 0) + 26 \times (-1,1) + 26 \times (-1,0) + 0 \times (0,-1)
+\]
+
+Calculate:
+
+- \(26 \times (-1,1) = (-26, 26)\)
+- \(26 \times (-1,0) = (-26, 0)\)
+
+Sum:
+
+\[
+(26, 0) + (-26, 26) + (-26, 0) = (26 - 26 - 26, 0 + 26 + 0) = (-26, 26)
+\]
+
+Wait, reconsider this:
+
+We seem to be double subtracting: “26 \times (-1,1)” then “26 \times (-1,0)”?
+
+But the walk around ring is sequential:
+
+- Start at \((26, 0)\),
+
+- From positions 1 to 26: move NW \((-1,1)\), 0 to 25 steps
+
+- Positions 27 to 52: W (-1,0), 0 to 25 steps
+
+- Positions 53 to 78: SW (0,-1), 0 to 25 steps
+
+So for position 75 within SW segment:
+
+Number of steps in first two segments:
+
+- NW steps: 26
+
+- W steps: 26
+
+The final position is:
+
+\[
+(26, 0) + 26 \times (-1, 1) + 26 \times (-1, 0) + (75 - 53) \times (0, -1)
+\]
+
+Calculate:
+
+- \(26 \times (-1, 1) = (-26, 26)\)
+- \(26 \times (-1, 0) = (-26, 0)\)
+- \(75 - 53 = 22\), so \(22 \times (0, -1) = (0, -22)\)
+
+Sum all:
+
+\[
+(26, 0) + (-26, 26) + (-26, 0) + (0, -22) = (26 - 26 - 26 + 0, 0 + 26 + 0 - 22) = (-26, 4)
+\]
+
+---
+
+### Step 15: Coordinates of number 2026 are \(\boxed{(-26, 4)}\).
+
+---
+
+### Step 16: Confirm ring distance
+
+Calculate ring number \(k\):
+
+\[
+k = \max(|q|, |r|, |-q-r|) = \max(26, 4, |-(-26) - 4|) = \max(26, 4, |26 - 4|) = \max(26,4,22) = 26
+\]
+
+Correct!
+
+---
+
+### Step 17: Step to find neighbor coordinates
+
+Neighbors are at:
+
+\[
+(-26 + 1, 4),\\
+(-26 + 1, 4 - 1),\\
+(-26, 4 - 1),\\
+(-26 - 1, 4),\\
+(-26 - 1, 4 + 1),\\
+(-26, 4 + 1)
+\]
+
+Or explicitly:
+
+1. \(E = (-25, 4)\)
+
+2. \(SE = (-25, 3)\)
+
+3. \(SW = (-26, 3)\)
+
+4. \(W = (-27, 4)\)
+
+5. \(NW = (-27, 5)\)
+
+6. \(NE = (-26, 5)\)
+
+---
+
+### Step 18: Function to convert \((q, r)\) to number
+
+To convert \((q,r)\) to the number:
+
+1. Compute ring \(k = \max(|q|, |r|, |-q - r|)\)
+
+2. Find the **minimum number** in ring \(k\):
+
+\[
+M_k = 1 + 3k(k-1)
+\]
+
+Because:
+
+- Ring 0 max: 1
+- Ring 1 max: \(1 + 3\cdot1\cdot(1+1) = 1 + 6 = 7\)
+  
+Wait, we need to check the general formula for max element number of ring \(k\):
+
+Earlier, we wrote:
+
+\[
+1 + 3 k (k+1)
+\]
+
+which is the maximum number in ring \(k\)
+
+The minimum number in ring \(k\) is:
+
+\[
+1 + 3 k (k-1) + 1 = 3k(k-1) + 2
+\]
+
+This is because:
+
+- The last number in ring \(k-1\) is \(1 + 3(k-1)k\)
+- So first number in ring \(k\) is last number in ring \(k-1\) + 1
+
+---
+
+Check this for example \(k=1\)
+
+- Max number ring 0 = 1
+
+- Max number ring 1 = \(1 + 3 \times 1 \times 2 = 7\)
+
+- So min number ring 1 = \(1 + 3 \times 1 \times 0 + 1 = 2\)
+
+Confirmed
+
+---
+
+### Step 19: To find the offset of \((q,r)\) in ring \(k\)
+
+We want to know how far from the minimal ring number this point is.
+
+---
+
+### Step 20: Determine the side and position on side for \((q,r)\)
+
+The ring edges are segmented into 6 sides, length \(k\).
+
+Each side corresponds to moving along a particular direction from each corner.
+
+The corners of ring \(k\) are:
+
+\[
+C_n = k \times d_n
+\]
+
+where \(d_n\) are the corner directions:
+
+Using standard hex corner directions in axial:
+
+- \(d_0 = (k, 0)\)
+
+- \(d_1 = (0, k)\)
+
+- \(d_2 = (-k, k)\)
+
+- \(d_3 = (-k, 0)\)
+
+- \(d_4 = (0, -k)\)
+
+- \(d_5 = (k, -k)\)
+
+The sides are the edges connecting these corners.
+
+We want to find in which side \((q,r)\) falls on ring \(k\).
+
+From this answer (reference: https://www.redblobgames.com/grids/hexagons/#rings):
+
+We note possible approach:
+
+- Compute which side \((q,r)\) is on by comparing coordinates.
+
+
+Distance along each side is found by projecting vector \(\overrightarrow{C_n C_{n+1}}\).
+
+---
+
+### Step 21: Manually find ring 26 corner coordinates:
+
+Corners:
+
+- \(C_0 = (26, 0)\)
+
+- \(C_1 = (0, 26)\)
+
+- \(C_2 = (-26, 26)\)
+
+- \(C_3 = (-26, 0)\)
+
+- \(C_4 = (0, -26)\)
+
+- \(C_5 = (26, -26)\)
+
+---
+
+### Step 22: Determine the side
+
+Our point is \((-26, 4)\).
+
+Is it on a side between which corners?
+
+Sides are:
+
+- Side 0: \(C_0 \to C_1\): from (26,0) to (0,26)
+
+- Side 1: \(C_1 \to C_2\): (0,26) to (-26,26)
+
+- Side 2: \(C_2 \to C_3\): (-26,26) to (-26,0)
+
+- Side 3: \(C_3 \to C_4\): (-26,0) to (0,-26)
+
+- Side 4: \(C_4 \to C_5\): (0,-26) to (26,-26)
+
+- Side 5: \(C_5 \to C_0\): (26,-26) to (26,0)
+
+---
+
+Given \((-26,4)\), note:
+
+- Its q coordinate = -26 (fixed)
+
+- r coordinate = 4, which lies between \(26\) and \(0\).
+
+Side 2 connects corners:
+
+\[
+(-26, 26) \to (-26, 0)
+\]
+
+Our point has \(q = -26\) and \(r = 4\) which lies between 26 and 0.
+
+Hence, \((-26,4)\) lies on side 2.
+
+---
+
+### Step 23: Offset on side 2
+
+Side 2 vector:
+
+\[
+C_3 - C_2 = (-26,0) - (-26,26) = (0, -26)
+\]
+
+Length \(= k = 26\).
+
+Offset along this side of a point \(P = (-26, r)\):
+
+\[
+\text{offset} = C_2.r - r = 26 - 4 = 22
+\]
+
+Offset numbering from 0 to 25.
+
+---
+
+### Step 24: Compute the number at coordinate \((q,r)\)
+
+Overall offset from minimal number in ring:
+
+\[
+\text{side length} \times \text{side number} + \text{offset on side}
+\]
+
+Sides are numbered 0 to 5 starting at \(C_0 \to C_1\).
+
+Side 2 is the 3rd side (0-based indexing):
+
+\[
+2 \times 26 + 22 = 52 + 22 = 74
+\]
+
+Positions along ring \(k\):
+
+Positions start at 1:
+
+- Position = offset +1 = 75
+
+Recall in step 3:
+
+\[
+2026 \text{ is 75th number in ring } 26
+\]
+
+---
+
+### Step 25: Min number in ring 26
+
+Calculate:
+
+\[
+M_{26} = 1 + 3 \times 26 \times 25 = 1 + 3 \times 650 = 1951
+\]
+
+Number at offset 74 (0-based) is:
+
+\[
+N = M_{26} + 74 = 1951 + 74 = 2025
+\]
+
+Wait, we got 2025 instead of 2026.
+
+But our offset calculation assumes offset 74 corresponds to position 75 on ring (which is number 2026).
+
+So we need to add 1 more to offset to get position.
+
+Therefore:
+
+\[
+\text{Position} = 75 \implies \text{offset} = 74
+\]
+
+But since number at offset 74 is 1951 + 74 = 2025, and 2026 is offset 75.
+
+So correction is offset = 75, position = 76?
+
+Mismatch shows the side offset indexing is 0-based or 1-based?
+
+Actually, the minimal number corresponds to offset 0.
+
+So final number:
+
+\[
+N = M_k + \text{offset}
+\]
+
+offset = side length * side index + offset on side.
+
+We have side index = 2, offset on side = 22
+
+\[
+\Rightarrow \text{offset} = 2 \times 26 + 22 = 74
+\]
+
+Then
+
+\[
+N = 1951 + 74 = 2025
+\]
+
+---
+
+We found point \((-26,4)\) with number 2025, but originally we wanted 2026 at (-26,4).
+
+---
+
+### Step 26: Re-check step 17 coordinates of number 2026
+
+Notice the slight indexing error with offsets.
+
+---
+
+### Step 27: Correct offset on the side
+
+Recalculate offset and be consistent in domain of indexing.
+
+---
+
+### Step back to step 14 coordinates:
+
+Recall:
+
+- position 75 in ring 26 corresponds to number 2026.
+
+- which lies on side 2 (SW segment in earlier step), but now in this model side 2 connects \(C_2 \to C_3\).
+
+Using the corner approach, side 2 corresponds to \(C_2 \to C_3\), running from \((-26, 26)\) to \((-26, 0)\).
+
+Position on ring: \(74^{th}\) offset corresponds to \((-26,4)\)
+
+Thus, number 2025 at \((-26, 4)\).
+
+Our point 2026 has coordinates of \((-26, 3)\)
+
+or
+
+Offset on side = 23 (0-based)
+
+28. So coordinates of 2026 should be \((-26, 3)\).
+
+---
+
+### Step 28: Calculate coordinates of neighbors of 2026
+
+Coordinates of 2026:
+
+\[
+(-26, 3)
+\]
+
+Neighbors:
+
+\[
+E = (-25, 3), \quad SE = (-25, 2), \quad SW = (-26, 2), \quad W = (-27, 3), \quad NW = (-27, 4), \quad NE = (-26, 4)
+\]
+
+---
+
+### Step 29: Now convert each neighbor coordinate back to number
+
+---
+
+### Step 30: Write a short function description for coordinate \((q,r)\)
+
+1. Find ring \(k = \max(|q|, |r|, |-q-r|)\)
+
+2. Find minimal number at ring \(k\):
+
+\[
+M_k = 1 + 3k(k-1)
+\]
+
+3. Identify side \(s\) and offset \(o\) for point:
+
+- Corners:
+
+\[
+C_0 = (k, 0), \quad C_1 = (0, k), \quad C_2 = (-k, k), \quad C_3 = (-k, 0), \quad C_4 = (0, -k), \quad C_5 = (k, -k)
+\]
+
+- Sides between corners \(C_s \to C_{s+1}\)
+
+Sides:
+
+| Side | From  | To    | Vector          |
+|-------|--------|---------|-----------------|
+| 0     | \(C_0\) | \(C_1\)  | \((-1, +1)\)    |
+| 1     | \(C_1\) | \(C_2\)  | \((-1, 0)\)     |
+| 2     | \(C_2\) | \(C_3\)  | \((0, -1)\)     |
+| 3     | \(C_3\) | \(C_4\)  | \((+1, -1)\)    |
+| 4     | \(C_4\) | \(C_5\)  | \((+1, 0)\)     |
+| 5     | \(C_5\) | \(C_0\)  | \((0, +1)\)     |
+
+4. Determine which side the point lies on by checking which side vector matches.
+
+5. Calculate offset on that side = distance from \(C_s\) to point along the side vector.
+
+6. Total offset in ring = \(s \times k + \text{offset}\)
+
+7. Number:
+
+\[
+N = M_k + s \times k + \text{offset}
+\]
+
+---
+
+### Step 31: Find side and offset of the neighbors
+
+Let's process each neighbor:
+
+---
+
+**Neighbor 1: \((-25, 3)\)**
+
+- Compute \(k = \max(|-25|, |3|, |25 - 3|) = \max(25, 3, 22) = 25\)
+
+- \(M_{25} = 1 + 3 \times 25 \times 24 = 1 + 1800 = 1801\)
+
+Now find which side on ring 25 the point lies.
+
+Corners:
+
+\[
+C_0 = (25, 0), C_1 = (0, 25), C_2 = (-25, 25), C_3 = (-25, 0), C_4 = (0, -25), C_5 = (25, -25)
+\]
+
+Checking its position relative to corners.
+
+- The point has \(q=-25\), r=3, which is between \(C_3=(-25, 0)\) and \(C_2=(-25, 25)\)
+
+This is side 2 (between \(C_2 \to C_3\)).
+
+Side 2 vector: \((0, -1)\)
+
+Offset along side = \(C_2.r - r = 25 - 3 = 22\)
+
+Number:
+
+\[
+N = 1801 + 2 \times 25 + 22 = 1801 + 50 + 22 = 1873
+\]
+
+---
+
+**Neighbor 2: \((-25, 2)\)**
+
+\(k = \max(25, 2, 23) = 25\)
+
+Same ring 25:
+
+Side 2 again (because \(q = -25\))
+
+Offset \(= 25 - 2 = 23\)
+
+Number:
+
+\[
+N = 1801 + 50 + 23 = 1874
+\]
+
+---
+
+**Neighbor 3: \((-26, 2)\)**
+
+\(k = \max(26, 2, |26 - 2|) = \max(26, 2, 24) = 26\)
+
+Corners \(C_2=(-26, 26)\) to \(C_3=(-26,0)\): side 2 of ring 26
+
+Offset:
+
+\[
+26 - 2 = 24
+\]
+
+Number:
+
+\[
+M_{26} = 1 + 3 \times 26 \times 25 = 1951
+\]
+
+\[
+N = 1951 + 2 \times 26 + 24 = 1951 + 52 + 24 = 2027
+\]
+
+---
+
+**Neighbor 4: \((-27, 3)\)**
+
+\(k = \max(27, 3, 24) = 27\)
+
+\(M_{27} = 1 + 3 \times 27 \times 26 = 1 + 2106 = 2107\)
+
+Where is \((-27,3)\) on ring 27?
+
+Possibilities:
+
+- \(q = -27\)
+
+- Looking at corners:
+
+\[
+C_2 = (-27, 27), C_3 = (-27, 0)
+\]
+
+Side 2 again for ring 27 with vector \((0,-1)\)
+
+Offset:
+
+\[
+27 - 3 = 24
+\]
+
+Number:
+
+\[
+N = 2107 + 2 \times 27 + 24 = 2107 + 54 + 24 = 2185
+\]
+
+---
+
+**Neighbor 5: \((-27, 4)\)**
+
+\(k = 27\)
+
+Offset on side 2 = \(27 - 4 = 23\)
+
+Number = \(2107 + 54 + 23 = 2184\)
+
+---
+
+**Neighbor 6: \((-26, 4)\)**
+
+We already know \((-26, 4)\) corresponds to number 2025.
+
+---
+
+### Step 32: The neighbors are:
+
+| Coordinates | Number |
+|-------------|--------|
+| (-25, 3)    | 1873   |
+| (-25, 2)    | 1874   |
+| (-26, 2)    | 2027   |
+| (-27, 3)    | 2185   |
+| (-27, 4)    | 2184   |
+| (-26, 4)    | 2025   |
+
+---
+
+### Step 33: Sum the neighbors
+
+\[
+1873 + 1874 + 2027 + 2185 + 2184 + 2025
+\]
+
+Calculate step by step:
+
+\[
+1873 + 1874 = 3747
+\]
+\[
+3747 + 2027 = 5774
+\]
+\[
+5774 + 2185 = 7959
+\]
+\[
+7959 + 2184 = 10143
+\]
+\[
+10143 + 2025 = 12168
+\]
+
+---
+
+### **Final answer:**
+
+\[
+\boxed{12168}
+\]
+
+---
+
+## Summary:
+
+- Number 2026 lies on ring 26 at side 2, offset 23.
+
+- Its neighbors are found by moving to adjacent hexes.
+
+- Converted neighbors' coordinates back to numbers.
+
+- Summation of these numbers gave result.
+
+---
+
+# **Answer:**
+
+\[
+\boxed{12168}
+\]
+----
+Usage(input=71, output=6956, details={})

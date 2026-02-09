@@ -1,0 +1,244 @@
+Solution:
+The problem asks for the sum of the 8 neighbors of the number 2026, where the natural numbers are written on a square grid in a spiral pattern.
+
+The spiral pattern is:
+$$
+\begin{array}{ccccccc}
+\cdots & 25 & 24 & 23 & 22 & 21 & \cdots \\
+\cdots & 10 & 9 & 8 & 7 & 20 & \cdots \\
+\cdots & 11 & 2 & 1 & 6 & 19 & \cdots \\
+\cdots & 12 & 3 & 4 & 5 & 18 & \cdots \\
+\cdots & 13 & 14 & 15 & 16 & 17 & \cdots
+\end{array}
+$$
+
+The numbers on the spiral form squares whose corners are perfect squares of odd numbers. The $k$-th square (where $k \ge 1$) is the square containing the numbers from $(2k-3)^2 + 1$ to $(2k-1)^2$. The largest number in the $k$-th square is $(2k-1)^2$, which is at the bottom-right corner of that square.
+
+Let $m = 2k-1$. The corners of the square corresponding to $m$ are:
+\begin{itemize}
+    \item Bottom-right: $m^2$
+    \item Bottom-left: $m^2 - (m-1) = m^2 - m + 1$
+    \item Top-left: $m^2 - 2(m-1) = m^2 - 2m + 2$
+    \item Top-right: $m^2 - 3(m-1) = m^2 - 3m + 3$
+\end{itemize}
+
+We need to find which square the number $N = 2026$ belongs to. We look for an odd number $m$ such that $(m-2)^2 < 2026 \le m^2$.
+We calculate the squares of integers near $\sqrt{2026} \approx 45.01$.
+$45^2 = 2025$.
+
+Since $2025 = 45^2$, the number 2025 is the bottom-right corner of the square corresponding to $m=45$.
+The square is defined by the size $(2k-1) \times (2k-1)$, where $2k-1 = 45$, so $2k = 46$, $k=23$.
+The numbers in this square range from $(45-2)^2 + 1 = 43^2 + 1 = 1849 + 1 = 1850$ to $45^2 = 2025$.
+
+The number $N = 2026$ is the next number in the spiral, which means it is the start of the next square, corresponding to $m' = 47$.
+The next square has $m' = 47$. The size is $47 \times 47$.
+The largest number in the previous square is $45^2 = 2025$.
+The number $2026$ is $45^2 + 1$. This number is located at the position immediately following the corner $45^2$ in the counter-clockwise spiral.
+
+Let's examine the coordinates for $N=2025$ and $N=2026$.
+For $m=45$:
+\begin{itemize}
+    \item $C_1 = 2025$ (Bottom-right corner)
+    \item $C_2 = 45^2 - 44 = 2025 - 44 = 1981$ (Bottom-left corner)
+    \item $C_3 = 45^2 - 2(44) = 2025 - 88 = 1937$ (Top-left corner)
+    \item $C_4 = 45^2 - 3(44) = 2025 - 132 = 1893$ (Top-right corner)
+\end{itemize}
+The number $2025$ is at $(+22, -22)$ if $1$ is at $(0,0)$.
+
+The number $2026 = 45^2 + 1$ is located one step counter-clockwise from $2025$.
+If $2025$ is at $(x, y)$, then $2026$ is at $(x+1, y)$.
+Since the square $m=45$ has side length $45$, the positions range from $-22$ to $22$ in both coordinates.
+$2025$ is at $(22, -22)$.
+$2026$ is at $(23, -22)$. This is the start of the next layer, $m'=47$.
+
+The center is $(0,0)$. The $m \times m$ square has coordinates $(x, y)$ where $\max(|x|, |y|) = (m-1)/2$.
+For $m=45$, $(m-1)/2 = 22$. $2025$ is at $(22, -22)$.
+For $m=47$, $(m-1)/2 = 23$. $2026$ is at $(23, -22)$.
+
+The neighbors of $2026$ at $(23, -22)$ are the 8 cells surrounding it:
+\begin{itemize}
+    \item $(-1, 0)$: $(22, -23)$
+    \item $(+1, 0)$: $(24, -23)$
+    \item $(0, -1)$: $(23, -23)$
+    \item $(0, +1)$: $(23, -21)$
+    \item $(-1, -1)$: $(22, -21)$
+    \item $(-1, +1)$: $(22, -23)$
+    \item $(+1, -1)$: $(24, -21)$
+    \item $(+1, +1)$: $(24, -23)$
+\end{itemize}
+Wait, the neighbors are:
+\begin{enumerate}
+    \item $(23-1, -22-1) = (22, -23)$
+    \item $(23-1, -22) = (22, -22)$
+    \item $(23-1, -22+1) = (22, -21)$
+    \item $(23, -22-1) = (23, -23)$
+    \item $(23, -22+1) = (23, -21)$
+    \item $(23+1, -22-1) = (24, -23)$
+    \item $(23+1, -22) = (24, -22)$
+    \item $(23+1, -22+1) = (24, -21)$
+\end{enumerate}
+
+We need to identify the numbers at these positions.
+The square $m=45$ goes up to 2025, at $(22, -22)$.
+The square $m'=47$ starts at 2026, at $(23, -22)$. The numbers in this square go up to $47^2 = 2209$.
+
+Neighbors of $2026$ at $(23, -22)$:
+\begin{enumerate}
+    \item $(22, -23)$: This position is outside the $45 \times 45$ square (which ends at $\max(|x|, |y|) = 22$). This position belongs to the layer $m''=49$, or it's a corner of the $m'=47$ layer. Since $2026$ is on the edge, many neighbors will be in the previous or next layer.
+    The position $(22, -23)$ is on the edge of the $47 \times 47$ square, where $\max(|x|, |y|) = 23$. So it belongs to the $m'=47$ square.
+    The side length of the $m'=47$ square is 47. The corners are:
+    \begin{itemize}
+        \item BR: $47^2 = 2209$ at $(23, -23)$
+        \item BL: $47^2 - 46 = 2164$ at $(-23, -23)$
+        \item TL: $47^2 - 2(46) = 2118$ at $(-23, 23)$
+        \item TR: $47^2 - 3(46) = 2072$ at $(23, 23)$
+    \end{itemize}
+    The path of the $m'=47$ square starts at $2026$ at $(23, -22)$ and moves up to $(23, 23)$, then left to $(-23, 23)$, then down to $(-23, -23)$, then right to $(23, -23)$ (which is 2209).
+
+    Let's trace the path for the $m'=47$ square starting from $2026$ at $(23, -22)$:
+    \begin{itemize}
+        \item The path goes UP along $x=23$: $2026, 2027, \dots, 2071, 2072$.
+        $2072$ is the Top-Right corner at $(23, 23)$. The number of steps from $(23, -22)$ to $(23, 23)$ is $23 - (-22) = 45$ steps. $2026 + 45 = 2071$. Ah, the corners are separated by 46 steps along the sides.
+        The side length is $L=47$. The segments have length $L-1=46$.
+        Start: $2026$ at $(23, -22)$.
+        The segment is $(23, -22)$ to $(23, 23)$. The numbers are $2026, 2027, \dots, 2026 + 45 = 2071$.
+        The next number $2072$ must be the TR corner. The TR corner should be $47^2 - 3(46) = 2072$. So $2072$ is at $(23, 23)$. The path follows the edge.
+        $2072 = 2026 + 46$. This implies the segment length is 46.
+        The coordinates are: $x=23$. $y$ goes from $-22$ to $23$. Number of points: $23 - (-22) + 1 = 46$. Wait, $47$ points in total for the side length of 47.
+        The corner $47^2$ is at $(23, -23)$.
+        The path is: $(23, -22) \to (23, 23) \to (-23, 23) \to (-23, -23) \to (23, -23)$.
+
+        The numbers along the right edge $x=23$: $2026$ at $(23, -22)$. The segment has length $46$.
+        $2026$ to $2026 + 45 = 2071$ are on the edge up to $(23, 22)$.
+        $2072$ is at $(23, 23)$ (TR corner). This is $2026 + 46$. Correct.
+
+        The path continues left along $y=23$: $2073$ at $(22, 23)$, down to $2072 + 46 = 2118$ at $(-23, 23)$ (TL corner).
+
+        The path continues down along $x=-23$: $2119$ at $(-23, 22)$, down to $2118 + 46 = 2164$ at $(-23, -23)$ (BL corner).
+
+        The path continues right along $y=-23$: $2165$ at $(-22, -23)$, right to $2164 + 46 = 2209$ at $(23, -23)$ (BR corner).
+
+    \item $(22, -22)$: This is the number $2025$, the last number of the previous square $m=45$.
+    \item $(22, -21)$: This is on the right edge of the $m=45$ square. The right edge goes from $45^2=2025$ (BR) up to $1893$ (TR). $2025$ is at $(22, -22)$. $2024$ is at $(22, -21)$, $2023$ is at $(22, -20)$, $\dots$, $1893$ is at $(22, 22)$.
+    The segment is $2025 \to 1893$. The difference is $2025 - 1893 = 132$. The length of the segment is $44$.
+    $2025$ is at position 0 (relative to this segment). $2024$ is at position 1.
+    The number at $(22, -21)$ is $2025 - 1 = 2024$.
+
+    \item $(22, -23)$: This position is adjacent to $(23, -22)$. Since $|-23| = 23 > 22$, this position is in the $m'=47$ square.
+    This position is $(x_{m'-1}, y_{m'-1}+1)$ relative to $2025=(22, -22)$.
+    $2026$ is at $(23, -22)$. $(22, -23)$ is the neighbor "down-left" from $2026$.
+    This position is on the bottom edge of the $m'=47$ square. The bottom edge is $y=-23$.
+    The path reaches $y=-23$ at $2165$ at $(-22, -23)$ and ends at $2209$ at $(23, -23)$.
+    The order is: $(-22, -23) \to (-21, -23) \to \dots \to (22, -23) \to (23, -23)$.
+    $2165$ is at $(-22, -23)$. The coordinates $x$ go from $-22$ to $23$. Number of points: $23 - (-22) + 1 = 46$. Wait, $47$ points.
+    $(-23, -23)$ is $2164$. $(-22, -23)$ is $2165$. The index for $x=-22$ is 1 (relative to $-23$).
+    The position $(22, -23)$ is the second to last point on this edge.
+    $x$ goes from $-23$ to $23$. $22$ is the $(22 - (-23)) + 1 = 46$-th point.
+    $2164 + 45 = 2209$. Ah, the length is 46.
+    $2164$ at $(-23, -23)$. $2165$ at $(-22, -23)$. $\dots$
+    $2208$ at $(22, -23)$. $2209$ at $(23, -23)$.
+    The number at $(22, -23)$ is $2164 + (22 - (-23)) = 2164 + 45 = 2209$. Wait, this is wrong.
+    $2164$ is the starting point. The coordinates are $x = -23, -22, \dots, 23$. Total 47 points.
+    The numbers are $2164, 2165, \dots, 2209$. Total $2209 - 2164 + 1 = 46$ numbers. This means the segment has 46 steps.
+    The number of steps from $2164$ to $2209$ is $45$. So there are 46 numbers.
+    If $x=-23$, number is $2164$. If $x=23$, number is $2164 + 46 = 2210$. But $2209$ is the end.
+    $2209 - 2164 = 45$. So there are $46$ numbers, $2164, \dots, 2209$.
+    The segment is from $(-23, -23)$ to $(23, -23)$. $x$ changes from $-23$ to $23$.
+    The number $N(x)$ at $(x, -23)$ is $2164 + (x - (-23)) = 2164 + x + 23$.
+    For $x=23$, $N(23) = 2164 + 46 = 2210$. This is incorrect, $2209$ is the end.
+
+    Let's re-check the corners for $m'=47$:
+    BR: $2209$ at $(23, -23)$.
+    BL: $2164$ at $(-23, -23)$. (Difference $45$)
+    The number of points on the edge is $47$. The segment length is $46$.
+    If $2164$ is at $x=-23$, the next point $2165$ is at $x=-22$.
+    $N(x) = 2164 + (x - (-23)) = x + 2187$.
+    For $x=23$, $N(23) = 23 + 2187 = 2210$. Still off by 1.
+
+    The number of steps from BL to BR is $23 - (-23) = 46$.
+    The number of elements is $47$. The last element is $2164 + 46 = 2210$. But the last element is $2209$.
+    This means the path doesn't end at $(23, -23)$ with $m'^2$.
+    The $m^2$ corners are: $m^2$ (BR), $m^2 - (m-1)$ (BL), $m^2 - 2(m-1)$ (TL), $m^2 - 3(m-1)$ (TR).
+    For $m'=47$: $m'-1 = 46$.
+    BR: $47^2 = 2209$ at $(23, -23)$.
+    BL: $2209 - 46 = 2163$ at $(-23, -23)$.
+    TL: $2209 - 2(46) = 2117$ at $(-23, 23)$.
+    TR: $2209 - 3(46) = 2071$ at $(23, 23)$.
+
+    The path for $m'=47$ starts at $2026$ at $(23, -22)$ and ends at $2209$ at $(23, -23)$.
+    Right edge ($x=23$): $2026$ to $2071$ (TR). Steps: $2071 - 2026 = 45$. $y$ goes from $-22$ to $23$. $23 - (-22) = 45$ steps. Correct.
+    $N(y) = 2026 + (y - (-22)) = y + 2048$.
+    At $y=23$, $N(23) = 23 + 2048 = 2071$. This is the TR corner.
+
+    Top edge ($y=23$): $2072$ at $(22, 23)$, $\dots$, $2117$ at $(-23, 23)$ (TL). Steps: $2072 - 2071 = 1$.
+    $N(x) = 2071 + (23 - x)$. (Moving left, $x$ decreases).
+    At $x=-23$, $N(-23) = 2071 + (23 - (-23)) = 2071 + 46 = 2117$. This is the TL corner. Correct.
+
+    Left edge ($x=-23$): $2118$ at $(-23, 22)$, $\dots$, $2163$ at $(-23, -23)$ (BL).
+    $N(y) = 2117 + (23 - y)$. (Moving down, $y$ decreases).
+    At $y=-23$, $N(-23) = 2117 + (23 - (-23)) = 2117 + 46 = 2163$. This is the BL corner. Correct.
+
+    Bottom edge ($y=-23$): $2164$ at $(-22, -23)$, $\dots$, $2209$ at $(23, -23)$ (BR).
+    $N(x) = 2163 + (x - (-23)) = x + 2186$. (Moving right, $x$ increases).
+    At $x=23$, $N(23) = 23 + 2186 = 2209$. This is the BR corner. Correct.
+
+    Now we map the neighbors of $2026$ at $(23, -22)$:
+    \begin{enumerate}
+        \item $(22, -23)$ (BL neighbor): On the bottom edge $y=-23$. $N(22) = 22 + 2186 = 2208$.
+        \item $(22, -22)$: In the previous square $m=45$. $N = 2025$.
+        \item $(22, -21)$: On the right edge of the $m=45$ square. $N = 2024$.
+        \item $(23, -23)$ (Down neighbor): BR corner of $m'=47$. $N = 2209$.
+        \item $(23, -21)$ (Up neighbor): On the right edge of $m'=47$. $N(y=-21) = -21 + 2048 = 2027$.
+        \item $(24, -23)$: Outside $m'=47$ square ($\max=23$). Belongs to $m''=49$ square ($\max=24$).
+        The $m''=49$ square starts at $2210$ at $(24, -22)$.
+        The path of $m''=49$ starts at $47^2 + 1 = 2210$. $2209$ is at $(23, -23)$.
+        $2210$ is at $(24, -23)$ or $(24, -22)$ or $(23, -24)$ or $(22, -24)$.
+        $2209$ is at $(23, -23)$. $2210$ is at $(24, -23)$ (moving right on the bottom edge $y=-23$).
+        The bottom edge of $m''=49$ is $y=-24$. $2210$ is at the position adjacent to $2209$ in the counter-clockwise direction.
+        $2209=(23, -23)$. Next is $(24, -23)$ (which is on the same line $y=-23$, but $x=24$ means it's outside).
+        $2210$ is at $(24, -23)$? No, the new square has $x, y$ up to 24.
+        $2209$ is the BR of $m'=47$. $2210$ is one step away.
+        The $m=47$ square is bounded by $x, y \in [-23, 23]$.
+        $2209$ is at $(23, -23)$. The next position must be $(24, -23)$ if it moves right, or $(23, -24)$ if it moves down.
+        The spiral continues outwards, so $2210$ must be at $(24, -23)$ or $(23, -24)$. Since the spiral turns counter-clockwise, $2210$ must be adjacent to the last element $(23, -23)$.
+        If $2025$ is at $(22, -22)$, then $2026$ is at $(23, -22)$.
+        $2209$ is at $(23, -23)$. The next position is $(24, -23)$ (moving right on the $y=-23$ line).
+        So $2210$ is at $(24, -23)$. This is the start of the right edge of the $m''=49$ square ($x=24$).
+        The position $(24, -23)$ is on the right edge of the $m''=49$ square, $x=24$.
+        The right edge for $m''=49$ ($L''=49$) goes from $(24, -23)$ up to $(24, 24)$.
+        $N(y) = 2210 + (y - (-23)) = y + 2233$.
+        The position $(24, -23)$ gives $N = -23 + 2233 = 2210$. Correct.
+        The neighbor $(24, -23)$ has value $2210$.
+
+        \item $(24, -22)$: On the right edge of $m''=49$. $N(-22) = -22 + 2233 = 2211$.
+        \item $(24, -21)$: On the right edge of $m''=49$. $N(-21) = -21 + 2233 = 2212$.
+    \end{enumerate}
+
+The 8 neighbors of 2026 are:
+\begin{enumerate}
+    \item $(22, -23) \implies 2208$
+    \item $(22, -22) \implies 2025$
+    \item $(22, -21) \implies 2024$
+    \item $(23, -23) \implies 2209$
+    \item $(23, -21) \implies 2027$
+    \item $(24, -23) \implies 2210$
+    \item $(24, -22) \implies 2211$
+    \item $(24, -21) \implies 2212$
+\end{enumerate}
+
+The sum $S$ is:
+$$S = 2208 + 2025 + 2024 + 2209 + 2027 + 2210 + 2211 + 2212$$
+Group the numbers:
+$$(2024 + 2025 + 2027) + (2208 + 2209 + 2210 + 2211 + 2212)$$
+$$3 \times 2025 + 2 \times 2025 + 2027 - 2025 + 5 \times 2210$$
+$$3 \times 2025 + 2027 + 2024 + 2025 + 2208 + 2209 + 2210 + 2211 + 2212$$
+
+$S = (2024 + 2025 + 2027) + (2208 + 2209 + 2210 + 2211 + 2212)$
+Sum of first group: $2024 + 2025 + 2027 = 6076$.
+Sum of second group (arithmetic progression with 5 terms, average is 2210): $5 \times 2210 = 11050$.
+
+Total sum $S = 6076 + 11050 = 17126$.
+
+
+----
+Usage(input=62, output=6871, details={'candidatesTokenCount': 6871, 'promptTokensDetails': [{'modality': 'TEXT', 'tokenCount': 62}]})

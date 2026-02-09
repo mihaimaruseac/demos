@@ -1,0 +1,273 @@
+Let's analyze the arrangement and solve the problem step by step.
+
+### 1. **Understanding the Spiral**
+The spiral is organized as follows (centered on 1):
+
+```
+  5  4  3
+  6  1  2
+  7  8  9
+```
+
+So, the spiral starts at 1, then moves right (2), down (3), left (4, 5), up (6, 7), right (8, 9, ...), and so on, forming *spiral "layers"*.
+
+### 2. **Positioning an Arbitrary Number**
+Let \( n \) be in layer \( k \):
+- The "layers" are squares: the center is layer 0, next ring is layer 1, etc.
+- The lower right corner of the \( k \)-th layer has the value \( (2k+1)^2 \).
+
+#### **We need to find the layer containing 2026.**
+
+Set \( (2k+1)^2 \geq 2026 \):
+
+\[
+(2k+1)^2 \geq 2026 \implies 2k+1 \geq \sqrt{2026}
+\]
+
+\[
+\sqrt{2026} \approx 45
+\]
+\[
+2k+1 \geq 45 \implies k \geq 22
+\]
+
+Now let's check corners for \( k = 22 \):
+
+\[
+(2k+1)^2 = (45)^2 = 2025
+\]
+
+So, \( 2025 \) is the lower-right corner of the spiral square in the \( 22^\text{nd} \) layer, side \( 45 \).
+
+### 3. **Finding the Position of 2026**
+
+From the lower right corner (2025), the next number in the spiral is 2026.
+
+Let's verify the spiral direction after 2025:
+
+#### **How do numbers increase?**
+At each "corner" the direction changes:
+- Bottom right (largest): move up
+- Top right: move left
+- Top left: move down
+- Bottom left: move right
+
+So from 2025 at the bottom right, the next number goes **up**:
+- (x, y) = (k, -k) for \( (2k+1)^2 \), next position (x, y+1) = (k, -k+1).
+
+So for \( k = 22 \):
+
+- \( 2025 \) is at (22, -22)
+- \( 2026 \) is at (22, -21)
+
+### 4. **Finding the 8 Neighbors**
+
+Neighbors are at:
+- (x+-1, y+-1): the 8 surrounding grid spots.
+
+So we need numbers at these positions:
+
+- (21, -22)
+- (21, -21)
+- (21, -20)
+- (22, -22)
+- (22, -20)
+- (23, -22)
+- (23, -21)
+- (23, -20)
+
+### 5. **Relating Coordinates to Numbers in the Spiral**
+
+For this spiral:
+- **Odd layers:** Start at bottom right, increase counterclockwise
+- Each ring/layer \( k \) runs from number \( (2k-1)^2 + 1 \) around to \( (2k+1)^2 \).
+
+Let's generalize how to get the number at position (x, y):
+
+#### **As per the spiral pattern** (Standard 'Ulam Spiral'):
+
+Given coordinates (x, y), with center (0, 0) holding 1, and increasing spirally.
+
+Let \( N = \max(|x|, |y|) \) (the "layer" number)
+
+- For each layer \( N \) (except 0), the numbers form the sides of the square with side \( 2N+1 \)
+
+- The maximum value (bottom right corner) is \( (2N+1)^2 \)
+
+For a point on the outermost ring at (x, y):
+
+- Start at bottom right: (N, -N) = \( (2N+1)^2 \)
+- Up to (N, -N+1) as you move up, then left, etc.
+
+Let's parameterize the four sides:
+- **Right edge:** from (N, -N) to (N, N)
+- **Top edge:** from (N, N) to (-N, N)
+- **Left edge:** from (-N, N) to (-N, -N)
+- **Bottom edge:** from (-N, -N) to (N, -N)
+
+The traversal for values decreases by 1 as you move from bottom right corner counterclockwise.
+
+Specifically, starting from \( (2N+1)^2 \) at (N, -N):
+
+- Up the right edge: (N, -N) → (N, N): S positions
+- Left along top: (N, N) → (-N, N): S positions
+- Down the left: (-N, N) → (-N, -N): S positions
+- Right along bottom: (-N, -N) → (N, -N): S positions (excluding starting point (N, -N), already counted)
+
+Where \( S = 2N \) (side length minus 1)
+
+**So, for each position, we can get its value as follows:**
+
+If on right edge: (N, y), y from (-N) to (N):
+
+\[
+\text{Value} = (2N+1)^2 - (N - y)
+\]
+
+If on top edge: (x, N), x from (N-1) to (-N):
+
+\[
+\text{Value} = (2N+1)^2 - (2N) - (N - x)
+\]
+
+If on left edge: (-N, y), y from (N-1) to (-N):
+
+\[
+\text{Value} = (2N+1)^2 - (4N) - (N + y)
+\]
+
+If on bottom edge: (x, -N), x from (-N+1) to (N-1):
+
+\[
+\text{Value} = (2N+1)^2 - (6N) - (N + x)
+\]
+
+### 6. **Apply to the Neighbors**
+
+Let's calculate **layer \( N \) for each neighbor**.
+
+Recall, 2026 is at (22, -21), thus all its neighbors are on layer 22, 21, or 23:
+
+#### **A. (21, -22): Compute N and Value**
+- N = max(21, 22) = 22
+- x = 21, y = -22. Since y = -22, we are on the **bottom edge**. \( x \) from -21 to 21.
+
+For bottom edge:
+
+\[
+\text{Value} = (2N+1)^2 - 6N - (N + x)
+\]
+
+N = 22, x = 21
+
+\[
+(45^2) - 132 - (22 + 21) = 2025 - 132 - 43 = 2025 - 175 = 1850
+\]
+
+#### **B. (21, -21): N = 21, x = 21, y = -21**
+- This is at the **right edge** (x = N = 21), y from -21 to 21.
+
+\[
+(2 \times 21 + 1)^2 - (21 - y) = 43^2 - (21 - (-21)) = 1849 - 42 = 1807
+\]
+
+#### **C. (21, -20): N = 21, x = 21, y = -20**
+
+Still right edge,
+
+\[
+1849 - (21 - (-20)) = 1849 - 41 = 1808
+\]
+
+#### **D. (22, -22): (22, -22), N = 22**
+
+x = 22, y = -22, so bottom edge.
+
+\[
+2025 - 132 - (22 + 22) = 2025 - 132 - 44 = 2025 - 176 = 1849
+\]
+
+#### **E. (22, -20): (22, -20), N = 22**
+
+x = 22, y = -20, this is **right edge**, as x = N, y > -N.
+
+Right edge: \( (2N+1)^2 - (N - y) \)
+
+\[
+2025 - (22 - (-20)) = 2025 - 42 = 1983
+\]
+
+#### **F. (23, -22): x = 23, y = -22, N = 23**
+
+Bottom edge.
+
+(47^2) = 2209
+
+\[
+2209 - 6*23 - (23 + 23) = 2209 - 138 - 46 = 2209 - 184 = 2025
+\]
+
+#### **G. (23, -21): x = 23, y = -21, N = 23**
+
+Right edge.
+
+\[
+2209 - (23 - (-21)) = 2209 - 44 = 2165
+\]
+
+#### **H. (23, -20): x = 23, y = -20, N = 23**
+
+Right edge.
+
+\[
+2209 - (23 - (-20)) = 2209 - 43 = 2166
+\]
+
+### 7. **Sum Up**
+
+Let’s write the final list:
+
+| Position    | N   | Edge    | Value |
+|-------------|-----|---------|-------|
+| (21, -22)   | 22  | bottom  | 1850  |
+| (21, -21)   | 21  | right   | 1807  |
+| (21, -20)   | 21  | right   | 1808  |
+| (22, -22)   | 22  | bottom  | 1849  |
+| (22, -20)   | 22  | right   | 1983  |
+| (23, -22)   | 23  | bottom  | 2025  |
+| (23, -21)   | 23  | right   | 2165  |
+| (23, -20)   | 23  | right   | 2166  |
+
+Sum:
+
+\[
+1850 + 1807 + 1808 + 1849 + 1983 + 2025 + 2165 + 2166
+\]
+
+Calculate step-by-step:
+
+- \( 1850 + 1807 = 3657 \)
+- \( 3657 + 1808 = 5465 \)
+- \( 5465 + 1849 = 7314 \)
+- \( 7314 + 1983 = 9297 \)
+- \( 9297 + 2025 = 11322 \)
+- \( 11322 + 2165 = 13487 \)
+- \( 13487 + 2166 = 15653 \)
+
+**Final sum:**
+
+\[
+\boxed{15653}
+\]
+
+---
+
+## **Final Answer**
+
+\[
+\boxed{15653}
+\]
+
+is the sum of all 8 neighbors of the number 2026 in the described spiral.
+----
+Usage(input=62, output=2449, details={})

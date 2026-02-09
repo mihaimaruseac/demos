@@ -1,0 +1,360 @@
+Alright, let's break this problem down systematically.  
+
+---
+
+## **1. Understanding the spiral layout**
+
+We are told here it’s the "square spiral" starting like this:
+
+\[
+\begin{matrix}
+\dots & 5 & 4 & 3 & \dots \\
+\dots & 6 & 1 & 2 & \dots \\
+\dots & 7 & 8 & 9 & \dots \\
+\end{matrix}
+\]
+
+This is the usual Ulam spiral (counterclockwise starting right from 1).  
+Coordinates in this setup:  
+
+Let’s follow the standard numbering where:
+
+- 1 is at origin \( (0,0) \)
+- Moving right: \(1 \to 2\),  
+- Then up: \(2 \to 3\),  
+- Then left twice: \(3 \to 4 \to 5\),  
+- Then down: \(5\to6\to7\),  
+- Then right: \(7\to8\to9\), etc.  
+
+Indeed in your example:
+
+```
+(0,0):1  
+(1,0):2  
+(1,1):3  
+(0,1):4  
+(-1,1):5  
+(-1,0):6  
+(-1,-1):7  
+(0,-1):8  
+(1,-1):9
+```
+Actually, let’s check: Wait — if 1 is at (0,0), 2 is at (1,0), 3 at (1,1), 4 at (0,1), 5 at (-1,1), 6 at (-1,0), 7 at (-1,-1), 8 at (0,-1), 9 at (1,-1).
+
+Let’s compare with the given diagram:
+
+Given:  
+Row1: ... 5 4 3 ...  
+Row0: ... 6 1 2 ...  
+Row-1:... 7 8 9 ...
+
+Coordinates in "array terms" maybe: no, let’s align properly:  
+
+The diagram given is rotated? Actually maybe their top row is y=1, middle row y=0, bottom row y=-1? But data: 
+
+From y=1 row: (x=-1,y=1) = 5, (x=0,y=1)=4, (x=1,y=1)=3. ✅  
+From y=0 row: (x=-1,y=0)=6, (x=0,y=0)=1, (x=1,y=0)=2. ✅  
+From y=-1 row: (x=-1,y=-1)=7, (x=0,y=-1)=8, (x=1,y=-1)=9. ✅
+
+So indeed 1 is at (0,0), 2 at (1,0), 3 at (1,1), 4 at (0,1), 5 at (-1,1), 6 at (-1,0), 7 at (-1,-1), 8 at (0,-1), 9 at (1,-1).
+
+So it is standard:  
+Move right 1: 1→2,  
+Move up 1: 2→3,  
+Move left 2: 3→4→5,  
+Move down 3: 5→6→7→8?, hold on check numbers:
+
+Actually sequence: 6 at (-1,0), 7 at (-1,-1), 8 at (0,-1), 9 at (1,-1).  
+
+That’s moving down from 5→6 (y:1→0), then moving right? No — check: 7 & 8 & 9: positions relative to 6:  
+
+6 at (-1,0), then 7 at (-1,-1) (down-left? no, down). 8 at (0,-1) (right). 9 at (1,-1) (right).
+
+So pattern in full known Ulam spiral: directions cycle: right → up → left → down → right …
+
+Let’s not get lost — we can find coordinates of \( n = 2026 \) explicitly.
+
+---
+
+## **2. Finding coordinates of \(n\) in square spiral (counterclockwise from right)**
+
+Known formulas:  
+Let \( k = \lfloor \sqrt{n-1} \rfloor \) or \( m = \lceil \sqrt{n} \rceil \) — but better is to find the ring each \(n\) is in.
+
+Sequence: Ring \(r\) has numbers: start \( (2r-1)^2 \) to \((2r+1)^2\), but careful:
+
+Ring 0: just number 1 at (0,0).
+
+Ring 1: numbers 2 to 9 = 8 numbers, square corners: 2,3,4,5,6,7,8,9.
+
+General ring \( r \) (r ≥ 1): numbers from \( (2r-1)^2 + 1 \) to \( (2r+1)^2 \).
+
+Check: Ring 1: (2*1-1)^2 = 1^2 = 1, so starting at n=2 up to (3)^2 = 9.  
+
+Ring 2: starting at n=10 up to n=25.
+Ring 3: n=26 to n=49, etc.
+
+We want n=2026.
+
+---
+
+First find largest odd number \(2r+1\) such that \((2r+1)^2 \ge 2026\) or \( < 2026 \).
+
+Let \(s = \sqrt{2026} \approx 45.011\),  
+So next odd number ≥ sqrt(n) ?  
+Odd numbers near sqrt: 45 (since 45^2=2025). Great.
+
+2025 = \(45^2\).  
+
+If \(45^2\) is an odd square, then \(2r+1 = 45\), so \(r=22\). Ring index r=22 covers numbers from \((43)^2 + 1\) to \(45^2\).
+
+Check: \(43^2 = 1849\). So ring r=22: start 1850 to end 2025 inclusive. Wait, is 2025 included? Yes, because \(45^2 = 2025\) is the max of ring r=22.
+
+**But 2026** is bigger than 2025, so 2026 is in ring r=23.
+
+Let’s check: For ring r: numbers from \((2r-1)^2+1\) to \((2r+1)^2\).  
+Ring r=23: \( (2*23-1)^2 + 1 = (45)^2 + 1 = 2025 + 1 = 2026\) up to \( (47)^2 = 2209\).
+
+So indeed **n=2026** is the first number of ring r=23.
+
+---
+
+First number of ring r: starts at \((2r-1)^2 + 1\) at position \((r, 1-r)\)? Better recall: start positions:
+
+For r≥1, starting point for ring r:  
+Coordinates: first number after \((2r-1)^2\), which is at bottom-right corner? Let’s consult known algorithm:
+
+Actually known convention (OEIS A174344, A274923):  
+
+Start 1 at (0,0),  
+2 at (1,0),  
+ring r (r≥1) first number after (2r-1)^2 at (r, 1-r). Let’s test r=1:  
+
+(2r-1)^2=1, next n=2 at (r,1-r) = (1,0) ✔.
+
+Ring r=2: (2r-1)^2=9, next n=10 at (2,1-2) = (2,-1)? Is that right? Check: known: ring2 corners: 10 at (2,-1), 11 at (2,0), etc. But looking at earlier small example: our ring1: 2 to 9: corners: (1,0),(1,1),(-1,1),(-1,-1),(0,-1),(????) Need systematic.
+
+Actually easier: Let’s just compute coordinate of n=2026 directly:
+
+Ring r=23: first number is \(n_0 = (45)^2 + 1 = 2026\).  
+We start ring r at coordinates (r, 1-r) = (23, -22).
+
+Then:
+
+Side lengths in ring r: each side length = 2r, and first side (right side) goes up from (r, 1-r) to (r, r).
+
+Let’s check: ring r=1: (1,0) go up: (1,0)→(1,1) length 1? hmm no—actually side length per ring: side length = 2r, but first segment maybe r→r? Let's explicitly:
+
+Ring r: start (r, 1-r):  
+Move up: for steps: to (r, r)  
+Length = r - (1-r) = 2r-1? No: initial coordinate 1-r to r: diff = r - (1-r) = 2r-1? Wait that’s not 2r.
+
+Better known: each ring r (r≥1) has square of side length 2r, divided thus:  
+Start of ring: at (r, -(r-1))? Wait, no, my earlier start was wrong: Known formula for square spiral (counterclockwise right first):
+
+1 at (0,0), ring r: numbers (2r-1)^2 to (2r+1)^2, corners: SE corner (r,-r)??? Let me test small r=1:  
+
+Ring r=1: (2r-1)^2=1 at (0,0) before ring starts. Then first new number 2 at (1,0) indeed. So (1,0) start.
+
+For r=2: (2r-1)^2=9 at (-1,-1)? Actually 9 at (1,-1)? No 9 in my earlier was at (1,-1). Wait contradiction: earlier I had:  
+
+Checking ring 1: numbers 2 at (1,0), 3 at (1,1), 4 at (0,1), 5 at (-1,1), 6 at (-1,0), 7 at (-1,-1), 8 at (0,-1), 9 at (1,-1).  
+
+Thus corners: 2: bottom right?? No top right? 3: top right, 5: top left, 7: bottom left, 9: bottom right.
+
+Going from 1→2: right, 2→3: up, 3→4: left, 4→5: left, 5→6: down, 6→7: down, 7→8: right, 8→9: right.
+
+So pattern: ring r=1: each side length 2 steps except up side length 2? We can see 3 to 4 to 5: left 2 steps. Down 5→6→7: 2 steps? Actually 5→6→7: yes 2 steps, then 7→8→9: 2 steps.
+
+So each side length = 2r for r≥1. So ring1 length=2, but I counted: up had 1 step? Wait no, ring1: corners: 2 to 3: up length 1? That’s 1 step, not 2. So perhaps formula needs r≥2?
+
+Anyway let’s just find 2026’s position:
+
+Start position for ring r: bottom right corner coordinate (r, -r+1)? Let’s see r=1: (1,0) yes.
+
+Let’s duplicate known code logic:
+
+Ring r: start = (r, 1-r),  
+Up movement length=2r-1? Wait: test r=1: (1,0) up to (1,1) length1=2*1-1=1 ✓.  
+Then left length=2r: (1,1) left to (-1,1): length=2 ✓ (positions (0,1),(-1,1)).  
+Down length=2r: (-1,1) to (-1,-1): length=2 ✓ ((-1,0),(-1,-1)).  
+Right length=2r: (-1,-1) to (1,-1): length=2 ✓ ((0,-1),(1,-1)).
+
+For larger r: up: length=2r-1, left: len=2r, down: len=2r, right: len=2r, plus 1 missing step: After completing, next ring starts at (r+1, -r).
+
+Now: n=2026 is start of ring r=23: start at (23, 1-23) = (23, -22).
+
+Then:  
+Up: length = 2r-1 = 45 steps? Including start number: first number at (23,-22), then add (0,1) 45 times? Wait but ring r=23: first side (right side) direction: actually since start is bottom right? No start is rightmost middle? Let’s check r=1: start (1,0) move up: (1,0) to (1,1) length 1 = (2r-1). So for r=23: up length=45.
+
+Positions count: start number is n_0 = (45)^2+1=2026 at (23, -22). Then n=2027:(23,-21), …, up to n=2026+45 at (23, -22+45) = (23,23)? Wait -22+45=23 ✓. So last up step n=2026+45=2071 at (23,23). Good.
+
+Next side: left: length=2r=46 steps: from (23,23) to (-23,23). That goes throug n=2072 to 2072+45=2117? careful: left: from (23,23) to (-23,23): difference in x: 46 steps? Actually: positions: (23→22→21→...→-23) is 46 steps? Wait: 
+x:23 to -23: that’s 23-(-23)=46 steps indeed. But 46 steps means new positions count = 46 numbers? No: movement by increments of (-1,0), starting at n=2072 at (22,23), ending at n=2117 at (-23,23). So yes.
+
+Anyway, important: n=2026 is at the start of its ring, so coordinates: (23, -22).
+
+---
+
+## **3. Eight neighbors’ coordinates**
+
+Neighbors of (23, -22):
+
+\[
+(22,-22),\ (24,-22),\ (23,-21),\ (23,-23),\ (22,-21),\ (24,-21),\ (22,-23),\ (24,-23)
+\]
+
+Now we need numbers at these coordinates.
+
+---
+
+## **4. Finding numbers at neighbor coordinates**
+
+We can find by “coordinate → number” formula.
+
+Known formulas for square spiral: For a given (x,y):
+
+Define \( m = \max(|x|,|y|) \) = ring number m (starting m=0 at center).
+
+Ring m has numbers: from \( (2m-1)^2 + 1 \) to \( (2m+1)^2 \) except for m=0.
+
+Let’s compute m for each neighbor:
+
+m= max(|x|,|y|) for each:
+
+1. (22,-22): m=22  
+2. (24,-22): m=24  
+3. (23,-21): m=23 (since max=23)  
+4. (23,-23): m=23  
+5. (22,-21): m=22  
+6. (24,-21): m=24  
+7. (22,-23): m=23 (since max=23)  
+8. (24,-23): m=24  
+
+---
+
+Now, function f(x,y):  
+
+If \( |x| = m \) and \( y = -m \) (bottom right corner), then position along ring? Better to use coordinate → number directly.
+
+But easier: we know n=2026 is at bottom right corner of its ring? No, bottom right corner is (r, -r), here r=23: (23,-23) is bottom right corner of ring r=23? But we start at (23,-22) up, so bottom right corner’s coordinates? Wait start is bottom right but one step above bottom right corner? Actually bottom right corner coordinate is (r, -r+1) not?  
+
+Testing r=1: start of ring: (1,0) (bottom right corner or middle right side?) Actually in usual Ulam spiral bottom right is (r, -r), e.g., r=1 bottom right = (1,-1) = number 9. Yes! so bottom right corner n = (2r+1)^2? Let's check r=1: (2*1+1)^2=9 at (1,-1).
+
+So: ring r: bottom right corner=(r,-r) corresponds to n=(2r+1)^2. Top right corner=(r,r) corresponds to n=(2r-1)^2+2r? Let's check.
+
+Instead of deriving, possible easier: we have 8 neighbors belonging to rings m=22,23,24.
+
+Known: ring m numbers from \( a_m = (2m-1)^2+1 \) to \( b_m = (2m+1)^2 \).
+
+Let’s find exactly where each neighbor lies along ring m.  
+
+Given coordinates: (x,y) in ring m = max(|x|,|y|).
+
+---
+
+Let’s find index along the ring:  
+
+Ring m wrapping order: start: (m, 1-m) [n=a_m], up to (m,m), left to (-m,m), down to (-m,-m), right to (m,-m). Then bottom right corner = (m,-m) = n=b_m.
+
+So compute position within ring m:
+
+Case 1: if x = m and y < m: right side: but our (23,-22): x=m, y=-22: m=23, right side? Coordinates: bottom right corner = (m,-m)=(23,-23), start of ring=(m,1-m)=(23,-22). So (23,-22) is one step above bottom right corner along right side. So along bottom side? Actually right side: x=m, y from -m+1 to m? Wait y goes from 1-m up to m for right side? No: from start (m,1-m) up to (m,m) is right side? That’s actually top-right side? Wait check: in ring1: m=1: start (1,0) up to (1,1), so indeed x=m, y increasing is right vertical side, but orientation got me confused visually but okay.
+
+Better: known formula for given (x,y):
+
+Let m=max(|x|,|y|).
+
+If x==m and y≠-m, then it's on right vertical side. Offset from (m, 1-m): offset = y - (1-m) = y - (1-m).
+
+Then number = a_m + offset, a_m=(2m-1)^2+1.
+
+If y==m and x≠m, left top side. Etc.
+
+But given time, maybe instead of full formula, let’s find number of one neighbor and infer rest? Let’s take (22,-21): m=22.
+
+m=22: a_m=(43)^2+1=1849+1=1850. Max=22, x=22, y=-21 ⇒ x=m? But max(|x|,|y|)=max(22,21)=22, x=22, so top/bottom? no: x=m and y=-21, so right side? yes (right side: x=m, y from 1-m to m): 1-m=1-22=-21? oh! y=-21 is exactly 1-m=-21 indeed! So (22,-21) is the start of ring m=22.
+
+So n_start_ring22 = a_22 = (2*22-1)^2+1 = (43)^2+1=1849+1=1850. Yes! So (22,-21) corresponds to n=1850.
+
+Similarly (24,-21): m=24: a_24=(47)^2+1=2209+1=2210? Wait no: a_m formula: a_m=(2m-1)^2+1 for m≥1, but for m=24: 2m-1=47 ⇒ 47^2=2209, plus1=2210. But (24,-21): x=m=24, y=-21: check y=1-m = 1-24=-23, no equal? No so y=-21 is two up from bottom.
+
+We can systematically find but easier: distance around ring from start depends on which side coordinate lies.
+
+Given time, maybe easier: exploit symmetry: 2026 is at start of ring 23: its neighbors: lower ring m=22, same m=23, higher m=24. Likely sequence known pattern: cross sum of 8 neighbors maybe symmetric? Might just brute force idea conceptually but since we can’t compute all exactly here quickly, maybe guess known numeric result from contest problems: often spiral neighbor sums are constant times something. Possibly all neighbors sum = 8n+ (constant) depending on ring start? Known property: for numbers at start of ring r, neighbors differ by fixed offsets related to square differences.
+
+Given time pressure, let’s try shortcut:
+
+We can deduce values:
+
+Let’s get coordinates:
+
+Our m=23 ring: start=(23,-22), end bottom corner=(23,-23)=n_last= (47)^2? Wait ring r=23: max n=(2r+1)^2=47^2=2209 at (r,-r)?? Actually: r=23→ max n = (2*23+1)^2=47^2 = 2209 at (23,-23). Yes.
+
+So sequence: start at n=(45)^2+1=2026 at (23,-22), then up to n=2071 at (23,23).
+
+Now neighbors:
+
+(22,-22): m=22, x=22, y=-22: On which side? max=22⇒right side? x=22=m⇒y=-22, start=(22,1-22)=(22,-21) has n=1850.
+
+Offset = y-(1-m) = -22 - (-21) = -1 ⇒ So number = 1850 + (-1) = 1849. Wait that’s end of previous ring r=22: (2*22+1)^2=45^2=2025? Wait yes 1849 is too small? Contradiction!
+
+Check: ring22 max=45^2=2025 at (22,-22)?  
+
+Let’s test: ring m=22: (2m+1=45)^2=2025 at bottom right corner=(m,-m)=(22,-22), yes! So (22,-22) number=2025. Right. So earlier calc error: offset: start=(m,1-m)=(22,-21) is n=1850 indeed. Then (22,-22) is one step down from start? But down means decreasing y: from -21 to -22. But decreasing y along right side? Wait decreasing y along right side going down leads to bottom right corner? Actually ring goes up first then left etc. We must be careful—perhaps easier: Right side: from (22,-21) to (22,22) is upwards y increment. But (22,-22): y=-22 less than -21, so it’s not on right side—it’s on bottom side! Yes because y=-22 equals -m? m=22⇒-m=-22, so y=-22 ⇒ bottom side! Bottom side: from (-22,-22) to (22,-22), with x increasing.
+
+Bottom side’s start in ring: after left side and before right side? Actually ring order: Start at (m,1-m) up, left, down, right. So bottom side: decreasing x? Wait maybe easier: Formulas known:  
+
+From known square spiral: f(x,y):
+
+Calculation for (22,-22): m=22, y=-22 ⇒ bottom side!  
+Bottom side: x from -m to m, but order: from left-bottom (-m,-m) to right-bottom (m,-m) increasing x. Wait but bottom right corner (m,-m) is last in ring. So bottom side goes from (-m,-m) to (m,-m) rightwards? Actually last segment of ring: bottom side leads to bottom right corner.
+
+Point (22,-22): just left of bottom right corner by 1 step maybe number = 2024?  
+
+Let’s compute: end of ring = bottom right corner = m=22: (22,-22)=n_last_ring22=2025. Then point before that on bottom side: moving left along bottom side: bottom right corner’s prev: (21,-22) → n=2024.
+
+Yes! So (22,-22) is same as (m,-m) with m=22: n=2025. Wait but we have x=22=m, y=-22=-m ⇒ yes bottom right corner: n=(2m+1)^2=(45)^2=2025. So (22,-22)=2025. Good.
+
+Similarly others:
+
+We can similarly find:  
+
+(24,-22): m=24, y=-22≠-m=-24, so bottom side? x=24=m, so cannot be bottom side—bottom side requires y=-m, i.e., -24. So this is right side of ring m=24. x=m=24, y=-22, start=(24,1-24)=(24,-23)=n=2210, offset=y-(1-m)= -22 - (-23)=1 ⇒ n=2210+1=2211.
+
+(23,-21): m=23, x=23=m, y=-21⇒ right side: start=(23,1-23)=(23,-22)=2026, offset=(-21)-(-22)=1 ⇒ n=2027.
+
+(23,-23): m=23, y=-23=-m ⇒ bottom side? But x=23=m ⇒ bottom right corner for m=23 ⇒ n=(2*23+1)^2=47^2=2209.
+
+Thus neighbors:
+
+8 neighbors:
+
+1. (22,-22): 2025  
+2. (24,-22): 2211  
+3. (23,-21): 2027  
+4. (23,-23): 2209  
+5. (22,-21): m=22, x=22, y=-21=1-m ⇒ start of ring22: n=1850  
+6. (24,-21): m=24, x=24, y=-21 ⇒ right side: start=(24,-23)=2210, offset=-21-(-23)=2 ⇒ n=2212  
+7. (22,-23): m=23, x=22≠m=23, y=-23=-m ⇒ bottom side: bottom right corner (23,-23)=2209, leftwards along bottom: (22,-23) is one left from bottom right ⇒ decreasing x by 1 ⇒ n=2208  
+8. (24,-23): m=24? No x=24, y=-23: max(|x|,|y|) = max(24,23)=24 ⇒ m=24, y=-23=1-m ⇒ start of ring24: n=2304? Wait check: a_24=(47)^2+1=2209+1=2210? Earlier mistake: a_m=(2m-1)^2+1 = for m=24: 47^2=2209+1=2210 yes.  
+
+Start of ring m=24: (24,1-24)=(24,-23)=n=2210. Yes. So then (24,-23) = 2210.
+
+---
+
+So the 8 neighbors:
+
+N={2025, 2211, 2027, 2209, 1850, 2212, 2208, 2210}.
+
+---
+
+Sum = sum pairwise: 2025+2211=4236, +2027=6263, +2209=8472, +1850=10322, +2212=12534, +2208=14742, +2210=16952.
+
+---
+
+**Check:** All numbers correct by equations.
+
+Thus: \(\boxed{16952}\)
+----
+Usage(input=59, output=6219, details={'estimated_cost': 0.00244075})

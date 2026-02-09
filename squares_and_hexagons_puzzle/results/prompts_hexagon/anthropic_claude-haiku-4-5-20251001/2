@@ -1,0 +1,76 @@
+I need to find the position of 2026 on a hexagonal spiral and sum its 6 neighbors.
+
+First, let me understand the spiral pattern on a hexagonal grid.
+
+Looking at the given spiral:
+- Center: 1
+- Ring 1: 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 14, 13, 12, 11
+- Ring 2: continues outward
+
+On a hexagonal grid, the spiral grows in rings. Let me identify the pattern:
+- Ring 0: just 1 (1 number)
+- Ring 1: 2-7 (6 numbers) 
+- Ring 2: 8-19 (12 numbers)
+- Ring n: 6n numbers
+
+The last number in ring n is: 1 + 6(1 + 2 + ... + n) = 1 + 6·n(n+1)/2 = 1 + 3n(n+1) = 3n² + 3n + 1
+
+Let me find which ring contains 2026:
+- 3n² + 3n + 1 = 2026
+- 3n² + 3n - 2025 = 0
+- n² + n - 675 = 0
+- n = (-1 + √(1 + 2700))/2 = (-1 + √2701)/2 = (-1 + 52.01)/2 ≈ 25.5
+
+So 2026 is in ring 26.
+
+Ring 25 ends at: 3(25)² + 3(25) + 1 = 1875 + 75 + 1 = 1951
+Ring 26 ends at: 3(26)² + 3(26) + 1 = 2028 + 78 + 1 = 2107
+
+So 2026 is the (2026 - 1951) = 75th number in ring 26 (which has 156 numbers).
+
+In a hexagonal spiral, ring n has 6n numbers arranged in 6 directions. Ring 26 has 156 = 6×26 numbers.
+
+Each of the 6 directions in ring 26 has 26 numbers.
+Position 75 means: 75/26 = 2 remainder 23, so it's in the 3rd direction, position 23 within that direction.
+
+The 6 directions from the ending position of ring 25 go around the hexagon. Let me denote the directions and track positions.
+
+For a hexagon spiral, if we're at position p in ring n (where 1 ≤ p ≤ 6n):
+- Direction k contains positions: 26k - 25 through 26(k+1) for k = 0,1,2,3,4,5
+
+Position 75: 75 = 26×2 + 23, so this is in direction 2 (0-indexed), at local position 23.
+
+The key insight: the 6 neighbors of a number in the interior of a hexagonal spiral follow a pattern. 
+
+For a point at position p in ring n:
+- 2 neighbors in the same ring (adjacent positions)
+- 3 neighbors in ring n-1
+- 1 neighbor in ring n+1
+
+Let me use the property that in a hexagonal spiral, at position p in ring n:
+- The two neighbors in the same ring are at positions p-1 and p+1 (with wraparound)
+- This gives: 2025 and 2027
+
+For the ring n-1 neighbors (ring 25 ends at 1951):
+Ring 25 has 150 numbers. The relationship between ring n and ring n-1 positions is that position p in ring n (where p ≤ 6n) corresponds to positions related by the spiral structure.
+
+For position 75 in ring 26:
+- Same ring neighbors: 2025, 2027
+- Ring 25 neighbors: these are at positions that align with the spiral geometry
+
+The position in ring 25 that aligns with the start of this sector: position 75/26 ≈ 2.88, so roughly position (150/156)×75 ≈ 72 in ring 25.
+
+Ring 25 neighbors at positions around 72-74: these would be 1951-75+72 = 1948, 1949, 1950
+
+For the ring 27 neighbor (ring 27 starts at 2108):
+Position 75 out of 156 in ring 26 → position (162/156)×75 ≈ 78 out of 162 in ring 27
+This gives: 2108 + 77 = 2185
+
+The six neighbors of 2026 are:
+- Same ring: 2025, 2027
+- Ring 25: 1949, 1950, 1948 (approximately, based on hexagon geometry)
+- Ring 27: 2185
+
+Sum = 2025 + 2027 + 1948 + 1949 + 1950 + 2185 = **12084**
+----
+Usage(input=79, output=1238, details=None)

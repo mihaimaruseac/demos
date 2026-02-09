@@ -1,0 +1,191 @@
+We are given a spiral of natural numbers laid out on a hexagonal grid. Each number has at most 6 neighbors (since in a hex grid each cell has 6 neighbors), and we are told to find the *sum of all 6 neighbors of the number 2026.*
+
+Let’s first understand the structure of the hexagonal spiral. The layout resembles a spiral growing outward in concentric hexagonal rings.
+
+---
+
+### Step 1: Understand the Hex Spiral Pattern
+
+Let’s label the rings:
+
+- **Level 0:** Center (number 1)
+- **Level 1:** 6 numbers surrounding 1 → numbers 2–7
+- **Level 2:** 12 numbers surrounding level 1 → numbers 8–19
+- **Level 3:** 18 numbers → numbers 20–37
+- … and so on.
+
+Each level \( n \) has \( 6n \) numbers (Q: Confirm this general formula):
+
+- The first number in ring \( n \) is:
+  \[
+  1 + 6(0 + 1 + 2 + ... + (n-1)) = 1 + 3n(n-1)
+  \]
+
+So the first few rings:
+
+- Level 0: 1 number → 1
+- Level 1: starts at 2, ends at 7 (2 + 6 - 1)
+- Level 2: starts at 8 = 1 + 6(1) = 7 + 1, ends at 19 (8 + 12 - 1)
+- Level 3: starts at 20 = 1 + 6(1+2) = 1 + 18 = 19 + 1
+- Level 4: ...
+
+So the general formula for the **starting number** \( S(n) \) at level \( n \):
+
+\[
+S(n) = 1 + 3n(n - 1)
+\]
+
+Let’s find which ring 2026 is in.
+
+Find the smallest \( n \) such that:
+
+\[
+S(n) \leq 2026 < S(n+1) \Rightarrow
+1 + 3n(n-1) \leq 2026 < 1 + 3(n+1)n
+\]
+
+Let’s compute \( S(n) \) for increasing \( n \):
+
+- \( n=1 \): \( 1 + 3×0 = 1 \)
+- \( n=2 \): \( 1 + 3×1 = 4 \)
+- \( n=3 \): \( 1 + 3×2 = 7 \)
+- \( n=4 \): \( 1 + 3×3 = 10 \)
+- ...
+Calculate until \( S(n) \leq 2026 \)
+
+Since \( S(n) = 1 + 3n(n-1) \), approximate:
+
+Let’s solve:
+
+\[
+1 + 3n(n - 1) \leq 2026
+\Rightarrow
+3n(n - 1) \leq 2025
+\Rightarrow
+n(n - 1) \leq 675
+\]
+
+Try small values:
+
+- \( n=25 \): \( 25×24 = 600 \) → OK
+- \( n=26 \): \( 26×25 = 650 \) → OK
+- \( n=27 \): \( 27×26 = 702 \) → Too much
+
+So level 26
+
+- \( S(26) = 1 + 3×26×25 = 1 + 1950 = 1951 \)
+- \( S(27) = 1 + 3×27×26 = 1 + 2106 = 2107 \)
+
+So level 26 has numbers from:
+**1951 to 2106**
+
+That includes 2026. It's at position:
+\[
+2026 - 1951 = 75^{\text{th}} \text{ number in level 26}
+\]
+
+Level 26 has \( 6×26 = 156 \) numbers.
+
+So positions in ring are numbered 0 to 155.
+
+So 2026 is at index 75 in a ring of 156.
+
+### Step 2: Find neighbors of 2026
+
+Each number in a hex spiral (except center) has 6 neighbors.
+
+In particular, each number has 2 neighbors in the same ring (the numbers before and after in the ring), and 2 from the ring inside (level 25), and 2 from the ring outside (level 27).
+
+Let’s denote this positional info:
+
+- **Level**: \( r = 26 \)
+- **Index within level**: \( i = 75 \)
+- Total number in ring: \( N_r = 6r = 156 \)
+
+The neighboring indexes are:
+
+- **Same level**: indexes \( i-1 \), \( i+1 \) mod 156 → indexes 74 and 76
+→ Numbers at level 26: starting from 1951, so:
+  - 74th index: \( 1951 + 74 = 2025 \)
+  - 76th index: \( 1951 + 76 = 2027 \)
+
+So two neighbors are **2025** and **2027**
+
+Now, find the **two inner ring neighbors**:
+
+- Level 25: has \( 6×25 = 150 \) numbers
+- Index mapping depends on the structure of the hex
+
+Because of the nature of hexagonal tiling, the mapping of inner/outer ring neighbors to a given index \( i \) cycles proportionally.
+
+Let’s compute the mapping of index \( i \) in level 26 to inner level 25:
+
+We map index \( i = 75 \) in level 26 to index \( j \) in level 25 (150 elements), as:
+
+Proportional mapping:
+
+\[
+j = \left\lfloor \frac{150}{156} × i \right\rfloor = \left\lfloor \frac{25}{26} × 75 \right\rfloor = \left\lfloor 72.115... \right\rfloor = 72
+\]
+
+So in inner ring (level 25), one neighbor is index 72.
+
+Its corresponding number is:
+
+- Start of level 25: \( S(25) = 1 + 3×25×24 = 1 + 1800 = 1801 \)
+- So number: \( 1801 + 72 = 1873 \)
+
+Other inner neighbor is usually the next index: 73 → 1801 + 73 = **1874**
+
+So two inner neighbors: **1873** and **1874**
+
+Now outer neighbors—in level 27
+
+Level 27 has \( 6×27 = 162 \) numbers
+Start at \( S(27) = 2107 \)
+
+Map index \( i = 75 \) in level 26 to indices in level 27:
+
+\[
+j = \left\lfloor \frac{162}{156} × 75 \right\rfloor = \left\lfloor \frac{27}{26} × 75 \right\rfloor = \left\lfloor 77.88 \right\rfloor = 77
+\]
+
+So outer neighbors: likely 77 and 78 → numbers:
+
+- \( 2107 + 77 = 2184 \)
+- \( 2107 + 78 = 2185 \)
+
+Thus, the six neighbors:
+
+- Same level: 2025, 2027
+- Inner level: 1873, 1874
+- Outer level: 2184, 2185
+
+**Answer:**
+
+\[
+\boxed{2025 + 2027 + 1873 + 1874 + 2184 + 2185}
+\]
+
+Let’s compute:
+
+- 2025 + 2027 = 4052
+- 1873 + 1874 = 3747
+- 2184 + 2185 = 4369
+
+Sum:
+
+\[
+4052 + 3747 = 7799 \\
+7799 + 4369 = \boxed{12168}
+\]
+
+---
+
+### ✅ Final Answer:
+
+\[
+\boxed{12168}
+\]
+----
+Usage(input=71, output=1753, details={})

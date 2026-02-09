@@ -1,0 +1,175 @@
+Let me solve this step by step.
+
+We have the Ulam spiral, where 1 is at the center and numbers spiral outward to the northeast. We want the 8 neighbors of 2026 and their sum.
+
+1. Locate 2026 on the spiral.
+   - The “layers” are square rings around 1. Layer k (k ≥ 0) runs from n = (2k–1)² + 1 up to (2k+1)².
+   - For k = 31: (2·31–1)² + 1 = 61² + 1 = 3721 + 1 = 3722  
+     (2·31+1)² = 63² = 3969  
+     So layer 31 contains numbers 3722 … 3969.
+   - 2026 < 3722, so it’s on an earlier layer.
+   - For k = 22: (2·22–1)² + 1 = 43² + 1 = 1849 + 1 = 1850  
+     (2·22+1)² = 45² = 2025  
+     So layer 22 contains 1850 … 2025.
+   - 2025 is the last number of layer 22 and sits at coordinates (22, –22) if we place 1 at (0,0).
+   - The next number, 2026, is one step east of 2025, so at (22, –21).
+
+2. Coordinates of 2026:
+   - x = 22, y = –21.
+
+3. Its 8 neighbors are all (x±1, y±1). We compute each neighbor’s value.
+
+   In the Ulam spiral, for large n the value at (r, c) is roughly r² + c² – r + 1, with a small correction depending on which “side” of the square ring the point lies on.  
+   However, we can simply walk around the ring near 2025 to get the exact neighbors.
+
+   - 2025 is at (22, –22).
+   - Moving clockwise from 2025:
+     • (22, –22) → 2025  
+     • (22, –21) → 2026  
+     • (21, –21) → 2027  
+     • (21, –20) → 2028  
+     • (22, –20) → 2029  
+     • (23, –20) → 2030  
+     • (23, –19) → 2031  
+     • (22, –19) → 2032  
+
+   Thus the neighbors of (22, –21) are:
+     (21, –22), (21, –21), (21, –20),
+     (22, –22),           (22, –20),
+     (23, –22), (23, –21), (23, –20)
+
+   Assigning the values we just listed:
+     (21, –22) → 2024  
+     (21, –21) → 2027  
+     (21, –20) → 2028  
+     (22, –22) → 2025  
+               (skip 2026 itself)  
+     (22, –20) → 2029  
+     (23, –22) → 2033  ← we need to check this one carefully  
+     (23, –21) → 2034  
+     (23, –20) → 2030  
+
+   Let’s verify the ring around 2025 more carefully. From 2024 to 2032 in order:
+     • 2024 at (21, –22)
+     • 2025 at (22, –22)
+     • 2026 at (22, –21)
+     • 2027 at (21, –21)
+     • 2028 at (21, –20)
+     • 2029 at (22, –20)
+     • 2030 at (23, –20)
+     • 2031 at (23, –19)
+     • 2032 at (22, –19)
+     • 2033 at (21, –19)
+     • …  
+
+   But for the west side:
+     • (23, –22) is directly south of 2025, so it is the first point on the south side of layer 22.
+     • On layer 22 the south side runs from (22, –22) → (23, –22) → … → (31, –22).
+     • The value at (23, –22) is 2025 + (23–22) = 2026 + 1 = 2027?  Wait, that can’t be because 2027 is already used.
+
+   Instead, let’s use the standard coordinate→number formula for the Ulam spiral:
+
+   For (r, c):
+     m = max(|r|, |c|)
+     if r = m and c ≥ –m:  # top side
+         n = (2m–1)² + (c + m)
+     elif c = –m and r ≤ m:  # left side
+         n = (2m–1)² + 3m + (m – r)
+     elif r = –m and c ≥ –m: # bottom side
+         n = (2m+1)² – (m + c)
+     else: # right side
+         n = (2m+1)² – 3m + (r – (–m))
+
+   For 2026 at (22, –21), m = 22.
+     top side?   r ≠ 22
+     left side?  c ≠ –22
+     bottom?     r ≠ –22
+     right side? yes, since c > –m and r > m–? Actually our (r,c) is (22,–21), which is on the right side (r = m, c > –m).
+     So use right side formula:
+       n = (2·22+1)² – 3·22 + (22 – (–22))
+         = 45² – 66 + (22 + 22)
+         = 2025 – 66 + 44
+         = 2025 – 22
+         = 2003   ← wrong, so we must have mixed up the formula.
+
+   Better to use a known reliable mapping.  Alternatively, trust the ring-walking we did earlier for the immediate neighbors, except for (23, –22).  We already know from walking the ring that:
+     – (21, –22) = 2024
+     – (21, –21) = 2027
+     – (21, –20) = 2028
+     – (22, –22) = 2025
+     – (22, –20) = 2029
+     – (23, –20) = 2030
+
+   Now for (23, –22):
+     That is one step south of (22, –22) = 2025, so it must be the first number on the south side of layer 22.
+     The south side starts at (22, –22) = 2025 and moves down, increasing r from 22→31 while c stays at –22.
+     Each step rightward along the bottom increases the number by 1.
+     So (23, –22) = 2025 + 1 = 2026?  But 2026 is already used.
+     Actually the next value after 2025 is 2026 at (22, –21), so the south side starts at the next position after the bottom-right corner.
+
+   Let’s list the corners of layer 22:
+     – bottom-right: (22, –22) = 2025
+     – bottom-left:  (–22, –22) = (2·22+1)² = 45² = 2025 – 4·22 = 2025 – 88 = 1937?  That doesn’t match our ring walk.
+
+   Given the confusion, let’s use the following reliable trick:
+
+   We already know from the ring walk around 2025 that the eight neighbors of 2026 are:
+     (21, –22) = 2024
+     (21, –21) = 2027
+     (21, –20) = 2028
+     (22, –22) = 2025
+     (22, –20) = 2029
+     (23, –21) = ?
+     (23, –20) = 2030
+     (23, –22) = ?
+
+   We already have six of them.  To get the last two, note that from 2029 at (22, –20) we step east to (23, –20) = 2030, and from 2027 at (21, –21) we step south to (22, –21) = 2026 (occupied), then (23, –21) is the next on that ray.
+
+   Alternatively, observe that the numbers along the ray from the center to (23, –21) increase by 2 each step once we are past the corners, but near the corner they increase by 1.  Since we’re only one step away, we can simply continue the ring walk:
+
+   After 2029 at (22, –20), the next point on the spiral is (23, –20) = 2030, then (23, –19) = 2031, then (22, –19) = 2032, then (21, –19) = 2033, …
+
+   But we need (23, –21), which is directly south of (23, –20).  That lies on the south side of the ring.  The south side starts at (22, –22) = 2025 and moves down to (31, –22).  Each step increases r by 1 and adds 1 to the number.  Therefore:
+     (23, –22) = 2025 + 1 = 2026?  No, because (22, –21) is already 2026.
+
+   Actually the south side begins at the point immediately after the bottom-right corner, which is (23, –22).  The value there is 2025 + 1 = 2026?  But that conflicts.
+
+   Let’s re-anchor: we know
+     (22, –22) = 2025
+     (22, –21) = 2026
+     (21, –21) = 2027
+     (21, –20) = 2028
+     (22, –20) = 2029
+     (23, –20) = 2030
+
+   Now move south from (23, –20): that’s (24, –20), not a neighbor.  
+   Instead, from (23, –20) go west to (23, –21).  That is the next point on the ring after 2030, so (23, –21) = 2031.
+   And from (23, –21) go west to (23, –22) = 2032.
+
+   Therefore the full list of neighbors is:
+     (21, –22) = 2024
+     (21, –21) = 2027
+     (21, –20) = 2028
+     (22, –22) = 2025
+     (22, –20) = 2029
+     (23, –21) = 2031
+     (23, –20) = 2030
+     (23, –22) = 2032
+
+4. Sum them up:
+   2024 + 2025 + 2027 + 2028 + 2029 + 2030 + 2031 + 2032
+
+   Group for easier addition:
+     (2024 + 2032) = 4056
+     (2025 + 2031) = 4056
+     (2027 + 2030) = 4057
+     (2028 + 2029) = 4057
+
+   Now sum those pairs:
+     4056 + 4056 = 8112
+     4057 + 4057 = 8114
+     8112 + 8114 = 16226
+
+Answer: 16226
+----
+Usage(input=121, output=2642, details={'estimated_cost': 0.0016094})

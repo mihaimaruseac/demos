@@ -1,0 +1,224 @@
+Let's break down the problem methodically:
+
+### 1. **Understanding the Hexagonal Spiral**
+
+We are told that the natural numbers are written on a spiral laid out on a hexagonal grid. The grid's provided local layout is:
+
+```
+   14  4  3 10
+ 15  5  1  2  9
+   16  6  7  8
+```
+
+Focus on **1** — it's the center. Numbers increase outwards in a spiral, each ring forming a regular hexagon.
+
+### 2. **The spiral's arithmetic structure**
+
+The numbers are laid **in rings around the center**. Each ring is a hexagon, encompassing the previous.
+
+#### **Ring n:**
+- Center is ring 0, which is just 1 (the number).
+- Each additional ring adds 6 more entries than the previous.
+
+- **Ring 0:** 1
+- **Ring 1:** 2...7 = 6 numbers (total up to 7)
+- **Ring 2:** 8...19 = 12 numbers (total up to 19)
+- **Ring 3:** 20...37 = 18 numbers (total up to 37)
+- etc.
+
+Let's formalize:
+
+- Number of numbers in ring \( r \) (excluding the center): \( 6r \)
+- The **last number** in ring \( r \) is:  
+  \( 1 + 6(1 + 2 + \dots + r) = 1 + 6 \cdot \frac{r(r+1)}{2} \)
+  \( = 1 + 3r(r+1) \)
+
+So, the largest number in ring \( r \) = \( 3r(r+1) + 1 \).
+
+Let's check for ring 1: \( r = 1 \): \( 3 \times 2 + 1 = 7 \) -- matches "up to 7".
+Ring 2: \( 3 \times 2 \times 3 + 1 = 3 \times 6 + 1 = 19 \) -- matches.
+
+### 3. **Find which ring 2026 is in**
+
+We solve: \( 3r(r+1) + 1 \geq 2026 \)
+
+So \( 3r^2 + 3r + 1 \geq 2026 \)
+\( 3r^2 + 3r \geq 2025 \)
+\( r^2 + r \geq 675 \)
+Solve \( r^2 + r - 675 = 0 \):
+
+\( r = \frac{-1 + \sqrt{1 + 4 \cdot 675}}{2} = \frac{-1 + \sqrt{2701}}{2} \)
+
+\(\sqrt{2701} \approx 51.96\). So
+
+\( r \approx \frac{-1 + 51.96}{2} \approx \frac{50.96}{2} = 25.48 \)
+
+So, the **25th ring** ends at
+
+\( 3 \times 25 \times 26 + 1 = 3 \times 650 + 1 = 1951 \)
+1951 < 2026
+
+26th ring:
+\( 3 \times 26 \times 27 + 1 = 3 \times 702 + 1 = 2107 \)
+2026 ≤ 2107
+
+So, **ring 26**.
+
+The **first number** in ring 26 is the number right after ring 25's end:
+
+- Last number of ring \( r - 1 \): \( 3(r-1)r + 1 \)
+
+Ring 25: last is 1951; so first of ring 26 is **1952**.
+- There are \( 6 \times 26 = 156 \) numbers in ring 26.
+- Let's check: 1952 + 155 = 2107 ([[computed above|yes]]).
+
+Find **position** in the ring:
+\( 2026 - 1952 = 74 \implies \) the 75th (since counting starts at 1) number on the 26th ring.
+
+So, **2026 is the 75th position in ring 26**.
+
+### 4. **Neighborhood structure**
+
+In a regular hex ring, each position has two neighbors in the same ring (previous, next), two in previous ring, two in next ring.
+
+The spiral, for each ring:
+- Each ring has 6 straight segments (hexagon sides), each of \( r \) positions.
+
+The k-th position of ring \( r \) is adjacent to:
+- previous and next in ring \( r \) (cyclic)
+- "corresponding positions" in rings \( r-1 \) and \( r+1 \), depending on side.
+
+Our position is at \( k = 75 \) in ring \( 26 \), with positions numbered \( 0 \) to \( 155 \) in the ring (since 156 positions). So, \( k = 74 \).
+
+Let's break the ring into sides:
+- Side 1: positions 0 to 25
+- Side 2: 26 to 51
+- Side 3: 52 to 77
+- Side 4: 78 to 103
+- Side 5: 104 to 129
+- Side 6: 130 to 155
+
+Positions:
+- 0: ring starting corner (for each side)
+- Each side is 26 positions (since ring 26).
+
+So, **75** is between 52 and 77 (Side 3).
+- On side 3, position in side: \( 75 - 52 = 23 \), so it's the 24th position on side 3 (since positions 0–25 per side).
+
+Let us formalize the structure of the numbers as "corner-based".
+
+Let us denote:
+- For ring \( r \), the starting number is \( S = 3(r-1)r + 2 \).
+- For ring \( r \), the positions go from \( 0 \) to \( 6r - 1 \) (total \( 6r \)).
+- For position \( k \), the number is \( S + k \).
+
+So for **ring 26**:
+- \( S = 3 \times 25 \times 26 + 2 = 3 \times 650 + 2 = 1952 \)
+- So at position \( k = 74 \), the number is \( 1952 + 74 = 2026 \) (verifies our count).
+
+### 5. **The neighbor positions**
+
+Each number has 6 neighbors:
+
+- Two in same ring: at positions \( k-1 \) and \( k+1 \) (modulo \( 156 \)).
+- Two in previous ring (ring 25)
+- Two in next ring (ring 27)
+
+#### **Same ring**
+- \( k-1 = 73 \)
+- \( k+1 = 75 \)
+
+So, in ring 26,
+- \( 1952 + 73 = 2025 \)
+- \( 1952 + 75 = 2027 \)
+
+#### **In previous ring (ring 25, positions!)**
+
+**Find the corresponding positions in ring 25**
+- Ring 25: has \( 6 \times 25 = 150 \) positions (positions 0 to 149), numbers \( 3 \times 24 \times 25 + 2 = 1802 \), so numbers from \( 1802 \) to \( 1951 \).
+
+For ring \( r \), positions are assigned side-by-side along each of the 6 sides.
+
+For position \( k \) in ring \( r \), which is at position on side \( s \), offset \( o \):
+
+- Side \( s = \left\lfloor \frac{k}{r} \right\rfloor \),  
+- Offset on side: \( o = k \bmod r \),
+    - (Each side has \( r \) positions, running 0 to \( r-1 \).)
+
+Now, the corresponding positions in previous ring (ring 25):
+- For each position in ring \( r \), its two adjacent previous ring numbers are on sides \( s \) and \( s + 1 \) (modulo 6), at offsets \( o \) and \( o - 1 \) (respectively, with cyclic wrap).
+  - `In the source ring, position = (side) * r + offset`
+  - In ring \( r-1 \):  
+      - position1: side \( s \), offset \( o \) ⇒ \( s \times (r-1) + o \)
+      - position2: side \( (s+1 \mod 6) \), offset \( o-1 \) (if \( o > 0 \)), otherwise offset 24 (if wrapping, as in ring 25, offset must be 24 when \( o=0 \))
+
+Let's compute step-by-step:
+
+- \( k = 74 \), \( r = 26 \)
+- \( s = \lfloor 74 / 26 \rfloor = 2 \)   (since 26 × 2 = 52, 52 ≤ 74 < 78)
+- \( o = 74 \bmod 26 = 22 \)  (since 3 × 26 = 78, so 74 - 52 = 22)
+
+So,
+- Side 2 (counting from 0), offset 22 on that side (offsets run 0..25).
+
+#### **Ring 25:**
+Positions per side: 25 (offsets 0..24).
+
+First corresponding neighbor:
+- side \( s = 2 \), offset \( o = 22 \)
+- position: \( 2 \times 25 + 22 = 50 + 22 = 72 \)
+- Number: starting number \( S_{25} = 1802 \), so \( 1802 + 72 = 1874 \)
+
+Second corresponding neighbor:
+- side \( s+1 = 3 \)
+- offset \( o-1 = 21 \)
+- position: \( 3 \times 25 + 21 = 75 + 21 = 96 \)
+- Number: \( 1802 + 96 = 1898 \)
+
+#### **In next ring (ring 27, positions!)**
+
+Ring 27: \( 6 \times 27 = 162 \) positions, positions 0..161
+Starting number: \( 3 \times 26 \times 27 + 2 = 3 \times 702 + 2 = 2108 \), numbers \( 2108 \) to \( 2108 + 161 = 2269 \).
+
+The corresponding two positions in next ring are as above:
+- For position \( k \) in ring \( r \), the corresponding positions in ring \( r+1 \) are at:
+    - side \( s \), offset \( o \)
+    - side \( s \), offset \( o+1 \)
+
+So:
+- side \( s = 2 \), offset \( o = 22 \)
+- position1: \( 2 \times 27 + 22 = 54 + 22 = 76 \)
+- offset \( o+1 = 23 \), position2: \( 2 \times 27 + 23 = 77 \)
+
+So, numbers:
+- 2108 + 76 = 2184
+- 2108 + 77 = 2185
+
+### 6. **Summary: Find all 6 neighbor numbers**
+
+- Same ring: \( 2025, 2027 \)
+- Previous ring: \( 1874, 1898 \)
+- Next ring: \( 2184, 2185 \)
+
+### 7. **Calculate the sum**
+
+\[
+\begin{align*}
+2025 + 2027 = 4052 \\
+1874 + 1898 = 3772 \\
+2184 + 2185 = 4369 \\
+\text{Total} = 4052 + 3772 + 4369 = \boxed{12193}
+\end{align*}
+\]
+
+---
+
+## **Final Answer**
+
+\[
+\boxed{12193}
+\]
+
+That is, the sum of all 6 neighbors of number 2026 in the hex spiral is **12193**.
+----
+Usage(input=71, output=2654, details={})

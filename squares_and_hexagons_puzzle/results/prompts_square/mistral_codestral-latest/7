@@ -1,0 +1,221 @@
+Alright, let's tackle this problem step by step. I'm going to approach it methodically to ensure I understand the spiral layout and how to find the neighbors of the number 2026.
+
+### Understanding the Spiral Layout
+
+First, let's visualize the given spiral pattern to understand how numbers are arranged on the grid. The provided snippet shows a small part of the spiral:
+
+```
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+```
+
+From this, we can see that:
+- The number `1` is at the center.
+- The numbers increase as we move outward in a spiral manner.
+- The spiral moves right, up, left, down, and so on, expanding outward with each layer.
+
+This is a classic **Ulam spiral**, where numbers are arranged in a square grid with the number 1 at the center, and subsequent numbers are placed in a spiral pattern moving outward.
+
+### Determining the Position of a Number in the Spiral
+
+To find the neighbors of a given number, we first need to determine its position in the spiral. The position can be described by its coordinates (x, y) on the grid, where the center is at (0, 0).
+
+The spiral can be thought of as a series of concentric squares (or "rings") around the center. Each ring corresponds to a certain range of numbers. The outermost ring is the "n-th" ring, which contains numbers from `n² + 1` to `(n+1)²`.
+
+For example:
+- Ring 0: only the number 1 (1² to 1²)
+- Ring 1: numbers 2 to 8 (2² + 1 to 3²)
+- Ring 2: numbers 9 to 24 (4² + 1 to 5²)
+- And so on.
+
+Given a number `N`, we can find which ring it's in by solving for `n` in the inequality:
+`n² < N ≤ (n+1)²`
+
+Once we know `n`, we can determine the position of `N` within that ring.
+
+### Finding the Ring for Number 2026
+
+Let's find out which ring 2026 is in.
+
+We need to find the smallest integer `n` such that `n² < 2026 ≤ (n+1)²`.
+
+Calculate squares around 2026:
+- 44² = 1936
+- 45² = 2025
+- 46² = 2116
+
+So, 1936 < 2026 ≤ 2025 is not correct because 2026 > 2025. Wait, let's check:
+
+Actually, 45² = 2025, and 2026 is the next number after 2025 in the sequence. So, 2026 is in the next ring, which is ring 45, because:
+
+- Ring 44: numbers from 44² + 1 = 1937 to 45² = 2025
+- Ring 45: numbers from 45² + 1 = 2026 to 46² = 2116
+
+So, 2026 is the first number in ring 45.
+
+### Position of Number 2026 in Ring 45
+
+Now, let's find the coordinates (x, y) of 2026 in ring 45.
+
+The spiral starts at the center (0,0) with 1, then moves right to (1,0) with 2, up to (1,1) with 3, left to (0,1) with 4, down to (0,0) with 5, and so on.
+
+For a given ring `n`, the numbers in that ring are arranged in a square that starts at `(n, -n)` and moves:
+1. Right along the top: from `(n, -n)` to `(-n, -n)` (x decreases, y constant)
+2. Up along the left: from `(-n, -n + 1)` to `(-n, n)`
+3. Left along the bottom: from `(-n + 1, n)` to `(n, n)`
+4. Down along the right: from `(n, n - 1)` to `(n, -n)`
+
+The first number in ring `n` is `n² + 1`, which is at `(n, -n + 1)`.
+
+So, for ring 45:
+- First number: 45² + 1 = 2026 is at (45, -44)
+
+Let's verify the positions around it to see the pattern.
+
+### Determining the 8 Neighbors
+
+The 8 neighbors of a point (x, y) are:
+1. (x+1, y)
+2. (x+1, y+1)
+3. (x, y+1)
+4. (x-1, y+1)
+5. (x-1, y)
+6. (x-1, y-1)
+7. (x, y-1)
+8. (x+1, y-1)
+
+For 2026 at (45, -44), the neighbors are:
+1. (46, -44)
+2. (46, -43)
+3. (45, -43)
+4. (44, -43)
+5. (44, -44)
+6. (44, -45)
+7. (45, -45)
+8. (46, -45)
+
+Now, we need to find the numbers at these coordinates.
+
+### Finding Numbers at Neighboring Coordinates
+
+To find the number at a given coordinate (x, y), we can use the following approach:
+
+The spiral can be divided into four quadrants based on the signs of x and y:
+1. Quadrant I: x > 0, y > 0
+2. Quadrant II: x < 0, y > 0
+3. Quadrant III: x < 0, y < 0
+4. Quadrant IV: x > 0, y < 0
+
+For a point (x, y), the number can be determined based on the maximum of |x| and |y|, which gives the ring number `n = max(|x|, |y|)`.
+
+Then, the position within the ring can be calculated based on the quadrant and the specific x and y values.
+
+However, this can be complex, so let's find a general formula or method to find the number at any (x, y).
+
+An alternative approach is to recognize that the number at (x, y) can be calculated based on the ring it's in and its position within that ring.
+
+For a point (x, y) where n = max(|x|, |y|), the number is:
+
+If n = 0 (center): 1
+Else:
+- If x = n and y > -n: top side
+  - Number = n² + (n - y)
+- If y = n and x < n: left side
+  - Number = n² + (n - x) + (2n - 1)
+- If x = -n and y < n: bottom side
+  - Number = n² + (n + y) + (4n - 1)
+- If y = -n and x > -n: right side
+  - Number = n² + (n + x) + (6n - 1)
+
+Let's apply this to our neighbors.
+
+#### Neighbor 1: (46, -44)
+n = max(46, 44) = 46
+x = 46, y = -44
+Since x = n and y = -44 > -46 (because y > -n = -46), it's on the top side.
+Number = 46² + (46 - (-44)) = 2116 + (46 + 44) = 2116 + 90 = 2206
+
+Wait, let's check the formula again. For x = n and y > -n:
+Number = n² + (n - y)
+But y is negative, so n - y = n + |y|
+So, 46² + 46 + 44 = 2116 + 90 = 2206
+
+#### Neighbor 2: (46, -43)
+n = max(46, 43) = 46
+x = 46, y = -43
+x = n, y > -46
+Number = 46² + (46 - (-43)) = 2116 + 89 = 2205
+
+#### Neighbor 3: (45, -43)
+n = max(45, 43) = 45
+x = 45, y = -43
+x = n, y > -45
+Number = 45² + (45 - (-43)) = 2025 + 88 = 2113
+
+#### Neighbor 4: (44, -43)
+n = max(44, 43) = 44
+x = 44, y = -43
+x = n, y > -44
+Number = 44² + (44 - (-43)) = 1936 + 87 = 2023
+
+#### Neighbor 5: (44, -44)
+n = max(44, 44) = 44
+x = 44, y = -44
+x = n, y = -n
+This is the corner of the ring, which is the last number in the previous ring.
+Number = 44² = 1936
+
+#### Neighbor 6: (44, -45)
+n = max(44, 45) = 45
+x = 44, y = -45
+y = -n, x > -45
+Number = 45² + (45 + 44) + (6*45 - 1) = 2025 + 89 + 269 = 2025 + 358 = 2383
+
+Wait, let's re-examine the formula for y = -n and x > -n:
+Number = n² + (n + x) + (6n - 1)
+For (44, -45):
+n = 45
+Number = 2025 + (45 + 44) + (270 - 1) = 2025 + 89 + 269 = 2025 + 358 = 2383
+
+#### Neighbor 7: (45, -45)
+n = max(45, 45) = 45
+x = 45, y = -45
+x = n, y = -n
+This is the corner of the ring, which is the last number in the previous ring.
+Number = 45² = 2025
+
+#### Neighbor 8: (46, -45)
+n = max(46, 45) = 46
+x = 46, y = -45
+y = -n, x > -46
+Number = 46² + (46 + 45) + (6*46 - 1) = 2116 + 91 + 275 = 2116 + 366 = 2482
+
+### Verifying the Numbers
+
+Let's list the neighbors with their coordinates and calculated numbers:
+
+1. (46, -44): 2206
+2. (46, -43): 2205
+3. (45, -43): 2113
+4. (44, -43): 2023
+5. (44, -44): 1936
+6. (44, -45): 2383
+7. (45, -45): 2025
+8. (46, -45): 2482
+
+Now, let's sum these numbers:
+
+2206 + 2205 = 4411
+4411 + 2113 = 6524
+6524 + 2023 = 8547
+8547 + 1936 = 10483
+10483 + 2383 = 12866
+12866 + 2025 = 14891
+14891 + 2482 = 17373
+
+### Final Answer
+
+The sum of all 8 neighbors of the number 2026 is **17,373**.
+----
+Usage(input=60, output=2909, details=None)

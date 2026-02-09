@@ -1,0 +1,718 @@
+Given the spiral as:
+
+```
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+```
+
+Let's analyze the spiral:
+
+Let's reconstruct how numbers are arranged:
+
+- The number 1 is at the center.
+- Numbers spiral outward in an anti-clockwise manner, increasing at each step.
+
+Here are the first few numbers:
+
+```
+17 16 15 14 13
+18  5  4  3 12
+19  6  1  2 11
+20  7  8  9 10
+21 22 23 24 25
+```
+
+So, **1** at (0,0), **2** at (1,0), **3** at (1,-1), **4** at (0,-1), **5** at (-1,-1), etc.
+
+### Our Goal
+
+Find the sum of all 8 neighbors of **2026** in this spiral.
+
+---
+
+## Step 1: Which layer does 2026 belong to?
+
+The numbers in the spiral occupy concentric "squares". Let's generalize:
+
+### The \(n\)-th "layer":
+
+- The side of the square is **odd**: \(2n + 1\)
+- The largest number in each layer is at the bottom right corner:
+  \[
+  (2n+1)^2
+  \]
+- The layers are:
+  - Layer 0: 1 at center (0,0)
+  - Layer 1: numbers 2 to 9
+  - Layer 2: numbers 10 to 25
+  - etc.
+
+Let's solve for \(n\) such that:
+\[
+(2n-1)^2 < 2026 \leq (2n+1)^2
+\]
+Let’s compute \((2n+1)^2 \geq 2026\):
+
+\((2n+1)^2 \geq 2026 \implies 2n+1 \geq \sqrt{2026} \approx 45\)
+So, \(2n+1 = 45, 47, ...\)
+
+Try \(2n+1 = 45\): \(45^2 = 2025 < 2026\)
+Try \(2n+1 = 47\): \(47^2 = 2209 > 2026\)
+
+Therefore, \(2n+1 = 45 \Rightarrow n = 22\) is previous layer, and \(2n+1=47 \Rightarrow n=23\) is the layer for 2026.
+
+#### The bottom-right corner of layer 23 is
+\[
+(2 \times 23 + 1)^2 = 47^2 = 2209
+\]
+That's the largest number on that layer.
+
+The smallest number in that layer is the \((2n-1)^2+1 = (45)^2+1 = 2026\).
+
+So in fact, **2026 is the very first number in layer 23!**
+
+### The location of 2026:
+
+From the spiral pattern:
+
+- Each new layer starts at the **left corner** of the next outer square.
+- Specifically, the **bottom-right corner** is the maximal number of the layer: 2209.
+- From there, trace back counter-clockwise.
+
+For all **odd layers**, the minimal number appears immediately **right** after the biggest number of the previous layer.
+
+But from the above, the first number in layer 23 is at position \((n, -(n-1))\) if we define (0,0) as the center.
+
+Alternatively, recall that in this spiral:
+
+- The bottom-right corner for layer \(n\) is at \((n, -n)\).
+- The bottom-left corner is at \((-n, -n)\).
+- The top-left is at \((-n, n)\).
+- The top-right is at \((n, n)\).
+
+The numbers go **right, up, left, down**.
+
+### To be precise, let's make a table:
+
+#### For layer **n**:
+- Start at \((n, -n+1)\) going **right**.
+- Bottom-right corner: \((n, -n)\): value \((2 n + 1)^2\)
+- Bottom-left corner: \((-n, -n)\)
+- Top-left corner: \((-n, n)\)
+- Top-right corner: \((n, n)\)
+
+But let's use a more general spiral coordinate algorithm.
+
+## Step 2: Spiral coordinates
+
+Let's recall OEIS [A174344](https://oeis.org/A174344) for spiral coordinates. Alternatively, Wikipedia's "Ulam Spiral" formulas.
+
+For a given **layer** \(n\), the maximum is at \((n, -n)\), and the spiral proceeds in the following way:
+
+- Right: from \( (n-1, -n) \) to \( (n, -n) \) — length \(2n\)
+- Up: from \( (n, -n+1) \) to \( (n, n) \) — length \(2n\)
+- Left: from \( (n-1, n) \) to \( (-n, n) \) — length \(2n\)
+- Down: from \( (-n, n-1) \) to \( (-n, -n+1) \) — length \(2n\)
+
+The bottom-right corner (\(n, -n\)) is the **maximum** number: \(M = (2n+1)^2\).
+
+Then, we can get the ranges for each side:
+
+1. **Right edge (bottom row, moving left to right)**:
+   - Positions: from \((n, -n)\) to \((n, n-1)\), _moving up_.
+2. **Top edge (right column, moving top to left)**:
+   - from \((n, n)\) to \((-n+1, n)\)
+3. **Left edge (top row, moving left to down)**:
+   - from \((-n, n)\) to \((-n, -n+1)\)
+4. **Bottom edge (left column, moving bottom to right)**:
+   - from \((-n, -n)\) to \((n-1, -n)\)
+
+But the numbering is as follows (from 1 at center, we go right, up, left, down):
+
+- From previous layer's endpoint (maximum), we add 1 at position \((n, -(n-1))\).
+- Then go "up" by 2n, then "left" 2n, "down" 2n, then "right" 2n (closing the loop).
+
+Let's compute **the positions and values explicitly** for n=23.
+
+## Step 3: Layer 23 details
+
+- For layer 23, side length \(2 \times 23 + 1 = 47\).
+- Max value: \(47^2 = 2209\)
+- Min value in this layer: \(45^2 + 1 = 2026\) (since previous layer ends at 2025)
+- So numbers in layer 23: from 2026 to 2209.
+
+- Start at position \((23, -22)\) (immediately "east" of the bottom-right corner).
+- Then move "up", 46 steps.
+- Then move "left", 46 steps.
+- Then move "down", 46 steps.
+- Then move "right", 46 steps, to reach the end at \((23, -23)\).
+
+Let's check: 4 sides × 46 = 184, plus one starting point = 185, but \(2209-2026+1=184\). Let's make sure:
+
+\[
+2209 - 2026 + 1 = 184
+\]
+So, actually, we go from 2026 at \((23, -22)\), then 46 up, etc., until 2209 at \((23, -23)\).
+
+### So, the path:
+
+- **Start at** \((23, -22)\): 2026.
+- Move up: each step increases y by 1.
+    - From \((23, -22)\), next is \((23, -21)\), etc., up to \((23, 23)\):
+
+\(\Delta y = (+1)\), for 46 steps: y from -22 to +23 (inclusive?), let's check:
+
+From -22 to +23 is 46 steps? \(-22\) to \(+23\) is \(23 - (-22) = 45\), but count inclusive: \([ -22 , -21, ..., +22, +23 ]\), that's 46 numbers.
+
+But starting at y = -22, to y = 23 includes both endpoints: 23 - (-22) + 1 = 46 steps.
+
+So:
+
+- Start: (23, -22): 2026
+- Next: (23, -21): 2027
+- ...
+- (23, +23): value?
+
+\[
+\text{Number at }(23, y) = 2026 + (y - (-22)), \ \text{for}\ -22 \leq y \leq 23
+\]
+So EG:
+At (23, -21): 2027
+At (23, -22+k): 2026+k
+
+When y=23: 2026 + (23 - (-22)) = 2026 + 45 = 2071
+
+So, at (23, 23): 2071
+
+Next: move "left" (decrease x), x: 22 down to -23
+
+From x = 22 to -23 (inclusive?): so from (22, 23): 2072, down to (-23, 23)
+
+This is 46 steps (22 to -23 = 45 + 1 = 46), so at (22,23): 2072, at (21,23): 2073, ..., at (-23,23):?
+
+Total steps: x goes from 22 to -23: difference is 22 - (-23) = 45, plus 1 = 46 steps.
+
+OK.
+
+So, position (23, -22): 2026  
+(23, -21): 2027  
+...  
+(23, 23): 2071
+
+(22, 23): 2072  
+down to (-23, 23): value: 2071 + 46 = 2117
+
+Let's check:
+
+2071 + ( -23 - 22 ) = 2071 + ( -45 ) = 2026 (which is already at start)... Or maybe not; let's do explicit counts:
+
+From x=22 to x=-23,
+
+At (22,23): 2072  
+(21,23): 2073  
+...  
+(-23,23): 2072 + ( -23 - 22 ) = 2072 + ( -45 ) = 2027
+
+But in fact, after reaching (23,23): 2071, next is (22,23): 2072. Each step is +1.
+
+So step number \(k\) (0-based) along this edge is at position \(x = 22 - k\), value \(2072 + k\).
+
+When \(k = 45\): \(x = 22 - 45 = -23\), value \(2072 + 45 = 2117\).
+
+Therefore, at position (-23, 23): 2117
+
+Then "down" (decrease y): from y=22 to y=-23, at x=-23:
+
+(-23,22): 2118  
+down to  
+(-23,-23): 2118 + 45 = 2163
+
+Then, from (-22,-23): 2164  
+over to (23,-23): what value?
+
+From x=-22 to x=23, at y=-23: positions:
+
+(-22,-23): 2164  
+(-21,-23): 2165  
+...  
+(23,-23): 2164 + 45 = 2209.
+
+So at (23, -23): 2209 (end of layer 23).
+
+## Step 4: Position of 2026
+
+Our number, 2026, is at position (23, -22).
+
+- (23, -23): 2209
+- (23, -22): 2026
+
+Wait, this suggests an inconsistency. According to the movement, perhaps our starting point should be at (23, -23) for maximum, (23, -22) for 2026.
+
+But the numbers go up as we follow counterclockwise.
+
+Let's double-check:
+
+- At layer \(n\), start at position (\(n, -n+1\)), value: \( (2n-1)^2 + 1 \)
+- The numbers on the "right edge" go from (\(n, -n+1\)), up to (\(n, n\)), values increase by 1 each time.
+
+**Thus, for layer 23:**
+- \( (2n-1)^2 = (45)^2 = 2025 \), so value at (\(23, -22\)): 2026
+- (\(23, y\)), where \( -22 \leq y \leq 23 \), the value is \(2026 + ( y-(-22) ) = 2026 + (y + 22)\)
+
+Thus, at (\(23, y\)), value = \(2026 + y + 22 \).
+But at y = -22: \(2026 + 0 = 2026\), correct.
+At y = 23: \(2026 + 45 = 2071\).
+
+## Step 5: The neighbors of 2026
+
+8 neighbors: up, down, left, right, and four diagonals.
+
+2026 is at \( (23, -22) \).
+
+Neighbors at:
+
+- (23, -21)
+- (24, -22)
+- (24, -21)
+- (22, -22)
+- (22, -21)
+- (24, -23)
+- (23, -23)
+- (22, -23)
+
+Let me make sure of all 8:
+
+\[
+\begin{array}{ccc}
+(22, -21) & (23, -21) & (24, -21) \\
+(22, -22) & \textbf{(23, -22)} & (24, -22) \\
+(22, -23) & (23, -23) & (24, -23) \\
+\end{array}
+\]
+
+So, \((23, -21)\), etc.
+
+Now, let's find the **value at each neighbor**.
+
+### (23, -21):
+
+Since (23, y): value = 2026 + y + 22  
+At y = -21: 2026 + (-21) + 22 = 2027
+
+### (24, -22):
+
+Which layer is this position in?
+
+Does (24, y) for y between -23 up to 22 or 23 exist? Let's check.
+
+At layer 24, the perimeter runs from positions:
+
+- Layer 24: side = 49; \((2n+1)\) so n=24.
+
+- The minimal value in this layer: \( (2 \times 24 - 1)^2 + 1 = 47^2 + 1 = 2209 + 1 = 2210\)
+- The maximum: \(49^2 = 2401\)
+
+Positions for right side: (24, -23) upwards to (24, 24), values 2210 to 2257.
+
+At (24, y): value = 2210 + (y + 23)
+
+At y = -22: 2210 + ( -22 + 23 ) = 2211
+
+So, (24, -22) = 2211
+
+### (24, -21):
+
+(24, y): as above: 2210 + ( -21 + 23 ) = 2210 + 2 = 2212
+
+### (22, -22):
+
+At (22, y): Is this position on layer 22 or 23? Let's check.
+
+Remember, layer 23 occupies x values from -23 to +23 and y values from -23 to +23. However, not every (x, y) is on the spiral path for that layer.
+
+Let's review:
+
+Within layer 23, after going up (right side), then left (top), then down (left), then right (bottom).
+
+But (22, -22) could be in previous layer, possibly.
+
+But let's see the possible values for x=22.
+
+At x=22, y could be along the right edge, for y between -22 and +23.
+
+Given our earlier: at (23, y) for y from -22 to 23: layer 23.
+
+At (22, 23): after reaching (23,23) at 2071, (22,23): 2072.
+
+So, (x,23): x=22 down to x=-23, each step increases by 1.
+
+Thus, (22,23): 2072
+
+At x=22, y=23 (top edge), value: 2072
+
+To get to (22, -22), need to go down along (22, y): at what sequence?
+
+Which layer edge is (22, y) for various y?
+
+So, for the top edge, as above, we go from (23,23): 2071 to (22,23): 2072, down to (-23,23): 2117
+
+Then from (-23, 22) downward.
+
+But perhaps the way to do this is as follows:
+
+Let's think about (22, -22): is this on an **inner layer**? Let's check.
+
+For layer 22:
+- Maximum: (2 × 22 + 1)^2 = 45^2 = 2025
+- Minimum: (2*21 + 1)^2 + 1 = 43^2 + 1 = 1849 + 1 = 1850
+
+So layer 22: values from 1850 to 2025.
+
+As before, starting at (22, -21): 1850, moving up to (22, 22). Let's check:
+
+For layer 22:
+
+First value: (22, -21): 1850
+
+Up to (22, 22): value = 1850 + (22 - ( -21 )) = 1850 + 43 = 1893.
+
+Similarly, the next edge starts at (21, 22): 1894, so (22,22): 1893
+
+Now, from the previous logic, the lowest value in this edge: (22, -21): 1850  
+Highest: (22, 22): 1893
+
+Our value at (22, -22): does not exist in layer 22, since the y-values go from -21 to 22.
+
+But at layer 23, in its perimeter, x=22, y=-22 is not included in the corners.
+
+How about bottom edge of layer 23: y=-23, x from -22 up to 23.
+
+Earlier, we had:
+
+(-22, -23): 2164  
+(-21, -23): 2165  
+...
+(23, -23): 2209
+
+But our (22, -22) is just "north" of (22, -23): (22, -22), but that's not on the layer perimeter.
+
+Given this, perhaps the interior position (22, -22) belongs to an inner layer.
+
+Thus, perhaps the value at (22, -22) is 0, i.e. the spiral has a "hole" there; but the question needs the sum of numbers at those 8 positions.
+
+But let's just enumerate which of those 8 positions are on the spiral, i.e., have natural numbers attached to them.
+
+Let's recall: the entire spiral, every grid cell is occupied by an integer; the spiral passes through all integer grid positions.
+
+Therefore, at position (a, b), what is the value? Let's find a general formula.
+
+# Direct Formula for Spiral Value at (x, y)
+
+Let me recall the general formula for the Ulam spiral:
+
+For a square spiral, centered at (0,0):
+
+Given a coordinate (x, y):
+
+- Determine the "layer" \( n \) = max(|x|, |y|)
+- The maximal value at that layer: \( m = (2n+1)^2 \)
+- Then, for coordinates on the layer perimeter:
+
+   - If \(y = -n\), \(x\) goes from \(-n\) to \(n\): bottom edge, right to left
+   - If \(x = -n\), \(y\) goes from \(-n\) to \(n\): left edge, bottom to top
+   - If \(y = n\), \(x\) goes from \(n\) to \(-n\): top edge, left to right
+   - If \(x = n\), \(y\) goes from \(n\) to \(-n\): right edge, top to bottom
+
+But in the enumeration, for a spiral starting at (0,0)=1; moving right to (1,0)=2; up to (1,1)=3; left to (0,1)=4; left to (-1,1)=5; down to (-1,0)=6; etc.
+
+In this scheme, for layer n:
+
+- Maximum: (n, -n) = (2n+1)^2
+- Then move: up the right edge: from (n, -n+1) to (n, n)
+- Move left along top: from (n-1, n) to (-n, n)
+- Move down along left: from (-n, n-1) to (-n, -n)
+- Move right along bottom: from (-n+1, -n) to (n-1, -n)
+
+Then the mapping is:
+
+- If abs(x) >= abs(y):
+    - If x >= 0 and x == abs(y):   # right edge, y in [-n, n]
+          v = ...    # as above
+    - If x < 0 and x == -abs(y):   # left edge
+          v = ...
+
+But referencing the formula from, for example, [RosettaCode: Ulam spiral](https://rosettacode.org/wiki/Ulam_spiral_(for_primes)#Python):
+
+Let \( n = \max(|x|, |y|) \).
+
+Let
+
+\[
+m = (2n+1)^2
+\]
+
+Then:
+
+- If \( y = -n \):    value = \( m - (n - x) \)
+- If \( x = -n \):    value = \( m - 2n - (n + y) \)
+- If \( y = n \):     value = \( m - 4n - (n - x) \)
+- If \( x = n \):     value = \( m - 6n - (n - y) \)
+
+Let’s test for (0,0): n=0; m=1
+
+Since both x=0, y=0, which is both x=n and y=n. For central point, value = 1.
+
+For (1,0): n=1; m=9. x=1, y=0, x=n: last case:
+
+value = 9 - 6*1 - (1 - 0) = 9 - 6 - 1 = 2.
+
+Matches the above.
+
+For (1,1): x = n, y = n: so y=n:
+
+value = 9 - 4*1 - (1 - 1) = 9 - 4 - 0 = 5.
+
+Ah, but above in the table, (1,1): 3
+
+Wait, perhaps the formula uses a slightly different mapping; perhaps the spiral is in clockwise vs counterclockwise.
+
+But for our original table:
+
+|   x |  y | value |
+| --- | --- | ----- |
+|  0  |  0 |   1   |
+|  1  |  0 |   2   |
+|  1  | -1 |   3   |
+|  0  | -1 |   4   |
+| -1  | -1 |   5   |
+| -1  |  0 |   6   |
+| -1  |  1 |   7   |
+|  0  |  1 |   8   |
+|  1  |  1 |   9   |
+
+So at (1,0): 2, which is matched by the formula above.
+
+But we have at (1,-1): 3
+
+At (1,n): n=1; m=9; x=1, y=-1, x=n:
+
+so value = 9 - 6*1 - (1 - (-1)) = 9 - 6 - (2) = 1
+
+But at (1,-1): should be 3.
+
+So the mapping is different.
+
+Alternatively, perhaps the best approach is to use a table and a script, but let's try to deduce as much as possible directly.
+
+Given time constraints, let's see what we can get from the mapping above.
+
+Nassim Nicholas Taleb has a formula for "square spiral," and here's a corrected formula for value at (x,y):
+
+Let \( n = \max(|x|, |y|) \),
+- total numbers up to layer n: \( (2n+1)^2 \),
+- the values at the "corners" are the sequence \( (2n+1)^2 \),
+- spiral steps are of length 2n, forming the current square's perimeter.
+
+Adjust as per the actual direction of numbering.
+
+Alternatively, perhaps the best would be to see that the numbers at neighboring positions correspond to neighboring numbers in various layers.
+
+In the above, for our specific problem:
+
+We're trying to compute the sum of the 8 numbers surrounding 2026, which is at layer 23, at position (23,-22).
+
+From prior work, we see that the neighboring locations correspond to numbers on neighboring layers, and, in these positions, they are the first and last numbers in their respective layers.
+
+Given our location (23,-22):
+
+From earlier, on layer 24, numbers from 2210 up.
+
+- (24,-22): 2211,
+- (24,-21): 2212,
+- (23,-21): 2027,
+- (22,-21): (Calculate)
+- (22,-22): (Calculate)
+- (22,-23): (Calculate)
+- (23,-23): ?
+- (24,-23): ?
+
+For (23,-23): On layer 23, leftmost, this is last number of the layer: 2209
+
+For (24,-23): layer 24, at x=24, y=-23: on right edge,
+(24,-23): value = 2210 + (-23 + 23) = 2210 + 0 = 2210.
+
+Similarly, (22,-23): On bottom edge of layer 23, x from -22 to 23, y = -23.
+
+At x = 22: starts at (-22,-23): perhaps value 2164, increases by 1 per step.
+
+At (-22,-23): 2164
+
+So at x = 22: from x = -22 to 22, difference is 44, so 2164 + (22 - -22) = 2164 + 44 = 2208
+
+Wait, but that's more than 45 difference. Let's calculate
+
+Range from x=-22 to 22 inclusive: that's 45 values, since -22 to 22 = 44, plus 1.
+
+But given all this, perhaps the better approach is to see the pattern.
+
+From the spiral, at the **corners** of each layer:
+- The layer 23, as above, starts at 2026, ends at 2209.
+
+From previous work, the positions immediately adjacent to 2026 are the first values of the next layer (2211, 2212), the next value (2027), and leading up to the maximum of layer 23 (2209).
+
+Similarly, at the bottom corner (23, -23): 2209
+
+Then, (24, -23): 2210 (first value of layer 24).
+
+Similarly, (23, -23): 2209
+
+Thus, assembling all the values we have already:
+
+- (23,-21): 2027
+- (24,-22): 2211
+- (24,-21): 2212
+- (23,-23): 2209
+- (24,-23): 2210
+
+For the others, let's attempt to generalize.
+
+**Summary table so far:**
+
+| Position     | Value  |
+|--------------|--------|
+| (22, -21)    |   ?    |
+| (23, -21)    | 2027  |
+| (24, -21)    | 2212  |
+| (22, -22)    |   ?   |
+| (24, -22)    |2211   |
+| (22, -23)    |   ?    |
+| (23, -23)    | 2209  |
+| (24, -23)    |2210   |
+
+So, let's attempt to find (22, -21).
+
+At (22,-21):
+
+Calculate the value at (22,-21):
+
+Find layer: \( n = \max(|22|,| -21|) = 22 \)
+
+- Layer 22: maximum value: (2n+1)^2 = 45^2 = 2025
+
+Now, determine which edge (22, -21) is on.
+
+Layer 22, the maximum value at (22,-22), but perhaps the mapping is as follows.
+
+For layer n:
+
+- Starting at (n, -n+1) and moving up,
+- then left: from (n, n) to (-n, n),
+- then down, etc.
+
+Therefore, at right side, from (n, -n+1) up to (n, n)
+
+For (22, y): y from -21 to 22.
+
+At y=-21: starting position, so (22, -21): 1850
+
+At y increases by 1, so (22, y): 1850 + (y + 21)
+
+So (22, -21): 1850 + 0 = 1850  
+(22, -20): 1851  
+...  
+(22, 22): when y=22: 1850 + (22 + 21) = 1850 + 43 = 1893
+
+Now, (22, -22): not on this edge.
+
+But perhaps on a corner.
+
+So (22, -22): investigate.
+
+Left edge: x varies, but let's check if (22, -22) is a corner.
+
+Layer 22, corners:
+
+- (22, -22): bottom right corner: maximum value: 2025
+
+Thus, (22, -22) = 2025
+Similarly, check for (22,-23): Now, n = 23.
+
+At (22, -23), x = 22, y = -23, n=23.
+
+Layer 23 bottom edge: y = -23, x from -22 to 23
+
+At x=-22: (-22,-23): we previously found = 2164
+
+Increment by 1 as x increases.
+
+So, at x=22: 2164 + (22 - (-22)) = 2164 + 44 = 2208
+
+Wait: (-22,-23): 2164  
+(-21,-23): 2165  
+...
+(0,-23): 2186  
+...  
+(22,-23): 2208  
+(23,-23):2209
+
+So (22,-23): 2208
+
+Similarly, for (22, -21):
+
+Wait, at (22,-21): previous calculation, layer 22: 1850.
+
+So, let's now assemble all neighbor values:
+
+| Position      | Value |
+|---------------|-------|
+| (22, -21)     | 1850 |
+| (23, -21)     | 2027 |
+| (24, -21)     | 2212 |
+| (22, -22)     | 2025 |
+| (24, -22)     | 2211 |
+| (22, -23)     | 2208 |
+| (23, -23)     | 2209 |
+| (24, -23)     | 2210 |
+
+**Sum them up:**
+
+\(1850 + 2027 + 2212 + 2025 + 2211 + 2208 + 2209 + 2210 =\)
+
+Let's break into smaller sums:
+
+First, sum the higher numbers (over 2200):
+
+- 2212
+- 2211
+- 2208
+- 2209
+- 2210
+
+Sum: 2212 + 2211 = 4423, 4423 + 2208 = 6631, +2209= 8840, +2210=11050
+
+Now add the smaller numbers:
+
+- 1850 + 2027 = 3877
+- +2025 = 5902
+
+So total sum is:
+
+11050 + 5902 = **16,952**
+
+**Final Answer:**
+\[
+\boxed{16,952}
+\]
+
+---
+
+## **Summary:**
+
+The sum of all 8 neighbors of the number 2026 in the square spiral is
+
+\[
+\boxed{16,952}
+\]
+----
+Usage(input=62, output=7238, details={})

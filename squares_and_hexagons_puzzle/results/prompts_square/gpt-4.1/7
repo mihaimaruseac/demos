@@ -1,0 +1,495 @@
+Let's analyze the spiral described:
+
+```
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+```
+This is the classic "Ulam spiral" where each new layer is wrapped around anticlockwise.
+
+### First, let's clarify the spiral's pattern.
+
+The spiral starts at 1, and numbers proceed around 1 in the following order (counterclockwise):
+
+- Right → 2
+- Up    → 3
+- Left  → 4, 5
+- Down  → 6, 7, 8
+- Right → 9, 10, 11
+- Up    → 12, 13, 14, etc.
+
+If you notice, the numbers are located at `(x, y)` positions where 1 is at `(0, 0)`, 2 at `(1, 0)`, 3 at `(1, 1)`, 4 at `(0, 1)`, etc.
+
+### But let's use a simpler method.
+
+#### **Step 1. Find the 'ring' containing 2026**
+
+The spiral grows in squares:
+- The 1st layer is 1 at (0, 0).
+- The 2nd layer: \(3 \times 3\) square, numbers 2-9.
+- The 3rd layer: \(5 \times 5\), numbers 10-25.
+- The 4th layer: \(7 \times 7\), numbers 26-49.
+- The nth layer: \( (2n-1) \times (2n-1) \), and its last (corner) number is \((2n-1)^2\).
+
+Set \( (2n-1)^2 \geq 2026 \)
+
+\( (2n-1)^2 \geq 2026 \)
+
+Take square root:
+\( 2n-1 \geq \sqrt{2026} \approx 45 \)
+
+So,
+
+\( 2n \geq 46 \Rightarrow n \geq 23 \)
+
+But,
+- For \(n=23\), layer size: \(45\times45\), last number: \(2025\) (since \(45^2=2025\))
+- For \(n=24\), layer size \(47\times47\), last number: \(2209\) (\(47^2\))
+- 2026 falls into the 24th layer.
+
+#### **Step 2. Where is 2026 in layer 24?**
+
+- Largest number on the previous layer (23rd): \(45^2=2025\)
+- So, numbers in the 24th layer: **from 2026 to 2209**
+
+The four corners in this layer are:
+- Lower right: \(47^2=2209\)
+- Lower left: \(2209-(47-1)=2163\) (\(2209-46\))
+- Upper left: \(2163-46=2117\)
+- Upper right: \(2117-46=2071\)
+
+The bottom right (ending) corner is always \((2n-1)^2\); other corners decrease by steps of \((2n-2)\).
+
+Let's count the numbers **per side**: \(47-1=46\) steps per edge.
+
+Counting from \(2026\) up to \(2209\):
+
+- The way the spiral is built, for each ring iteration, starting number is just above the prior ring's max: here, \(2026\).
+
+#### **Step 3. Find the coordinates of 2026**
+
+In the Ulam spiral centered at (0,0), the movement is as follows (East = +x, North = +y):
+
+- Right (East): start of new layer.
+- Up, left, down, right.
+
+For 24th layer (n=24), side length = \(47\), layer starts at number \(45^2+1=2026\).
+
+For the spiral, **the bottom right corner is at \(2209\)**, which is at lowest y, so the side starting at \(2026\) must be at the bottom, going right to left along the bottom edge.
+
+Corner numbers:
+- Bottom right: \(2209\)
+- Bottom left: \(2209-46=2163\)
+- Top left: \(2163-46=2117\)
+- Top right: \(2117-46=2071\)
+
+The journey from \(2026\) (start of the layer) to \(2071\) is up the right side of the square.
+
+That is, the **rightmost edge** has numbers from \(2026\) **at the bottom** to \(2071\) **at the top**.
+
+So:
+
+- From \(2026\) to \(2071\): \(2071-2026 = 45\) steps (up the right edge).
+- The bottom right corner (\(y = -(n-1), x = n-1\)) is at (\(23, -23\)), and that's \(2026\).
+
+So,
+- \(2026\) is at coordinates \(x=23, y=-23\) in this grid.
+
+As this is the start of the right edge going up, the next numbers (\(2027\), \(2028\),...) will be at \(x=23, y=-22\), then \(x=23, y=-21\), ..., up to \(x=23, y=23\).
+
+### **Step 4. Find the 8 neighbors**
+
+The neighbors are at:
+- Up: \(x, y+1\)
+- Down: \(x, y-1\)
+- Left: \(x-1, y\)
+- Right: \(x+1, y\)
+- and the 4 diagonals.
+
+So, the eight neighbors of \(x=23, y=-23\) are at:
+1. \((22, -24)\)
+2. \((22, -23)\)
+3. \((22, -22)\)
+4. \((23, -24)\)
+5. \((23, -22)\)
+6. \((24, -24)\)
+7. \((24, -23)\)
+8. \((24, -22)\)
+
+We need to map these coordinates back to their spiral numbers.
+
+#### **Step 5. Compute the spiral numbers at these coordinates**
+
+The coordinates at \((x, y)\) can be mapped to their spiral numbers as follows.
+
+The spiral grows in rings; for any coordinate, we can compute its "layer" (n):
+
+\(n = \max{|x|, |y|}\), i.e., Manhattan shell.
+
+The largest number in the shell is at the lower right corner at coordinate (\(n, -n\)); that number is \((2n+1)^2\).
+
+From there, three other corners (clockwise):
+
+- lower left at coordinates \((-n, -n)\), value: \((2n+1)^2 - 2n\)
+- top left: \((-n, n)\), value: \((2n+1)^2 - 4n\)
+- top right: (\(n, n\)), value: \((2n+1)^2 - 6n\)
+
+Here is the recipe for any \((x, y)\) (see mathematical papers on Ulam spiral):
+
+Let \(n = \max{|x|, |y|}\), then
+- if \(x = n\), moving up: value = \( (2n+1)^2 - (n-y) \)
+- if \(y = n\), moving left: value = \( (2n+1)^2 - 2n - (n+x) \)
+- if \(x = -n\), moving down: value = \( (2n+1)^2 - 4n - (n-y) \)
+- if \(y = -n\), moving right: value = \( (2n+1)^2 - 6n - (n-x) \)
+
+Now let's compute for \(x=23, y=-23\) and its neighbors.
+
+##### A. \(x=23, y=-23\): as before
+
+Here, \(n=23\), \(x=23\), so \(x=n\). Moving up from bottom right
+
+From prior, bottom right corner is at (\(n, -n\)), and is number \( (2n+1)^2 \).
+
+But from our earlier calculation, in reality, the bottom right corner is:
+
+\( (2n+1)^2 \) is correct if spiral started at 1. But from the numerical pattern we've established, for \(n=23\):
+
+\(2n+1=47\), so \(47^2 = 2209\) (bottom right corner: \(23, -23\)), but our starting number for this layer is \(2026\).
+
+Wait -- this suggests a mismatch -- let's clarify:
+
+From zero, the bottom right corner is always \( (2n+1)^2 \).
+But our 2026 is at (\(23, -23\)), which is the bottom right of the 24th layer.
+So, in fact, 2026 is at (\(23, -23\)) in the 24th layer.
+
+So in layer 24 (\(n=23\)), at (\(23, -23\)), the value is \( (2n+1)^2 = 47^2 = **2209** \).
+
+But you said our 2026 is at (\(23, -23\)), but above, for this spiral, the bottom right corner of the 24th layer is 2209, and **the starting number for the layer is 2026** at the top right (with the spiral going not anti-clockwise but clockwise). 
+
+Wait! There must be a difference between standard Ulam spiral and the spiral described here.
+
+The initial numbers given:
+
+```
+ 5 4 3
+ 6 1 2
+ 7 8 9
+```
+
+Looking at this layout, the numbers spiral **clockwise**, not counterclockwise, starting from 1.
+
+Visualizing:
+
+- Start at (0,0): 1
+- Move right to (1,0): 2
+- Move down to (1,1): 3
+- Move left to (0,1): 4
+- Move left to (-1,1): 5
+- Move up to (-1,0): 6
+- Move up to (-1,-1): 7
+- Move right to (0,-1): 8
+- Move right to (1,-1): 9
+
+So, from (0,0):
+- Step 1: (1,0)
+- Step 2: (1,1)
+- Step 3: (0,1)
+- Step 4: (-1,1)
+- Step 5: (-1,0)
+- Step 6: (-1,-1)
+- Step 7: (0,-1)
+- Step 8: (1,-1)
+
+This is the correct path.
+
+#### **Coordinates of 2026**
+
+Clearly, the pattern: for each 'layer' \(n\), which is the maximum of \(|x|\) and \(|y|\) for a square spiral.
+
+Now, we compute the ring for 2026.
+
+- Layer 0: (0,0): 1 
+- Layer 1: 2 to 9
+- Layer 2: 10 to 25
+- Layer \(n\): numbers from \((2n-1)^2+1\) up to \((2n+1)^2\)
+
+Find \(n\) such that:
+
+\((2n-1)^2 < 2026 \leq (2n+1)^2\)
+
+Let’s try:
+
+- For \(n=22\): \( (2\cdot22-1)^2 = 43^2 = 1849\)
+- For \(n=23\): \( (2\cdot23-1)^2 = 45^2 = 2025\)
+- For \(n=24\): \( (2\cdot24-1)^2 = 47^2 = 2209\)
+
+So, \(n=23\): numbers 2026 up to 2209, in the 24th layer.
+
+- Start of ring: \(2026\)
+- End of ring: \(2209\)
+- Total in this 'layer': \(2209-2026+1 = 184\) numbers
+
+Now, let's reconstruct the path for layer \(n=23\):
+
+Each full layer consists of four sides, each of length \(2n\):
+
+- side 1 (right): from (n-1,-(n-1)) up by \(2n\) steps to (n-1, n-1)
+- side 2 (top): from (n-1, n-1) left by \(2n\) steps to (-(n-1), n-1)
+- side 3 (left): from (-(n-1), n-1) down by \(2n\) steps to (-(n-1), -(n-1))
+- side 4 (bottom): from (-(n-1), -(n-1)) right by \(2n\) steps to (n, -(n-1))
+
+But our initial spiral goes **right** first, so let's follow how coordinates move for the 24th layer.
+
+Let me write a general step-by-step correspondence for each side in layer \(n\):
+
+- Start at (\(n, -(n-1)\)) (the bottom right corner after the last layer)
+- Move up (\(2n-1\)) steps to (\(n, n\))
+- Move left (\(2n\)) steps to (\(-n, n\))
+- Move down (\(2n\)) steps to (\(-n, -n\))
+- Move right (\(2n\)) steps to (\(n+1, -n\))
+
+But let's start at the first number after the last layer, which is at (\(n, -(n-1)\)), value = \( (2n-1)^2 + 1 \).
+
+So:
+
+- (\(n, -(n-1)\))   : \( (2n-1)^2 + 1 \)
+- up along x = n, y from -(n-1) to n: (2n) steps
+  Each step increases the value by 1.
+
+Therefore,
+
+- (\(n, -(n-1) + k\)), for \(k = 0\) to \(2n-1\): value = \( (2n-1)^2 + 1 + k \)
+
+Let's check for \(n=1\):
+
+- (1,0): \( (2\cdot1 - 1)^2 + 1 = 1^2 + 1 = 2 \)
+- (1,1): value = 2+1=3
+
+Exactly matches our initial 2 and 3.
+
+Therefore, for \(n=23\):
+
+- Layer starts at \( (23, -22) \), value = \( (2\cdot23-1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026 \)
+
+- (23, -22): 2026
+- (23, -21): 2027
+- ...
+- (23, 23): up to here after \(45\) steps; 2026 + 45 = 2071
+
+Let's check:
+- (23, -22): 2026
+- (23, 23): 2026 + 45 = 2071
+
+Thus, **neighbor below** (23, -23): is not on this edge, but possibly a number from the prior layer.
+
+But our original coordinate is **(23, -22)** for 2026.
+
+Therefore:
+**2026 is at (23, -22)**, not (23, -23).
+
+Let's correct the earlier calculation.
+
+### **Step 6. Identify the correct coordinate for 2026**
+
+For layer \(n=23\):
+- The bottom right (23, -23) is last number of prior layer: \(45^2=2025\)
+- Layer 24 starts at (\(23, -22\)), value = \(2026\)
+
+So, 2026 is at (\(23, -22\))
+
+Now, its 8 neighbors are:
+- (22, -23)
+- (23, -23)
+- (24, -23)
+- (22, -22)
+- (24, -22)
+- (22, -21)
+- (23, -21)
+- (24, -21)
+
+Let's compute the value at each of these coordinates.
+
+### **Step 7. Compute values for each neighbor**
+
+Let’s use the above-edge-formulas.
+
+#### For coordinates on the ring with n = max(|x|, |y|):
+
+- For \(n\), coordinates follow:
+    - Start at (\(n, -(n-1)\)), value: \( (2n-1)^2 + 1 \)
+    - Up along \(x=n\): for k=0 to \(2n-1\):
+        - (\(n, -(n-1)+k\)), value: \( (2n-1)^2 + 1 + k \)
+    - Left along \(y=n\): for k=1 to \(2n\):
+        - (\(n-k, n\)), value: \( (2n-1)^2 + 1 + (2n-1) + k \)
+    - Down along \(x=-n\): for k=1 to \(2n\):
+        - (\(-n, n-k\)), value: \( (2n-1)^2 + 1 + (2n-1) + 2n + k \)
+    - Right along \(y=-n\): for k=1 to \(2n\):
+        - (\(-n+k, -n)\)), value: \( (2n-1)^2 + 1 + (2n-1) + 2n + 2n + k \)
+
+For **n = 23**:
+- \( (2n-1)^2 = 45^2 = 2025 \)
+- Layer starts at (\(23, -22\)), value = 2026
+
+Let's fill the values in for each neighbor coordinate.
+
+#### 1. (22, -23): \(x = 22\), \(y = -23\), \(n = \max(22, 23) = 23\)
+- \(y = -n\)
+- On the **bottom side**
+
+- Position from left along this side: \((-(n-1)+k, -n)\), for k = 0 to \(2n-1\):
+    - Leftmost is (\(-22, -23)\), value at leftmost
+
+But our specific point is (\(22, -23\)), so how many steps from the leftmost?
+- From (\(-22, -23)\) to (\(22, -23)\): From x = -22 to x = 22, that's 44 steps, so k=44.
+
+But according to our formula, for the bottom edge:
+    - (\(-n + k, -n\)), \(k = 0\) to \(2n\)
+    - Value = \( (2n-1)^2 + 1 + 6n - 1 + k \) ?
+
+But from our previous analysis, in total:
+  - (\(n, -(n-1)\)): value \( = (2n-1)^2 + 1 \)
+  - Up: \(0\) to \(2n-1\)
+  - Left: \(1\) to \(2n\)
+  - Down: \(1\) to \(2n\)
+  - Right: \(1\) to \(2n\)
+
+But it's easier to just count positions along the ring.
+
+For the bottom edge, starting at (\(-n, -n)), value: (\(2n-1)^2 + 1 + 6n\), then moving right.
+
+But let's be systematic. Let's sum these up for **each coordinate**.
+
+#### (a) (22, -23)
+- x from \(-23\) (leftmost) up to \(22\) (rightmost): \((-23, -23)\) to \( (22, -23)\), that's \(22 - (-23) = 45\) steps.
+
+So, (\(-23, -23\)) is the start of the bottom edge.
+
+Where is (\(-23, -23\)) in the total spiral?
+- After completing previous 3 edges (up, left, down)
+    - Up: from (\(23, -22)\) to (\(23, 23)\): 45 steps
+    - Left: (\(22, 23)\) to (\(-23, 23)\): 45 steps
+    - Down: (\(-23, 22)\) to (\(-23, -23)\): 45 steps
+
+So total = 45 up + 45 left + 45 down = 135 steps, so (\(-23, -23\)) = \(2026 + 135 = 2161\).
+
+Now, from (\(-23, -23\)) to (\(22, -23\)), each step right increases by 1, so (\(22, -23\)) is \(2161 + 45 = 2206\).
+
+So:
+- (\(-23, -23\)): 2161
+- (\(-23+1, -23\)): 2162
+- ...
+- (\(22, -23\)): \(2161 + 45 = 2206\)
+
+#### (b) (23, -23) [corner between right and bottom edges]
+For this, it must be after the up, left, and down edges, and before right.
+
+- After 135 steps (as above), but then, at (\(23, -23\)), is just after (\(22,-23\)).
+
+From (\(-23, -23\)), 45 steps gets you to (\(22, -23\)), and next is (\(23, -23\)) at step 46.
+
+Thus,
+- (\(23, -23\)) = 2161 + 46 = **2207**
+
+#### (c) (24, -23): 
+Now, \(n=24\), so it's on the ring outside this one.
+
+Let's do similar calculation for \(n=24\):
+
+- Ring starts at (\(24, -23\)), value = \( (2\cdot24-1)^2 + 1 = 47^2 + 1 = 2209 + 1 = 2210 \)
+
+So, (\(24, -23\)): 2210
+
+#### (d) (22, -22):
+
+For (\(22, -22\)), \(n = 22\).
+
+For \(n=22\), the ring starts at (\(22, -21\)), value = \( (2\cdot22-1)^2+1 = 43^2 + 1 = 1849 + 1 = 1850 \)
+
+- Up: (\(22, -21)\) to (\(22, 22)\), a total distance of 43 steps; (\(22, -22\)) is one before (\(22, -21\)), so... Wait, up moves are in +y, so (\(22, -22\)) is first step in this edge.
+
+So, (\(22, -22\)) = 1850
+
+#### (e) (24, -22):
+For (\(24, -22\)), \(n=24\), on the up edge as we did for (\(24, -23\)):
+
+- (\(24, -23)\): 2210 (start of up edge)
+- Up by 1: (\(24, -22)\): 2211
+
+#### (f) (22, -21):
+Now, being at \(n=22\):
+
+(\(22, -21\)): starting point for layer 22: 1850
+
+- Up moves are in +y. At (\(22, -21)\), that's the start.
+
+- (\(22, -21)\): 1850
+
+#### (g) (23, -21):
+
+At \(n=23\):
+
+We previously had (\(23, -22)\): 2026
+
+- Up edge: (\(23, -22)\) to (\(23, 23)\): each step +1 in value, y increases by 1.
+
+- (\(23, -22)\): 2026
+- (\(23, -21)\): 2027
+
+#### (h) (24, -21):
+
+For \(n=24\), up edge beginning at (\(24, -23)\): 2210
+
+- (\(24, -23)\): 2210
+- (\(24, -22)\): 2211
+- (\(24, -21)\): 2212
+
+### **Step 8. Summing the neighbors**
+
+Now, let's list each coordinate and value:
+
+| Neighbor        | Value    |
+|-----------------|----------|
+| (22, -23)       | 2206     |
+| (23, -23)       | 2207     |
+| (24, -23)       | 2210     |
+| (22, -22)       | 1850     |
+| (24, -22)       | 2211     |
+| (22, -21)       | 1850     |
+| (23, -21)       | 2027     |
+| (24, -21)       | 2212     |
+
+Let’s sum:
+
+- 2206
+- 2207
+- 2210
+- 1850
+- 2211
+- 1850
+- 2027
+- 2212
+
+Now, adding up:
+
+2206 + 2207 = 4413  
+4413 + 2210 = 6623  
+6623 + 1850 = 8473  
+8473 + 2211 = 10684  
+10684 + 1850 = 12534  
+12534 + 2027 = 14561  
+14561 + 2212 = 16773  
+
+So, **the sum of all 8 neighbors of 2026 is**: 
+
+\[
+\boxed{16773}
+\]
+
+---
+
+**Final Answer:**  
+\[
+\boxed{16773}
+\]
+----
+Usage(input=62, output=5702, details={})
