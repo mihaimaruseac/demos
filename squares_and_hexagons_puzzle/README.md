@@ -9,3 +9,10 @@ This problem is my first 2026 AI benchmark, introduced in
 [this blog article](https://mihai.page/ai-2026-0/), with these
 [initial results](https://mihai.page/ai-2026-1/). More experiments are needed,
 and I will update this with more data.
+
+## Contents
+
+- The main harness is in `run.py`
+- The prompts sent to the LLM are in `prompts/`
+- The collected results are in `results/`
+- A report of all the collected runs is in `report.csv`
