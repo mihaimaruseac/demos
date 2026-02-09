@@ -1,0 +1,352 @@
+Alright, let's tackle this problem step by step. I'm going to approach it methodically to ensure I understand how the numbers are arranged on the spiral and then determine the neighbors of the number 2026 to find their sum.
+
+### Understanding the Spiral Layout
+
+First, let's visualize the spiral based on the given snippet:
+
+```
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+```
+
+From this, we can see that the spiral starts at the center with the number 1, surrounded by its neighbors in a counterclockwise manner. Here's how the spiral grows:
+
+1. Start at 1.
+2. The next layer (ring) around 1 would be numbers 2 to 8, arranged in a square.
+   - Right of 1: 2
+   - Above 2: 3
+   - Left of 3: 4
+   - Below 4: 5
+   - Left of 5: 6
+   - Below 6: 7
+   - Right of 7: 8
+   - Then back to the right of 8 to start the next layer.
+
+This pattern continues outward, with each new layer adding a larger square around the previous one.
+
+### Identifying the Position of a Number on the Spiral
+
+To find the neighbors of 2026, we first need to determine its position on the spiral. The spiral can be thought of as layers or rings around the center. Each layer corresponds to a certain range of numbers.
+
+The number of numbers in each layer (starting from the outermost completed layer) can be determined by the following pattern:
+
+- Layer 0 (center): 1 number (1)
+- Layer 1: 8 numbers (2 to 9)
+- Layer 2: 16 numbers (10 to 25)
+- Layer 3: 24 numbers (26 to 49)
+- ...
+- Layer n: 8n numbers
+
+The total numbers up to layer n is the sum of an arithmetic series where each term increases by 8:
+
+Total numbers up to layer n = 1 + 8 + 16 + 24 + ... + 8n = 1 + 8*(1 + 2 + 3 + ... + n) = 1 + 8*(n(n+1)/2) = 1 + 4n(n+1)
+
+We need to find the smallest n such that the total numbers up to layer n is ≥ 2026.
+
+Let's solve for n in 1 + 4n(n+1) ≥ 2026:
+
+4n² + 4n - 2025 ≥ 0
+
+Divide by 4:
+
+n² + n - 506.25 ≥ 0
+
+Using the quadratic formula:
+
+n = [-1 ± sqrt(1 + 4*506.25)] / 2 = [-1 ± sqrt(2026)] / 2
+
+sqrt(2026) ≈ 45.01
+
+So, n ≈ (-1 + 45.01)/2 ≈ 22.005
+
+Since n must be an integer, let's check n=22:
+
+Total up to layer 21: 1 + 4*21*22 = 1 + 1848 = 1849
+
+Total up to layer 22: 1 + 4*22*23 = 1 + 2024 = 2025
+
+So, 2026 is in layer 22, and it's the first number in that layer (since 2025 is the last number of layer 21).
+
+### Determining the Position Within the Layer
+
+Layer 22 starts at 2026 and has 8*22 = 176 numbers.
+
+The numbers in a layer are arranged in a square ring. For layer n, the numbers are arranged in a square of side length 2n+1 (since the center is at layer 0 with side length 1, layer 1 has side length 3, etc.).
+
+For layer 22, the side length is 2*22 + 1 = 45.
+
+The numbers in the layer are arranged in a square where the corners are at the ends of the layer's sequence. Specifically, the layer starts at the bottom right corner and goes counterclockwise.
+
+Here's how the numbers are arranged in a layer:
+
+- Start at the bottom right corner (position (n, -n) in some coordinate system where center is (0,0)).
+- Move left to the bottom left corner.
+- Move up to the top left corner.
+- Move right to the top right corner.
+- Move down to the bottom right corner (but this is the start of the next layer, so we stop before completing the full square).
+
+But since 2026 is the first number in layer 22, it's at the bottom right corner of that layer.
+
+### Finding the Neighbors of 2026
+
+The neighbors of a number on the spiral are the numbers adjacent to it in the grid, which are the numbers immediately above, below, to the left, to the right, and the four diagonals (totaling 8 neighbors).
+
+Given that 2026 is at the bottom right corner of its layer, its neighbors would be:
+
+1. To the left: the number immediately to the left in the same row.
+2. To the top-left: the diagonal above and to the left.
+3. To the top: the number directly above.
+4. To the top-right: the diagonal above and to the right (but this is outside the current layer, so it's the first number of the next layer, which is 2026 + 176 = 2202).
+5. To the right: the number to the right is the next in the sequence, which is 2027.
+6. To the bottom-right: the diagonal below and to the right (but this is the start of the next layer, which is 2202, same as top-right).
+7. To the bottom: the number directly below is the last number of the previous layer, which is 2025.
+8. To the bottom-left: the diagonal below and to the left is the number before the last in the previous layer, which is 2024.
+
+Wait, this seems a bit confusing. Maybe a better approach is to consider the grid coordinates.
+
+### Assigning Coordinates to Numbers
+
+Let's assign coordinates to numbers on the spiral. The center (1) is at (0,0). Then:
+
+- Right is positive x, left is negative x.
+- Up is positive y, down is negative y.
+
+The spiral grows outward in layers. For layer n (n starts at 1 for the first layer around the center), the numbers are arranged in a square of side length 2n+1.
+
+The numbers in layer n are from (total up to layer n-1) + 1 to (total up to layer n).
+
+For layer 22:
+- Starts at 2026, ends at 2026 + 175 = 2201 (since 176 numbers in the layer, but the first is 2026, so last is 2026 + 175 = 2201).
+
+The corners of layer n are:
+- Bottom right: (n, -n)
+- Bottom left: (-n, -n)
+- Top left: (-n, n)
+- Top right: (n, n)
+
+The numbers are arranged in a counterclockwise manner starting from the bottom right corner.
+
+So, 2026 is at (22, -22).
+
+Now, the neighbors are the 8 adjacent cells in the grid. Their coordinates would be:
+
+1. (22, -22-1) = (22, -23) [below]
+2. (22, -22+1) = (22, -21) [above]
+3. (22-1, -22) = (21, -22) [left]
+4. (22+1, -22) = (23, -22) [right]
+5. (22-1, -22-1) = (21, -23) [bottom-left diagonal]
+6. (22-1, -22+1) = (21, -21) [top-left diagonal]
+7. (22+1, -22-1) = (23, -23) [bottom-right diagonal]
+8. (22+1, -22+1) = (23, -21) [top-right diagonal]
+
+Now, we need to find which numbers are at these coordinates.
+
+### Finding Numbers at Neighboring Coordinates
+
+The numbers are arranged in layers. To find the number at a given coordinate (x,y), we can determine which layer it's in and then find its position within that layer.
+
+The layer number for a coordinate (x,y) is max(|x|, |y|).
+
+For our neighbors:
+
+1. (22, -23): layer is max(22,23) = 23
+2. (22, -21): layer is 22
+3. (21, -22): layer is 22
+4. (23, -22): layer is 23
+5. (21, -23): layer is 23
+6. (21, -21): layer is 21
+7. (23, -23): layer is 23
+8. (23, -21): layer is 23
+
+Now, let's find the numbers at these positions.
+
+First, let's find the total numbers up to layer 22 is 2025 (as before), and up to layer 21 is 1849.
+
+So, layer 22 has numbers 2026 to 2201.
+
+For layer 23, it starts at 2202 and has 8*23 = 184 numbers, so up to 2202 + 183 = 2385.
+
+Now, let's find the numbers:
+
+1. (22, -23): layer 23
+   - This is the bottom row of layer 23, starting from the bottom right corner.
+   - The sequence in layer 23 starts at (23, -23) = 2202, then moves left to (-23, -23), then up to (-23, 23), then right to (23, 23).
+   - The bottom row is from (23, -23) to (-23, -23), which is 47 numbers (since it's from x=23 to x=-23 inclusive, that's 23 + 23 + 1 = 47 numbers).
+   - (22, -23) is the 2nd from the end in this row (since it's x=22, and x goes from 23 down to -23).
+   - So, position in layer is 47 - (23 - 22) = 47 - 1 = 46 (since 23 is first, 22 is second, etc.)
+   - So, number is 2202 + 45 = 2247 (since first is 2202, second is 2203, ..., 46th is 2202 + 45 = 2247)
+
+Wait, let's clarify the numbering in the layer:
+
+Layer n has 8n numbers, arranged in a square where the corners are at the ends of the sequence.
+
+For layer 23:
+- Starts at (23, -23) = 2202
+- Then moves left to (22, -23) = 2203
+- ...
+- (-23, -23) = 2202 + 46 = 2248
+- Then up to (-23, -22) = 2249
+- ...
+- (-23, 23) = 2249 + 45 = 2294
+- Then right to (-22, 23) = 2295
+- ...
+- (23, 23) = 2295 + 45 = 2340
+- Then down to (23, 22) = 2341
+- ...
+- (23, -22) = 2341 + 44 = 2385
+
+So, (22, -23) is the second number in the layer, so it's 2203.
+
+Wait, no: first is (23,-23)=2202, second is (22,-23)=2203, ..., (x,-23)=2202 + (23 - x)
+
+So, (22,-23) = 2202 + (23 - 22) = 2203.
+
+Similarly, (21,-23) = 2202 + (23 - 21) = 2204.
+
+Similarly, (23,-22) is the first in the down sequence, which starts after the left sequence.
+
+The left sequence is from (-23,-23) to (-23,23), which is 47 numbers (from y=-23 to y=23), so total numbers up to start of down sequence is 47 (bottom) + 47 (left) = 94.
+
+So, (23,-22) is the first in the down sequence, which is 2202 + 94 = 2306.
+
+Similarly, (23,-21) is the third in the down sequence (since it's y=-21, and y goes from -22 down to -23 is first, then -21 is second, but wait, no: the down sequence is from (23,23) down to (23,-22), so y goes from 23 down to -22, so (23,-22) is first, (23,-21) is second, etc.
+
+Wait, no, the sequence is:
+
+After the left sequence, we have (23,23), then (23,22), ..., (23,-22), which is 46 numbers (from y=23 down to y=-22).
+
+So, (23,-22) is 2202 + 94 (bottom and left) + 0 = 2306
+(23,-21) is 2202 + 94 + 1 = 2307
+...
+(23,23) is 2202 + 94 + 45 = 2341
+
+Similarly, (21,-21) is in the top-left corner's sequence.
+
+The sequence after the down is from (-23,23) to (23,23), which is 47 numbers (x from -23 to 23).
+
+So, (-23,23) is 2202 + 94 + 46 = 2342
+(-22,23) is 2343
+...
+(23,23) is 2342 + 45 = 2387, but we know it's 2341, so this seems inconsistent.
+
+I think I'm getting confused with the numbering. Maybe a better approach is to note that the numbers in layer n are arranged in a square where the corners are at the ends of the sequence, and the sequence goes counterclockwise starting from the bottom right.
+
+Given that, for layer 23:
+
+Start at (23,-23) = 2202
+Then left to (-23,-23) = 2202 + 46 = 2248
+Then up to (-23,23) = 2248 + 47 = 2305
+Then right to (23,23) = 2305 + 47 = 2352
+Then down to (23,-22) = 2352 + 46 = 2398
+
+But the layer has 8*23=184 numbers, and 46 + 47 + 47 + 46 = 186, which is more than 184. So this seems incorrect.
+
+I think the correct way is that the number of steps in each direction is 2n, not 2n+1, because the corners are included in the count.
+
+For layer n, the number of steps in each direction is 2n (since the side length is 2n+1, but the number of steps between corners is 2n).
+
+So, layer 23:
+
+Start at (23,-23) = 2202
+Move left: (22,-23) = 2203, ..., (-23,-23) = 2202 + 46 = 2248
+Move up: (-23,-22) = 2249, ..., (-23,23) = 2249 + 46 = 2305
+Move right: (-22,23) = 2306, ..., (23,23) = 2306 + 46 = 2352
+Move down: (23,22) = 2353, ..., (23,-22) = 2353 + 45 = 2398
+
+Total numbers: 46 (left) + 46 (up) + 46 (right) + 45 (down) = 183, but layer 23 should have 184 numbers. So the last number is (23,-23), but that's already 2202, which is the start of the next layer. So perhaps the layer ends at (23,-22)=2398, and the next layer starts at (23,-23)=2400.
+
+This seems inconsistent with the earlier calculation where layer 22 ends at 2201, and layer 23 starts at 2202.
+
+Perhaps the correct numbering is that the first number of layer n is at (n, -n), and the sequence goes counterclockwise, with each side having 2n numbers (including the corner).
+
+So, layer 23:
+
+Start at (23,-23) = 2202
+Left: (22,-23) = 2203, ..., (-23,-23) = 2202 + 46 = 2248
+Up: (-23,-22) = 2249, ..., (-23,23) = 2249 + 46 = 2305
+Right: (-22,23) = 2306, ..., (23,23) = 2306 + 46 = 2352
+Down: (23,22) = 2353, ..., (23,-22) = 2353 + 45 = 2398
+
+Total: 46 + 46 + 46 + 45 = 183, but layer 23 should have 184 numbers. So perhaps the last number is (23,-23)=2399, but that's the start of the next layer. Maybe the numbering is off by one.
+
+Alternatively, maybe the first number is not included in the count, and the sequence starts after the first number. This is getting complicated.
+
+Given the complexity, perhaps a better approach is to note that the neighbors of a number in the spiral are the numbers immediately adjacent in the grid, and their values can be determined by their positions relative to the given number.
+
+Given that 2026 is at (22, -22), its neighbors are at:
+
+1. (22, -23): below
+2. (22, -21): above
+3. (21, -22): left
+4. (23, -22): right
+5. (21, -23): bottom-left
+6. (21, -21): top-left
+7. (23, -23): bottom-right
+8. (23, -21): top-right
+
+Now, let's find the numbers at these positions:
+
+1. (22, -23): layer 23, bottom row, second from the end (since x=22 is second from x=23)
+   - Bottom row is from (23,-23) to (-23,-23), which is 47 numbers.
+   - (22,-23) is the second from the end, so it's 2202 + 45 = 2247
+2. (22, -21): layer 22, bottom row, but 2026 is at (22,-22), which is in layer 22, bottom row.
+   - The bottom row of layer 22 is from (22,-22) to (-22,-22), which is 45 numbers (from x=22 down to x=-22).
+   - (22,-21) is not in this row, because the bottom row is y=-22. So (22,-21) is above (22,-22), so it's in layer 21.
+   - Layer 21 has numbers 1850 to 2025.
+   - The top row of layer 21 is from (-21,21) to (21,21), which is 43 numbers.
+   - (22,-21) is not in this row. Maybe it's in the right column of layer 21.
+   - The right column of layer 21 is from (21,21) to (21,-21), which is 43 numbers.
+   - (22,-21) is to the right of (21,-21), so it's in layer 22.
+   - Wait, this is getting convoluted. Maybe it's easier to see that (22,-21) is directly above (22,-22), which is 2026 + 176 = 2202 (since each layer has 8n numbers, and layer 22 has 176 numbers).
+   - But 2026 is the first in layer 22, so 2027 is next, which is to the left (21,-22), then (20,-22), etc., until (-22,-22), then up to (-22,-21), etc.
+   - So (22,-21) is not in the sequence, meaning it's not a neighbor in the spiral's numbering, but in the grid, it's adjacent. Maybe it's not assigned a number, but since the spiral covers all numbers, it must be assigned.
+   - Alternatively, perhaps (22,-21) is the number before (22,-22) in the sequence, but 2026 is at (22,-22), so (22,-21) would be 2025, which is the last number of layer 21.
+   - So, (22,-21) = 2025
+3. (21, -22): left of 2026, so it's 2027
+4. (23, -22): right of 2026, but 2026 is the first in layer 22, so the right would be the next in the sequence, which is 2027 (left), then 2028 (left), etc., until (-22,-22), then up. So (23,-22) is not in the sequence, meaning it's in the next layer, which is layer 23.
+   - Layer 23 starts at (23,-23)=2202, then left to (-23,-23), then up to (-23,23), then right to (23,23), then down to (23,-22).
+   - (23,-22) is the last in the layer, so it's 2202 + 183 = 2385
+5. (21, -23): bottom-left diagonal
+   - (21,-22) is 2027, so (21,-23) is below it, so it's in layer 23.
+   - The bottom row of layer 23 is from (23,-23)=2202 to (-23,-23)=2202+46=2248.
+   - (21,-23) is the 23 - 21 + 1 = 3rd from the end, so it's 2248 - 2 = 2246
+6. (21, -21): top-left diagonal
+   - (21,-22) is 2027, so (21,-21) is above it, so it's in layer 21.
+   - The top row of layer 21 is from (-21,21) to (21,21), which is 43 numbers.
+   - (21,21) is the last in the top row, so (21,-21) is not in this row. Maybe it's in the right column.
+   - The right column of layer 21 is from (21,21) to (21,-21), which is 43 numbers.
+   - (21,-21) is the last in this column, so it's 1850 + 42 = 1892
+7. (23, -23): bottom-right diagonal
+   - This is the first in layer 23, so it's 2202
+8. (23, -21): top-right diagonal
+   - (23,-22) is 2385, so (23,-21) is above it, so it's in layer 23.
+   - The down sequence of layer 23 is from (23,23) down to (23,-22), which is 46 numbers.
+   - (23,-21) is the 22 - (-21) = 43rd from the end, so it's 2385 - 42 = 2343
+
+Now, let's list the neighbors and their numbers:
+
+1. (22, -23): 2247
+2. (22, -21): 2025
+3. (21, -22): 2027
+4. (23, -22): 2385
+5. (21, -23): 2246
+6. (21, -21): 1892
+7. (23, -23): 2202
+8. (23, -21): 2343
+
+Now, sum them up:
+
+2247 + 2025 = 4272
+4272 + 2027 = 6299
+6299 + 2385 = 8684
+8684 + 2246 = 10930
+10930 + 1892 = 12822
+12822 + 2202 = 15024
+15024 + 2343 = 17367
+
+### Final Answer
+
+The sum of all 8 neighbors of the number 2026 is **17367**.
+----
+Usage(input=60, output=6323, details=None)

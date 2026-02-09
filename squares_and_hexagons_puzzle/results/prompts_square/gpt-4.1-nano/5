@@ -1,0 +1,846 @@
+Let's carefully analyze the problem:
+
+We have natural numbers arranged in a spiral on a square grid, similar to a "spiral of numbers" pattern:
+
+For example, the given snippet:
+
+```
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+```
+
+This pattern corresponds to a well-known "spiral of numbers," where 1 is at the center, and the numbers spiral outward in layers.
+
+---
+
+### Understanding the Spiral Pattern 
+
+The pattern described is special: it resembles the *Ulam Spiral* or a similar spiral, but the key is to understand the placement of the number 1 and the surrounding numbers.
+
+Given the pattern's partial view, the spiral is laid out as:
+
+```
+    ... 5 4 3 ...
+    ... 6 1 2 ...
+    ... 7 8 9 ...
+```
+
+From this, we notice:
+
+- The number 1 is at position (row=0, column=0).
+- The numbers increase as we move outward in a spiral.
+
+**Observation:**
+
+1. The number 1 is at the center, at coordinate (0,0).
+2. Reading the grid, the first ring around 1 is:
+
+```
+  (−1, 0): 6
+  (0, 1): 2
+  (1, 0): 7
+  (0, -1): 5
+```
+
+However, from the snippet, 6 is just above 1, with 2 to the right, 5 to the left, and 7 below, matching a standard outward spiral.
+
+---
+
+### Standard Spiral Layout:
+Numbering in an outward square spiral:
+
+- The center is 1 at (0,0).
+- The next layer (layer 1) surrounds it with 8 numbers: 2-9.
+- At each subsequent layer \( n \), the layer contains numbers from \((2n-1)^2 + 1\) up to \((2n+1)^2\).
+
+**For example:**
+
+- Layer 0: just 1 at (0,0)
+- Layer 1: numbers 2-9, forming a square of size 3 x 3.
+- Layer 2: numbers 10-25, a 5 x 5 square, and so on.
+
+---
+
+### Coordinates of a Number in the Spiral:
+
+A known approach to find the position of a number in such a spiral:
+
+1. Find the **layer** \( n \):
+   
+   \[
+   n = \left\lceil \frac{\sqrt{k}}{2} \right\rceil
+   \]
+   
+   This is because each layer corresponds to a square of size \( (2n+1) \times (2n+1) \).
+
+2. The maximum number in layer \( n \):
+   
+   \[
+   (2n +1)^2
+   \]
+   
+3. The **layer number** \( n \) satisfies:
+   
+   \[
+   (2n - 1)^2 < k \leq (2n + 1)^2
+   \]
+
+Once \( n \) is known, the side length:
+
+\[
+s = 2n + 1
+\]
+
+Number of elements in previous layers:
+
+\[
+(\text{Total numbers before layer } n ) = (s - 2)^2
+\]
+
+which equals the largest number in previous outer layer.
+
+---
+
+### Locating 2026:
+
+Calculate \( n \):
+
+\[
+\sqrt{2026} \approx 45.011
+\]
+
+\[
+n = \left\lceil \frac{45.011}{2} \right\rceil = \lceil 22.5055 \rceil = 23
+\]
+
+Check the maximum number in layer 23:
+
+\[
+s = 2 \times 23 + 1 = 47
+\]
+\[
+(2n+1)^2 = 47^2 = 2209
+\]
+
+Since \( 2209 \geq 2026 \), number 2026 lies in layer 23.
+
+Number of elements in previous layer:
+
+\[
+(2(n-1)+1)^2 = (2 \times 22 + 1)^2 = 45^2 = 2025
+\]
+
+positions in previous layers: 2025.
+
+Within layer 23, the numbers go from 2026 to 2209.
+
+To find the position of 2026 within the layer:
+
+\[
+\text{Offset from previous layer} = 2026 - 2025 = 1
+\]
+
+---
+
+### Coordinates of 2026:
+
+In the square of size 47:
+- The layer's bottom-right corner (maximum number 2209) has coordinates \((n, -n+1)\).
+
+In the spiral, the coordinates of the corners of layer \( n \):
+
+- Right side: from bottom to top
+- Top side
+- Left side
+- Bottom side
+
+Following the standard pattern:
+
+- Starting point for layer \( n \):
+  
+  The maximum number in layer \( n \) is at coordinate \((n, -n+1)\), which corresponds to the bottom right corner.
+
+Number positions:
+
+- The numbers in layer \( n \) are arranged along the four sides:
+
+1. **Bottom side**: from \((n, -n+1)\) leftward to \((-n, -n+1)\)
+2. **Left side**: from \((-n, -n+1)\ upward to \((-n, n)\)
+3. **Top side**: from \((-n, n)\) rightward to \((n, n)\)
+4. **Right side**: from \((n, n)\) downward to \((n, -n+1)\)
+
+The total numbers in layer \( n \):
+
+\[
+\text{side length} = s = 2n + 1
+\]
+\[
+\text{Numbers in layer} = s^2 - (s-2)^2 = 8n
+\]
+
+Sequence of counts per side:
+
+- Bottom side: \( s - 1 \) numbers
+- Left side: \( s - 1 \)
+- Top side: \( s - 1 \)
+- Right side: \( s - 1 \)
+
+Total: \( 4(s-1) = 8 n \)
+
+Given that, and that the maximum number \( 2209 \) lies at the bottom right corner:
+
+- The last number in layer \( n \) (2209) is at \((n, -n+1)\).
+
+Numbering backwards:
+
+- The bottom side counts from the maximum number down.
+
+Calculating the position:
+
+Offset of 2026 from the maximum in the layer: 
+
+\[
+\text{offset} = 2209 - 2026 = 183
+\]
+
+Since the maximum (2209) is at \((n, -n+1)\), then:
+
+- Moving **back along the perimeter**:
+
+1. **Bottom side** (from bottom right to bottom left):
+
+   Coordinates decrease in columns from \((n, -n+1)\) leftward.
+
+2. Count of positions on bottom side:
+
+\[
+s - 1 = 46
+\]
+
+The last number, 2209, is at \((n, -n+1)\).
+
+Number 2209: offset 0.
+
+Number 2208: offset 1 (one step left).
+
+Number 2207: offset 2, etc.
+
+So for numbers less than 2209, the offset increases:
+
+\[
+\text{offset} = 2209 - \text{number}
+\]
+
+- For 2026:
+
+\[
+\text{offset} = 183
+\]
+
+Since the bottom side has 46 numbers, and the perimeter counting, the sequence is:
+
+- From \(0\) to \(45\): bottom side
+- From \(45\) to \(89\): left side
+- and so on.
+
+But since 183 > 45, it extends beyond bottom side; then, moving to the left side.
+
+The total perimeter:
+
+- The total steps to reach from maximum to 2026:
+
+Calculate:
+
+Number of steps along the bottom side:
+
+\[
+0 \leq \text{offset} \leq 45
+\]
+Number of steps along bottom:
+
+- Since 183 > 45, it passes beyond bottom side.
+
+Remaining offset:
+
+\[
+183 - 45 = 138
+\]
+
+Now, move to the **left side**:
+
+- The left side runs from \((-n, -n+1)\) upward to \((-n, n)\). Its length: \( s - 1 = 46 \).
+
+- The offsets for left side:
+
+\[
+0 \leq \text{offset} \leq 45
+\]
+
+But 138 > 45, so it crosses into the top side.
+
+Now, sum of bottom and left:
+
+\[
+45 + 45 = 90
+\]
+
+Remaining offset:
+
+\[
+138 - 45 - 45 = 48
+\]
+
+Next side: top side, from \((-n, n)\) to \((n, n)\). Length 46.
+
+Remaining offset: 48 > 45, so it proceeds into the **right side**.
+
+Sum of three sides:
+
+\[
+45 + 45 + 45= 135
+\]
+
+Remaining offset:
+
+\[
+138 - 45 - 45 - 45= 3
+\]
+
+Finally, the **right side**, from \((n, n)\) down to \((n, -n+1)\):
+
+- Length: \( s - 1 = 46 \).
+
+Since the offset is 3, the position along the right side:
+
+- Starting at \((n, n)\), moving downward.
+
+- Coordinate:
+
+\[
+x = n
+\]
+\[
+y = n - \text{offset}
+\]
+
+Because moving downward:
+
+\[
+y = n - \text{offset}
+\]
+
+Thus:
+
+\[
+x = n = 23
+\]
+\[
+y = n - 3 = 23 - 3 = 20
+\]
+
+---
+
+### Final Coordinates of 2026:
+
+\[
+\boxed{
+\text{Row } y=20, \quad \text{Column } x=23
+}
+\]
+
+*(Note: Since the grid's orientation is symmetric, and the description uses rows and columns, assuming row \( y \), column \( x \).)*
+
+---
+
+### Finding the 8 neighbors:
+
+Neighbors are the 8 surrounding cells:
+
+\[
+(x-1,y-1), (x,y-1), (x+1,y-1)
+\]
+\[
+(x-1,y), (x+1,y)
+\]
+\[
+(x-1,y+1), (x,y+1), (x+1,y+1)
+\]
+
+which correspond to the positions:
+
+\[
+(22,19), (23,19), (24,19)
+\]
+\[
+(22,20), (24,20)
+\]
+\[
+(22,21), (23,21), (24,21)
+\]
+
+---
+
+### **Mapping coordinates back to numbers:**
+
+We have:
+
+\[
+x = 23, \quad y=20
+\]
+
+From earlier, the spiral surface:
+
+- The origin (0,0) has number 1.
+- The number at coordinate \((x,y)\):
+
+**General formula:**
+
+- For layer \( n \), with maximum number \( (2n+1)^2 \), the coordinate \((x,y)\) is:
+
+\[
+x, y \in [-n, n]
+\]
+
+Number at \((x, y)\):
+
+1. Start at maximum corner at \((n, -n+1)\), which has number \( (2n+1)^2 \).
+
+2. Moving counterclockwise along the perimeter, the number increases or decreases depending on position.
+
+Alternatively, **since the pattern is symmetric**, define:
+
+\[
+k = n
+\]
+\[
+\text{max} = (2k+1)^2
+\]
+
+and the position \((x,y)\):
+
+- For \( y = k \):
+
+\[
+\text{Number} = \text{max} - (k - x)
+\]
+
+- For \( x = -k \):
+
+\[
+\text{Number} = \text{max} - (2k) - (k - y)
+\]
+
+- For \( y = -k \):
+
+\[
+\text{Number} = \text{max} - 4k - (x + k)
+\]
+
+- For \( x = k \):
+
+\[
+\text{Number} = \text{max} - 6k - (y + k)
+\]
+
+But these formulas depend on the side.
+
+---
+
+### **Alternative approach:**
+
+Given the coordinate \((x,y)\):
+
+The maximum layer \( n = 23 \).
+
+Calculate the Manhattan distance from the origin:
+
+\[
+d = \max(|x|, |y|)
+\]
+
+but from previous calculations, the coordinate:
+
+\[
+x=23, y=20
+\]
+
+\[
+|x|=23, \quad |y|=20
+\]
+
+so \( d=23 \), consistent with \( n=23 \).
+
+Number of elements before this layer:
+
+\[
+(n-1)^2 \times 8 = 2025
+\]
+
+The minimal number in layer \( n \):
+
+\[
+(2(n-1)+1)^2 + 1 = 45^2 + 1 = 2026
+\]
+
+which matches our earlier calculations.
+
+Number at coordinate \((x,y)\):
+
+- The positions along the perimeter are mapped as:
+
+Number:
+
+\[
+\text{Number} = (2n - 1)^2 + \text{offset along perimeter}
+\]
+
+Calculate perimeter offset:
+
+- For each side:
+
+Left side \( y = n \), \( x \) varies from \(-n \) to \( n \):
+
+Number at \((x, n)\):
+
+\[
+(2n-1)^2 + (n - y) \quad \text{for } y = n
+\]
+
+Similarly for other sides.
+
+Specifically, given the coordinate:
+
+\[
+x=23, y=20
+\]
+\[
+n=23
+\]
+\[
+\text{Max} = 47^2 = 2209
+\]
+
+Side length:
+
+\[
+s= 2n+1=47
+\]
+
+Position:
+
+Since \(|x| < n\) or \(|y|< n\), the point is somewhere along a side.
+
+Check:
+
+\[
+x=23 \leq n=23
+\]
+\[
+y=20 \leq n=23
+\]
+
+- \(x= n \), \( y < n \), so it's on the right side.
+
+Right side:
+
+From \((n, n)\) down to \((n, -n+1)\):
+
+Number at \((n, y)\):
+
+\[
+\text{Number} = (2n-1)^2 + (n - y)
+\]
+
+Compute:
+
+\[
+(2 \times 23 - 1)^2 = 45^2=2025
+\]
+\[
+\text{Number} = 2025 + (23 - 20) = 2025 + 3= 2028
+\]
+
+Similarly, check for neighbors:
+
+Positions:
+
+- \((x-1,y-1) = (22,19)\):
+
+Since \(x=22 < n=23\), and \(y=19<23\):
+
+- It is on the **"South-East"** corner? No; it's somewhere inside.
+
+But to determine the correct position, more straightforwardly:
+
+- For each neighbor, determine the coordinate and corresponding number.
+
+---
+
+### Repeating the process to find neighbor values:
+
+**1. Neighbor at (22,19):**
+
+Because:
+
+- \(|x|=22\), \(|y|=19\),
+- \(\max=23\),
+- with \( x< n \), \( y < n \), so both less than \( n \).
+
+In the pattern, the following applies:
+
+- For points where \(|x|< n\), \(|y|< n\), but not at the corner, they are inside the designated boundary, and their number can be computed similarly.
+
+Using the formula:
+
+\[
+\text{Number} = (2n-1)^2 + \text{perimeter offset}
+\]
+
+Calculate the offsets for each neighbor:
+
+---
+
+### Coordinates and their corresponding numbers:
+
+For clarity, define a function:
+
+\[
+\text{Number}(x,y) = (2n - 1)^2 + \text{perimeter position}
+\]
+
+with \( n=23 \), \( (2n-1)^2 = 45^2=2025 \).
+
+Perimeters:
+
+- The square perimeter is divided equally along four sides:
+
+Side length: \( s-1=46 \).
+
+Standard positions:
+
+- Top side: \( y= n \), \( x \) varies from \(-n\) to \( n \). Number at \((x, n)\):
+
+\[
+\text{Number} = (2n-1)^2 + (n - y) = 2025 + (n - y)
+\]
+but if \( y= n \), then:
+
+\[
+\text{Number} = 2025 + (n - n) = 2025
+\]
+
+which is the maximum corner (bottom right).
+
+- For other slopes and positions, similar calculations are made.
+
+Now, for each neighbor:
+
+---
+
+### Neighbor coordinates and their numbers:
+
+| Neighbor | Coordinates | Calculation | Resulting number |
+|------------|----------------|--------------|------------------|
+| **(22,19)** | \(x=22, y=19\) | \( x< n, y< n \) | \(2025 + (n - y) + (n - x)\) or similar? | Let's reconsider. |
+| **(23,19)** | (x=n, y=19) | So, at \( x=n \), \( y< n \). | \( 2025 + (n - y) \) | \( 2025 + (23 - 19) = 2025 +4=2029 \) |
+| **(24,19)** | \( x=24 \), \( y=19 \) | \( x > n \), so on the right side. | \( 2025 + (x - n) \) | \( 2025 + (24-23)=2026 \) |
+| **(22,20)** | \( x=22 \), \( y=20 \) | inside the square, \(|x|<n, |y|<n\) | \(\dots\) |
+
+Given the previous approach might be complicated, **a better way** is to **simulate the position** of these neighbors directly, based on their relative positions, knowing that:
+
+- The numbers increase outward in the spiral.
+
+Alternatively, considering the pattern:
+
+- At \((n, y)\) with \( y \leq n \), the number can be computed as:
+
+\[
+\text{Number} = (2n -1)^2 + (n - y)
+\]
+
+- Likewise, at \((x, n)\), points along the top row:
+
+\[
+\text{Number} = (2n - 1)^2 + (x + n)
+\]
+
+- Along the left side:
+
+\[
+\text{Number} = (2n - 1)^2 + 2n + (y + n)
+\]
+
+- Along the bottom:
+
+\[
+\text{Number} = (2n - 1)^2 + 4n + (x + n)
+\]
+
+Using these, compute each neighbor:
+
+---
+
+### Let's compute each neighbor:
+
+Recall:
+
+\[
+(2n - 1)^2 = 45^2 = 2025
+\]
+\[
+n=23
+\]
+
+---
+
+**1. (22,19):**
+
+- \(x=22\), \( y=19 \)
+
+Since:
+
+\[
+|x|=22 < 23, \quad |y|=19 < 23
+\]
+
+and both are less than \( n \), the position is inside the square, not on the border.
+
+Approximating:
+
+- Since \( x< n \), and \( y< n \), it's in the bottom side or interior.
+
+But considering the pattern:
+
+probably is better to use the general position formula:
+
+\[
+\text{Number} = (2n-1)^2 + \text{perimeter offset}
+\]
+
+or more precisely, if \( y< n \) and \( x< n \), the number is:
+
+\[
+\text{Number} = (2n -1)^2 + (n - y) + (n - x)
+\]
+
+Calculate:
+
+\[
+2025 + (23 - 19) + (23 - 22) = 2025 + 4 + 1 = 2030
+\]
+
+---
+
+**2. (23,19):**
+
+\[
+x = n = 23, y=19
+\]
+
+Number:
+
+\[
+(2n-1)^2 + (n - y) = 2025 + 4=2029
+\]
+
+**3. (24,19):**
+
+\[
+x=24 > n
+\]
+
+On the right side:
+
+\[
+\text{Number}= (2n -1)^2 + (x - n) = 2025 + 1=2026
+\]
+
+**4. (22,20):**
+
+\[
+x=22, y=20
+\]
+
+Both less than \( n \):
+
+\[
+2025 + (23 - 20) + (23 - 22) = 2025 + 3 + 1=2029
+\]
+
+**5. (24,20):**
+
+\[
+x=24, y=20
+\]
+
+Right side:
+
+\[
+2025 + (24 - 23) = 2026
+\]
+
+---
+
+**6. (22,21):**
+
+\[
+2025 + (23 - 21) + (23 - 22)= 2025 + 2 +1=2028
+\]
+
+**7. (23,21):**
+
+\[
+2025 + (23 - 21)=2025+2=2027
+\]
+
+**8. (24,21):**
+
+\[
+2025 + (24 - 23) + (21-20)=2025 + 1 + 1=2027
+\]
+
+---
+
+### **Summary of neighbors' values:**
+
+| Neighbor | Coordinates | Number |
+|------------|----------------|---------|
+| (22,19) | | **2030** |
+| (23,19) | | **2029** |
+| (24,19) | | **2026** |
+| (22,20) | | **2029** |
+| (24,20) | | **2026** |
+| (22,21) | | **2028** |
+| (23,21) | | **2027** |
+| (24,21) | | **2027** |
+
+---
+
+### **Compute the sum:**
+
+\[
+2030 + 2029 + 2026 + 2029 + 2026 + 2028 + 2027 + 2027
+\]
+
+Sum step-by-step:
+
+- \(2030 + 2029 = 4059\)
+- \(4059 + 2026 = 6085\)
+- \(6085 + 2029 = 8114\)
+- \(8114 + 2026 = 10140\)
+- \(10140 + 2028= 12168\)
+- \(12168 + 2027= 14195\)
+- \(14195 + 2027= 16222\)
+
+---
+
+## **Final answer:**
+
+\[
+\boxed{16222}
+\]
+
+**The sum of all 8 neighbors of the number 2026 in the spiral is \(\boxed{16222}\).**
+----
+Usage(input=62, output=5092, details={})

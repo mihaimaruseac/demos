@@ -1,0 +1,819 @@
+We have a spiral of natural numbers arranged on a square grid with 1 in the center:
+
+\[
+\begin{matrix}
+5 & 4 & 3 \\
+6 & 1 & 2 \\
+7 & 8 & 9
+\end{matrix}
+\]
+
+Numbers grow outward in a spiral pattern, presumably counterclockwise starting from 1 going to 2 on the right, then 3 above, 4 left, 5 left, etc.
+
+---
+
+### Step 1: Understand the spiral indexing
+
+From the example:
+
+- Center: 1 at (0,0)
+- Right: 2 at (1,0)
+- Top: 3 at (1,1)
+- Left: 4 at (0,1)
+- Left: 5 at (-1,1)
+- Down: 6 at (-1,0)
+- Down: 7 at (-1,-1)
+- Right: 8 at (0,-1)
+- Right: 9 at (1,-1)
+
+So the coordinates (x,y) map numbers increasing in a counterclockwise square spiral:
+
+- Start at (0,0) = 1
+- Move in the directions: right, up, left, down, and repeat with increasing ring sizes.
+
+---
+
+### Step 2: Goal
+
+We want the sum of all 8 neighbors of number 2026. The neighbors are the 8 cells surrounding a cell:
+
+\[
+(x-1,y+1), (x,y+1), (x+1,y+1) \\
+(x-1,y), (x+1,y) \\
+(x-1,y-1), (x,y-1), (x+1,y-1)
+\]
+
+If we find the (x,y) of 2026, we find the 8 neighbors at those coordinates, get their numbers, and sum them.
+
+---
+
+### Step 3: Identify the position (x,y) of 2026 on the spiral
+
+The square spiral layers:
+
+- Layer 0: number 1 at (0,0)
+- Each layer k corresponds to a square outline, with side length \(2k+1\).
+
+The maximum number in layer \(k\) is \((2k+1)^2\).
+
+For example:
+
+|Layer k|Side length|Max number in layer \(k\)|
+|-|-|-|
+|0|1|1^2 = 1|
+|1|3|(3)^2 = 9|
+|2|5|(5)^2 = 25|
+|3|7|(7)^2 = 49|
+|...|...|...|
+
+Find \(k\) so that:
+
+\[
+(2k-1)^2 < 2026 \leq (2k+1)^2
+\]
+
+Check square roots:
+
+\[
+\sqrt{2026} \approx 45.01
+\]
+
+The next odd squares near 2026:
+
+- \(43^2 = 1849\)
+- \(45^2 = 2025\)
+- \(47^2 = 2209\)
+
+So,
+
+- Layer \(k=22\) has side length \(45\) and max number \(45^2 = 2025\)
+- Layer \(k=23\) has side length \(47\) and max number \(47^2 = 2209\)
+
+Since 2026 > 2025, 2026 is at layer \(k=23\).
+
+---
+
+### Step 4: Characteristics of layer \(k\)
+
+At layer \(k\), side length \(= 2k + 1\),
+
+- Max number (bottom-right corner) = \((2k+1)^2\).
+- The ring numbers start from \((2k-1)^2 + 1\) to \((2k+1)^2\).
+
+For \(k=23\):
+
+- Side length = 47
+- Max number: \(47^2 = 2209\)
+- Min number in layer 23: \(45^2 + 1 = 2026\)
+
+So, 2026 is the **first number** in layer 23, right after 2025.
+
+---
+
+### Step 5: Define corners and edges of the layer \(k=23\)
+
+The corners of layer \(k\) are positions where the spiral changes direction:
+
+- Bottom-right corner: \((2k+1)^2 = 2209\)
+- Bottom-left corner: \(2209 - (47 - 1) = 2209 - 46 = 2163\)
+- Top-left corner: \(2163 - (47 - 1) = 2163 - 46 = 2117\)
+- Top-right corner: \(2117 - (47 - 1) = 2117 - 46 = 2071\)
+
+The bottom side runs from 2164 to 2209, left side from 2118 to 2163, top side from 2072 to 2117, right side from 2026 to 2071.
+
+Since 2026 is the minimal number, it is at the bottom of the *inner* side of the next layer, specifically the very first cell of the right side of the layer.
+
+---
+
+### Step 6: Coordinates of corners in layer \(k\)
+
+In layer \(k\):
+
+- Bottom-right corner: \((k, -k)\)
+- Bottom-left corner: \((-k, -k)\)
+- Top-left corner: \((-k, k)\)
+- Top-right corner: \((k, k)\)
+
+Here, \(k=23\).
+
+- Bottom-right corner: \((23, -23)\), number 2209
+- Bottom-left corner: \((-23, -23)\), number 2163
+- Top-left corner: \((-23, 23)\), number 2117
+- Top-right corner: \((23, 23)\), number 2071
+
+---
+
+### Step 7: Which side is 2026 on exactly?
+
+- Numbers decrease moving *clockwise* along edges:
+
+- Right edge numbers go from 2072 at \((23,22)\) (top corner moving down) to 2071 at \((23,23)\) (top-right corner) — but from the numbering above, it looks reversed.
+
+Actually, by examining the standard spiral:
+
+- The order of sides is: right -> top -> left -> bottom.
+- Numbers increase going from bottom-right corner counterclockwise.
+
+So we can find the coordinate of 2026 on the right edge:
+
+The right edge runs from (23,-22) to (23,23), length 47.
+
+Since 2209 is at (23,-23), moving upwards (increasing y coordinate) by 1 reduces the number by 1.
+
+Therefore,
+
+- At (23, -23): 2209
+- At (23, -22): 2208
+- ...
+- At (23, y): Number = \(2209 - (y - (-23)) = 2209 - (y + 23)\)
+
+Check if \(2026\) can be obtained for some \(y\):
+
+\[
+2026 = 2209 - (y + 23) \implies y + 23 = 2209 - 2026 = 183 \implies y = 160
+\]
+
+But this is impossible since \(y \in [-23, 23]\). So the right edge is number range 2163 to 2209 (which matches bottom edge).
+
+Check bottom edge:
+
+Bottom edge coordinates: from (23, -23) moving left to (-23, -23)
+
+- At (23, -23): 2209 (bottom-right corner)
+- Each step left decreases number by 1.
+
+At (x, -23),
+
+\[
+\text{number} = 2209 - (23 - x)
+\]
+
+Check for \(x = 1\),
+
+\[
+\text{number} = 2209 - (23 - 1) = 2209 - 22 = 2187
+\]
+
+We want 2026.
+
+Solve:
+
+\[
+2026 = 2209 - (23 - x) \implies 23 - x = 2209 - 2026 = 183 \implies x = 23 - 183 = -160
+\]
+
+Impossible.
+
+Try left edge:
+
+Left edge coordinates: (-23, -23) to (-23, 23)
+
+- At (-23, -23): 2163
+- Move up, decrease number by 1 per step
+
+At (-23, y):
+
+\[
+\text{number} = 2163 - (y - (-23)) = 2163 - (y + 23)
+\]
+
+Check \(2026 = 2163 - (y+23)\)
+
+\[
+y + 23 = 2163 - 2026 = 137 \implies y = 114
+\]
+
+Not possible since \(y \in [-23, 23]\).
+
+Try top edge:
+
+Top edge coordinates: (-23, 23) to (23, 23)
+
+At (x, 23):
+
+\[
+\text{number} = 2117 + (x + 23)
+\]
+
+Because at (-23,23) number is 2117; moving right increases number by 1.
+
+Check if 2026 is in the range \(2117 \leq number \leq 2163\) for \(x \in [-23, 23]\). \(2026<2117\), no.
+
+Try right edge going up:
+
+Right edge from (23, -23) to (23, 23):
+
+At (23, y), the number decreases from 2209 down to 2163 when \(y\) goes from \(-23\) to \(23\).
+
+Number at (23, y):
+
+\[
+2209 - (y + 23) = \text{number}
+\]
+
+But 2026 < 2163, so not here.
+
+---
+
+### Step 8: Smaller layer to check: layer 22
+
+Layer 22 has side length 45, max at \((2*22+1)^2 = 45^2 =2025\).
+
+Layer 22 min = \(43^2+1 = 1849 +1=1850\)
+
+Range: 1850 to 2025
+
+2026 is just after 2025 at end of layer 22, so 2026 is at the beginning of layer 23.
+
+---
+
+### Step 9: Consider the start of layer 23
+
+Layer 22 ends with 2025 at bottom-right corner \((22, -22)\).
+
+Layer 23 starts at number 2026, at (23, -22+1) or next position after bottom-right.
+
+The spiral proceeds as:
+
+- From the max number corner \((22,-22)\) which is 2025,
+- Then next up cell \((23, -22)\) is 2026,
+- Then move upwards along the right edge.
+
+So position of 2026 is likely at \((23, -22)\).
+
+---
+
+### Step 10: Confirm neighbor positions of 2026
+
+We have 2026 at \((23, -22)\).
+
+Neighbors are:
+
+\[
+(22, -21), (23, -21), (24, -21), \\
+(22, -22), \quad (24, -22), \\
+(22, -23), (23, -23), (24, -23)
+\]
+
+We must find the corresponding numbers of these neighbors.
+
+---
+
+### Step 11: Find numbers of neighbors
+
+We know layer 23 extends only to x and y in \([-23,23]\), so coordinates like \(x=24\) may be outside current or next layer.
+
+But since spiral always moves outward, positions like (24, -22) would be on next layer (layer 24).
+
+---
+
+### Step 12: Develop a method to find the number at any (x,y).
+
+The spiral is well-known in math. The numbering at position (x,y) can be computed by:
+
+Define
+
+\[
+n = \max(|x|,|y|)
+\]
+
+- \(n=0\): cell (0,0), number 1.
+- The square ring number is \(n\).
+- Side length \(= 2n+1\)
+- Max number in ring \(= (2n+1)^2\), which is at bottom-right corner (n, -n).
+
+Now, for (x,y):
+
+- If \(y = -n\), bottom row, number increases as \(x\) increases from \(-n\) to \(n\).
+- If \(x = -n\), left column, number increases as \(y\) increases from \(-n\) to \(n\).
+- If \(y = n\), top row, number increases as \(x\) decreases from \(n\) to \(-n\).
+- If \(x = n\), right column, number increases as \(y\) decreases from \(n\) to \(-n\).
+
+More specifically:
+
+\[
+\text{number}(x,y) = 
+\begin{cases}
+(2n+1)^2 - (n - x) & y = -n \quad \text{(bottom side)} \\
+(2n-1)^2 + 3n + (n - y) & x = -n \quad \text{(left side)} \\
+(2n-1)^2 + 5n + (x + n) & y = n \quad \text{(top side)} \\
+(2n-1)^2 + n + (y + n) & x = n \quad \text{(right side)}
+\end{cases}
+\]
+
+This formula comes from:
+
+- Bottom-right corner at \((n,-n)\) is \((2n+1)^2\)
+- Start numbering at \((n,-n)\), move left along bottom edge
+- Move up along left edge
+- Move right along top edge
+- Move down along right edge
+
+---
+
+### Step 13: Apply to (23, -22) where 2026 is found
+
+At (23, -22):
+
+- \(n = \max(|23|,|(-22)|) = 23\)
+- \(x = 23\), so on the right side since \(x=n=23\)
+- Use right side formula:
+
+\[
+\text{number} = (2n-1)^2 + n + (y + n)
+\]
+
+Calculate:
+
+- \((2n-1)^2 = (2 \times 23 - 1)^2 = 45^2 = 2025\)
+- \(n = 23\)
+- \(y = -22\)
+
+Plug in:
+
+\[
+number = 2025 + 23 + (-22 + 23) = 2025 + 23 + 1 = 2049
+\]
+
+This contradicts previous assumption that number is 2026.
+
+---
+
+### Step 14: Check for mistake in application
+
+Possibly the formula is not consistent with our spiral.
+
+Based on the examples, number at (1,0) is 2:
+
+- \(n = 1\)
+- \(x=1\), right side, use formula:
+
+\[
+(2n-1)^2 = (2-1)^2 = 1^2 = 1
+\]
+\[
+number = 1 + n + (y + n) = 1 + 1 + (0+1) = 3
+\]
+
+But the actual number from the example is 2. So the formula is off by 1.
+
+Try shifting:
+
+Try bottom side formula:
+
+At (1, -1),
+
+- \(n=1\)
+- \(y = -1\),
+- bottom side:
+
+\[
+number = (2n+1)^2 - (n - x) = 3^2 - (1 - 1) = 9 - 0 = 9
+\]
+
+Referring to example: number 9 is at (1, -1)
+
+Given from example:
+
+\[
+1 \quad (0,0) \\
+2 \quad (1,0) \\
+3 \quad (1,1) \\
+4 \quad (0,1) \\
+5 \quad (-1,1) \\
+6 \quad (-1,0) \\
+7 \quad (-1,-1) \\
+8 \quad (0,-1) \\
+9 \quad (1,-1)
+\]
+
+So number 9 is at (1,-1): matches with formula.
+
+Therefore, the formula is correct.
+
+---
+
+### Step 15: Verify 2026 position again using formula for (23,-22)
+
+At \(n=23\):
+
+\[
+(2n+1)^2 = (47)^2 = 2209
+\]
+\[
+(2n-1)^2 = (45)^2 = 2025
+\]
+
+Now, bottom side \((y = -n = -23)\):
+
+\[
+number = 2209 - (n - x) = 2209 - (23 - x) = 2209 - 23 + x = 2186 + x
+\]
+
+At \(x=23\):
+
+\[
+number = 2186 + 23 = 2209
+\]
+
+At \(x=22\) bottom
+
+\[
+number = 2186 + 22 = 2208
+\]
+
+---
+
+Right side (\(x=n=23\)):
+
+\[
+number = (2n-1)^2 + n + (y + n) = 2025 + 23 + (y + 23) = 2048 + y + 23 = 2048 + y + 23
+\]
+
+Wait, miscalculated:
+
+\[
+number = 2025 + 23 + (y + 23) = 2025 + 23 + y + 23 = 2025 + 46 + y = 2071 + y
+\]
+
+So at \(y = -23\), number = \(2071 - 23 = 2048\).
+
+At \(y = -22\), 
+
+\[
+number = 2071 - 22 = 2049
+\]
+
+So (23, -22) = 2049
+
+At (23,-23) = 2048
+
+---
+
+### Step 16: Now check layer 22:
+
+At \(n=22\),
+
+\[
+(2n+1)^2 = 45^2 = 2025
+\]
+Bottom right corner (22, -22) = 2025
+
+---
+
+### Step 17: Goal is to find where 2026 is.
+
+Since bottom right corner of layer 22 is 2025 at \((22,-22)\),
+
+The next number, 2026, must be at \((23,-22)\) or some other square in layer 23 (with \(n=23\)).
+
+But, from above, (23, -22) = 2049
+
+So 2026 is somewhere else.
+
+---
+
+### Step 18: Compute the number at (22,-21) (neighbor of 2026 candidate):
+
+At (22,-21), \(n=22\)
+
+- Since \(x=22\), \(x=n\), right side.
+
+Use:
+
+\[
+number = (2n-1)^2 + n + (y + n) = (43)^2 + 22 + (-21 + 22) = 1849 + 22 + 1 = 1872
+\]
+
+Not 2026.
+
+At bottom (y = -n = -22):
+
+\[
+number = (2n+1)^2 - (n - x) = 45^2 - (22 - x) =2025 - (22 - x) = 2025 - 22 + x = 2003 + x
+\]
+
+If \(x=22\),
+
+\[
+number = 2003 + 22 = 2025
+\]
+
+Matching previous info.
+
+---
+
+### Step 19: Since earlier assumptions were conflicting, let's do direct calculation for 2026.
+
+Find \(n\) for 2026:
+
+Calculate \(n = \lceil \frac{\sqrt{2026} -1}{2} \rceil\).
+
+\[
+\sqrt{2026} \approx 45.02
+\]
+
+\[
+\frac{45.02 -1}{2} = \frac{44.02}{2} = 22.01
+\]
+
+So \(n=23\).
+
+At layer \(n=23\),
+
+Max number: 2209 at (23, -23)
+
+---
+
+### Step 20: The offset of 2026 in layer 23 numbering:
+
+Numbers in layer 23 go from \(2026\) (start) to \(2209\) (max).
+
+So, offset from max:
+
+\[
+2209 - 2026 = 183
+\]
+
+Numbers decrease by 1 along the perimeter of layer 23, starting from bottom-right corner at (23,-23).
+
+The spiral goes:
+
+- Bottom side: length 46, positions from (23,-23) to (-23,-23)
+- Left side: length 46, (-23,-23) to (-23,23)
+- Top side: length 46, (-23,23) to (23,23)
+- Right side: length 46, (23,23) to (23,-23)
+
+Total perimeter = \(4 \times 46 = 184\)
+
+Because the bottom-right corner counts as one.
+
+---
+
+### Step 21: Calculate 2026 position along the layer perimeter
+
+Starting at (23,-23) with number 2209, going counterclockwise.
+
+Steps total: 0 to 183.
+
+At step \(s\) from (23,-23):
+
+- If \(s < 46\): bottom side, move left, position: (23 - s, -23)
+- If \(46 \leq s < 92\): left side, move up, position: (-23, -23 + (s - 46))
+- If \(92 \leq s < 138\): top side, move right, position: (-23 + (s - 92), 23)
+- If \(138 \leq s < 184\): right side, move down, position: (23, 23 - (s - 138))
+
+For number 2026:
+
+\[
+s = 2209 - 2026 = 183
+\]
+
+As \(183 \geq 138\), 2026 is on right side.
+
+Calculate:
+
+\[
+s - 138 = 183 - 138 = 45
+\]
+
+Position:
+
+\[
+x = 23
+\]
+\[
+y = 23 - 45 = -22
+\]
+
+Therefore:
+
+\[
+\boxed{2026 \text{ is at } (23, -22)}
+\]
+
+---
+
+### Step 22: Now, get neighbors of (23, -22)
+
+Neighbors:
+
+\[
+(22,-21), (23,-21), (24,-21), \\
+(22,-22), (24,-22), \\
+(22,-23), (23,-23), (24,-23)
+\]
+
+Note: Positions with \(x=24\) or 24 are outside layer 23.
+
+---
+
+- For positions \(x = 24\), \(n = \max(|x|, |y|) \ge 24\).
+- So these points are on layer 24.
+
+---
+
+### Step 23: Calculate neighbors' numbers
+
+We can calculate each neighbor individually using the formula from Step 12.
+
+---
+
+- **Neighbor (22,-21):**
+
+\(n = \max(22, 21) = 22\)
+
+Check which side:
+
+- \(x = 22 = n\), right side.
+
+Number is:
+
+\[
+(2n-1)^2 + n + (y + n) = 43^2 + 22 + (-21 + 22) = 1849 + 22 + 1 = 1872
+\]
+
+---
+
+- **Neighbor (23,-21):**
+
+\(n = 23\), \(x = 23 = n\), right side
+
+Number:
+
+\[
+(2n-1)^2 + n + (y + n) = 45^2 + 23 + (-21 + 23) = 2025 + 23 + 2 = 2050
+\]
+
+---
+
+- **Neighbor (24,-21):**
+
+\(n = 24\), \(x = 24 = n\) right side
+
+Number:
+
+\[
+(2n-1)^2 + n + (y + n) = 47^2 + 24 + (-21 + 24) = 2209 + 24 + 3 = 2236
+\]
+
+---
+
+- **Neighbor (22,-22):**
+
+\(n = 22\), bottom side or right side?
+
+Since \(y = -22 = -n\), bottom side.
+
+Bottom side formula:
+
+\[
+(2n+1)^2 - (n - x) = 45^2 - (22 - 22) = 2025 - 0 = 2025
+\]
+
+---
+
+- **Neighbor (24,-22):**
+
+\(n=24\), \(y = -22\), 
+
+Since \(|y| = 22 < n = 24\), \(x=24\) right edge.
+
+Right side formula:
+
+\[
+(2n-1)^2 + n + (y + n) = 47^2 + 24 + (-22 + 24) = 2209 + 24 + 2 = 2235
+\]
+
+---
+
+- **Neighbor (22,-23):**
+
+\(n=22\), \(y = -23 = -n - 1\) Actually, \(y\) cannot be \(-23\) if \(n=22\)
+
+Calculate \(n = \max(|22|, |23|) = 23\).
+
+So \(n=23\), check side:
+
+Since \(y = -23 = -n\), bottom side.
+
+Bottom side number at (22,-23):
+
+\[
+(2n+1)^2 - (n - x) = 47^2 - (23 - 22) = 2209 - 1 = 2208
+\]
+
+---
+
+- **Neighbor (23,-23):**
+
+\(n=23\), \(y=-23=-n\), bottom side
+
+Number:
+
+\[
+2209 - (23 - 23) = 2209 - 0 = 2209
+\]
+
+---
+
+- **Neighbor (24,-23):**
+
+\(n=24\), \(y=-23\), check side again
+
+Since \(y = -23 > -24\), but less than \(24\), with \(x=24=n\) — right edge.
+
+Right edge formula:
+
+\[
+(2n-1)^2 + n + (y + n) = 47^2 + 24 + (-23 + 24) = 2209 + 24 + 1 = 2234
+\]
+
+---
+
+### Step 24: Collect all neighbor numbers:
+
+|Neighbor (x,y)|n|Side|Number|
+|-|-|-|-|
+|(22,-21)|22|right|1872|
+|(23,-21)|23|right|2050|
+|(24,-21)|24|right|2236|
+|(22,-22)|22|bottom|2025|
+|(24,-22)|24|right|2235|
+|(22,-23)|23|bottom|2208|
+|(23,-23)|23|bottom|2209|
+|(24,-23)|24|right|2234|
+
+---
+
+### Step 25: Calculate sum
+
+\[
+1872 + 2050 + 2236 + 2025 + 2235 + 2208 + 2209 + 2234
+\]
+
+Calculate step-by-step:
+
+- \(1872 + 2050 = 3922\)
+- \(3922 + 2236 = 6158\)
+- \(6158 + 2025 = 8183\)
+- \(8183 + 2235 = 10418\)
+- \(10418 + 2208 = 12626\)
+- \(12626 + 2209 = 14835\)
+- \(14835 + 2234 = 17069\)
+
+---
+
+### **Answer:**
+
+\[
+\boxed{17069}
+\]
+
+---
+
+# **Final result:**
+
+The sum of all 8 neighbors of the number 2026 in this spiral is **17069**.
+----
+Usage(input=62, output=6060, details={})

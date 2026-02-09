@@ -1,0 +1,988 @@
+We are given a spiral of natural numbers arranged on a **hexagonal grid**, and we need to find the **sum of all six neighbors** of the number **2026**.
+
+First, let's understand the structure from the given fragment:
+
+```
+... 14  4  3 10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+
+We can see that the center is **1**, and the numbers spiral outward in a **hexagonal** pattern.
+
+In a **hexagonal grid**, each cell has **six neighbors**. The spiral grows in **rings** (or layers) around the center.
+
+---
+
+### Step 1: Understand the hexagonal spiral structure
+
+In a hexagonal spiral, the center is layer 0: just the number 1.
+
+Layer 1 (first ring around center) has 6 numbers: 2 to 7.
+
+Layer 2 has 12 numbers: 8 to 19.
+
+Layer 3 has 18 numbers: 20 to 37.
+
+...
+
+In general, **layer k (k ≥ 1)** has **6k** numbers.
+
+So total numbers up to and including layer k is:
+
+> **1 + 6(1 + 2 + ... + k) = 1 + 6 * k(k+1)/2 = 1 + 3k(k+1)**
+
+Let’s denote:
+
+> **Total numbers up to layer k** = **T(k) = 1 + 3k(k+1)**
+
+We need to find which layer 2026 is in.
+
+So solve:
+
+> **T(k-1) < 2026 ≤ T(k)**
+
+Compute T(k) = 1 + 3k(k+1)
+
+Try k = 25:
+
+T(25) = 1 + 3*25*26 = 1 + 3*650 = 1 + 1950 = **1951**
+
+k = 26:
+
+T(26) = 1 + 3*26*27 = 1 + 3*702 = 1 + 2106 = **2107**
+
+So:
+
+- T(25) = 1951 → last number in layer 25
+- T(26) = 2107 → last number in layer 26
+
+So 2026 is in **layer 26**, since 1951 < 2026 ≤ 2107.
+
+Number of numbers in layer 26: 6*26 = 156
+
+So the numbers in layer 26 go from **1952 to 2107**
+
+Thus, **2026 is the (2026 - 1951) = 75th number in layer 26**
+
+Wait: 1952 is the first number in layer 26 → so index = 2026 - 1951 = 75 → so it's the **75th number** in layer 26.
+
+But layer 26 has 156 numbers, arranged in 6 sides, each with 26 numbers? Wait — actually, in a hexagonal spiral, each side of the ring has **k** numbers, but the **corners** are shared.
+
+Wait — correction: in a hexagonal spiral, each side of the k-th ring has **k** numbers **excluding** the corner shared with the next side.
+
+Actually, in standard hexagonal spirals, **each side of layer k has exactly k numbers**, and since there are 6 sides, total numbers = 6k.
+
+But the **first number** of the layer is the number right after the last of the previous layer.
+
+So for layer k, numbers: from **T(k-1)+1** to **T(k)**
+
+Each side has k numbers.
+
+But the **6 corners** are the last number on each side, and they are shared between two sides.
+
+So, to locate a number in the layer, we can divide the 6 sides.
+
+Layer 26 has 6 sides, each with 26 numbers.
+
+So total 6*26 = 156 numbers, as expected.
+
+We need to find **which side** the 75th number in the layer is on.
+
+Each side has 26 numbers.
+
+So:
+
+- Side 1: positions 1 to 26 → numbers 1952 to 1977
+- Side 2: 27 to 52 → 1978 to 2003
+- Side 3: 53 to 78 → 2004 to 2029
+- Side 4: 79 to 104 → 2030 to 2055
+- Side 5: 105 to 130 → 2056 to 2081
+- Side 6: 131 to 156 → 2082 to 2107
+
+Our number: 2026
+
+Which side? 2026 is in side 3: since 2004 to 2029
+
+Position in side: 2026 - 2003 = 23 → so it's the **23rd number** on side 3.
+
+Wait: side 3 starts at 2004 → so:
+
+2004 → 1st
+
+2005 → 2nd
+
+...
+
+2026 → 2026 - 2003 = 23 → **23rd number** on side 3.
+
+But 2003 is the last number of side 2 → so 2004 is first of side 3 → yes, 2026 is the 23rd number on side 3.
+
+So:
+
+> **2026 is the 23rd number on side 3 of layer 26**
+
+Now, we need to find the **six neighbors** of 2026.
+
+In a hexagonal grid, each cell has six neighbors. In a spiral, the neighbors are:
+
+- One from the previous layer (inner)
+- Two from the same layer (adjacent on the spiral)
+- Three from the next layer (outer)
+
+But we need to be precise.
+
+In a hexagonal spiral, the neighbors of a cell can be determined based on its position on the side.
+
+Let’s think geometrically.
+
+In a hexagonal grid, the spiral moves in 6 directions, each 60 degrees apart.
+
+The six directions can be labeled as:
+
+Let’s define the 6 directions as vectors in axial coordinates (q, r), but maybe we don't need to go that deep.
+
+Alternatively, we can use the known structure of hexagonal spirals.
+
+There is a known pattern for the neighbors of a number in a hexagonal spiral.
+
+But since this is a math competition-style problem, there is a trick.
+
+---
+
+### Key Insight:
+
+In a **hexagonal spiral**, **each number on a side (not a corner)** has **six neighbors**:
+
+- One **inner** neighbor: from the previous layer (closer to center)
+- One **outer** neighbor: from the next layer (farther from center)
+- Two **lateral** neighbors: previous and next number in the spiral (on the same layer)
+- Two **diagonal** neighbors: one from the previous layer and one from the next layer, offset
+
+Wait — actually, in a hexagonal grid, each cell has exactly six neighbors. In the spiral, the neighbors of a number are always:
+
+- The number before it in the spiral (on the same layer)
+- The number after it in the spiral (on the same layer)
+- The number directly inward (toward center)
+- The number directly outward (away from center)
+- Two more: one from the previous layer, one from the next layer, but offset
+
+But perhaps there is a **pattern**: the **sum of the six neighbors** of a number in a hexagonal spiral is **always 6 times the number minus 6**? Or something like that?
+
+Wait — let’s test with small numbers.
+
+Take number **2** in the spiral:
+
+From the diagram:
+
+```
+... 14  4  3 10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+
+Neighbors of 2:
+
+Looking at the grid:
+
+2 is surrounded by:
+
+- Above-left: 3
+- Above-right: 9
+- Right: 8? Wait — we need to visualize the hex grid.
+
+Actually, in a hex grid, each cell has 6 neighbors.
+
+Let me reconstruct the positions.
+
+Assume center is 1.
+
+Then, going clockwise from the top-right, the first ring (layer 1) has numbers 2 to 7.
+
+Standard hexagonal spiral numbering:
+
+Usually, the spiral goes:
+
+- Start at 1
+- Move right to 2
+- Then up-right to 3
+- Then up-left to 4
+- Then left to 5
+- Then down-left to 6
+- Then down-right to 7
+- Then back to next layer...
+
+But in the given diagram:
+
+```
+... 14  4  3 10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+
+So, 1 is center.
+
+To the right of 1 is 2.
+
+Above-right of 1 is 3.
+
+Above-left of 1 is 4.
+
+Left of 1 is 5.
+
+Below-left of 1 is 6.
+
+Below-right of 1 is 7.
+
+Then next layer:
+
+Above 3 is 10? Wait, 10 is above 3? But 3 is above-right of 1.
+
+Actually, the grid is written in a staggered way.
+
+Let me try to reconstruct coordinates.
+
+Use **axial coordinates** for hex grid: (q, r)
+
+Set center 1 at (0,0)
+
+Then the six directions are:
+
+- (1,0), (0,1), (-1,1), (-1,0), (0,-1), (1,-1)
+
+Let’s assign:
+
+From center 1 (0,0):
+
+- 2: (1,0) → right
+- 3: (1,-1) → down-right? But in diagram, 3 is above-right of 1.
+
+Wait, perhaps different orientation.
+
+In the diagram:
+
+Row 1: ... 14  4  3 10 ...
+
+Row 2: .. 15  5  1  2  9 ...
+
+Row 3: ... 16  6  7  8 ...
+
+So 1 is in row 2, position 3
+
+2 is to the right of 1
+
+3 is to the right of 4, and 4 is to the left of 1
+
+So perhaps:
+
+- 1 at (0,0)
+
+- 2 at (1,0)
+
+- 3 at (1,-1)  [up-right?]
+
+Wait, in axial coordinates, moving in direction (1,-1) is "up-right"
+
+Then 4 at (0,-1) — up-left? But 4 is to the left of 1.
+
+Wait, 5 is to the left of 1 → so 5 at (-1,0)
+
+6 is below-left → (-1,1)
+
+7 is below-right → (0,1)
+
+8 is to the right of 7 → (1,1)
+
+9 is to the right of 2 → (2,0)
+
+10 is above 3 → (2,-1)
+
+Let’s try to assign:
+
+Assume the grid is oriented with flat tops.
+
+We'll assign:
+
+- 1: (0,0)
+
+- 2: (1,0)  → east
+
+- 3: (1,-1) → northeast
+
+- 4: (0,-1) → northwest
+
+- 5: (-1,0) → west
+
+- 6: (-1,1) → southwest
+
+- 7: (0,1) → southeast
+
+Then next layer:
+
+8: (1,1) → east of 7
+
+9: (2,0) → east of 2
+
+10: (2,-1) → northeast of 3
+
+11: (2,-2) → northeast of 4? But 4 is at (0,-1), so (2,-2) is two steps northeast
+
+But in diagram, after 10 is 14? Let's see:
+
+The diagram shows:
+
+Row 1: ... 14  4  3 10 ...
+
+So 14 is left of 4, 10 is right of 3.
+
+So 14 is at (-1,-1)? Let's try to assign.
+
+From 4 at (0,-1), the next number in the spiral after 7 is 8, then 9, then 10, then 11,12,13,14,15,16
+
+Actually, after 7 (0,1), the spiral goes to 8 at (1,1), then 9 at (2,0), then 10 at (2,-1), then 11 at (1,-2), then 12 at (0,-2), then 13 at (-1,-1), then 14 at (-1,0)? But (-1,0) is already 5.
+
+Conflict.
+
+Wait — perhaps 14 is at (-1,-1)
+
+Let me list the numbers in order and assign coordinates.
+
+Standard known hexagonal spiral: see OEIS or known pattern.
+
+Actually, there is a known sequence: the **hexagonal spiral** is similar to the **Ulam spiral** but on hex grid.
+
+I found a reference: In a hexagonal spiral starting at 1, the neighbors of a number can be computed based on its layer and position.
+
+But perhaps there's a **pattern in the sum**.
+
+Let me compute the sum of neighbors for a small number and see if there's a pattern.
+
+Take number **2**.
+
+From diagram:
+
+Neighbors of 2:
+
+From the grid:
+
+2 is surrounded by:
+
+- Above-left: 1
+
+- Above-right: 3
+
+- Right: 9
+
+- Below-right: 8
+
+- Below-left: 7
+
+- Left: 1? No, left is 1, but 1 is already counted.
+
+Wait — in hex grid, each cell has 6 neighbors.
+
+Let me list all neighbors of 2:
+
+From the diagram:
+
+Row above: 4  3  10 → so above 2 is 3 and 10? But 2 is at the center of row 2.
+
+Actually, the grid is written in a staggered way.
+
+Assume each row is offset.
+
+Row 1: ... 14  4  3  10 ... → these are at positions: let's say row 1 has 4,3,10
+
+Row 2: ... 15  5  1  2  9 ... → has 5,1,2,9
+
+Row 3: ... 16  6  7  8 ... → has 6,7,8
+
+So visually, the neighbors of 2 are:
+
+- Above-left: 1 (same row? No, 1 is left of 2)
+
+Actually, in hex grid, the neighbors are:
+
+- Left: 1
+
+- Right: 9
+
+- Upper-left: 5? But 5 is two left.
+
+Wait, this is messy.
+
+Perhaps use the known fact:
+
+> In a hexagonal spiral, the **sum of the six neighbors** of any number **n > 1** is **6n - 6**
+
+Let’s test with n=2.
+
+What are the neighbors of 2?
+
+From the diagram:
+
+2 is at the center-right of the first ring.
+
+Its neighbors are:
+
+- 1 (center)
+
+- 3 (next in spiral)
+
+- 9 (outer right)
+
+- 8 (below)
+
+- 7 (below-left)
+
+- 5 (left? But 5 is not adjacent directly)
+
+Wait, from the diagram:
+
+The six cells around 2 are:
+
+- 1 (to the left)
+
+- 3 (to the upper-right)
+
+- 9 (to the right)
+
+- 8 (to the lower-right)
+
+- 7 (to the lower-left)
+
+- 4 (to the upper-left)
+
+Is 4 adjacent to 2?
+
+In the diagram:
+
+Row 1: ... 14  4  3  10 ...
+
+Row 2: .. 15  5  1  2  9 ...
+
+So 4 is above 1, and 3 is above 2? So 4 is not directly adjacent to 2.
+
+Actually, in hex grid, the neighbors of 2 are:
+
+- 1 (left)
+
+- 3 (upper-right)
+
+- 9 (right)
+
+- 8 (lower-right)
+
+- 7 (lower-left)
+
+- 6? But 6 is below 1.
+
+Wait, 6 is at lower-left of 1, so is it adjacent to 2?
+
+Let’s think of hex grid adjacency.
+
+Each cell has 6 neighbors: in 6 directions.
+
+Assume 1 is at (0,0)
+
+2 is at (1,0)
+
+Then its neighbors are:
+
+- (0,0) → 1
+
+- (1,1) → 8? But 8 is at (1,1)
+
+- (2,0) → 9
+
+- (2,-1) → 10
+
+- (1,-1) → 3
+
+- (0,-1) → 4
+
+So neighbors of 2: 1, 8, 9, 10, 3, 4
+
+From diagram:
+
+- 1: yes
+
+- 3: yes
+
+- 4: yes (above 1, and diagonally adjacent to 2)
+
+- 8: yes (below 2)
+
+- 9: yes (right of 2)
+
+- 10: yes (above-right of 3, but is it adjacent to 2?)
+
+In axial coordinates, (1,0) has neighbors:
+
+- (0,0) → 1
+
+- (1,1) → 8
+
+- (2,0) → 9
+
+- (2,-1) → 10
+
+- (1,-1) → 3
+
+- (0,-1) → 4
+
+Yes, all six.
+
+So neighbors of 2: 1, 3, 4, 8, 9, 10
+
+Sum = 1+3+4+8+9+10 = 35
+
+Now, 6*2 - 6 = 12 - 6 = 6 → not 35.
+
+6*2 + 23 = 35? Not helpful.
+
+But 35 = 6*2 + 23? No.
+
+Wait, 35 = 6*6 - 1? No.
+
+Try n=3.
+
+Neighbors of 3: at (1,-1)
+
+Neighbors of (1,-1):
+
+- (0,-1) → 4
+
+- (1,-2) → ? next number after 10 is 11, then 12, etc.
+
+From diagram, 3 is between 4 and 10.
+
+Neighbors of 3:
+
+- (0,-1) = 4
+
+- (1,-2) = ? Let's assume next number is 11 at (1,-2)
+
+- (2,-1) = 10
+
+- (2,0) = 9
+
+- (1,0) = 2
+
+- (0,0) = 1
+
+So neighbors: 4, 11, 10, 9, 2, 1
+
+Sum = 4+11+10+9+2+1 = 37
+
+6*3 = 18, 37 - 18 = 19 — not obvious.
+
+But notice:
+
+For n=2: sum=35
+
+n=3: sum=37
+
+n=1: neighbors are 2,3,4,5,6,7 → sum=2+3+4+5+6+7=27
+
+Now, 27, 35, 37 — no clear pattern.
+
+Wait, perhaps the sum of neighbors of n is **6n + something**.
+
+For n=1: sum=27 = 6*1 + 21
+
+n=2: 35 = 6*2 + 23
+
+n=3: 37 = 6*3 + 19 — not consistent.
+
+Alternative idea:
+
+In many spirals, the **sum of the six neighbors of n is 6n - 6** for a square spiral, but here it's hexagonal.
+
+Let me search for a pattern in the layer.
+
+We know that 2026 is in layer 26, position 75, on side 3, 23rd number.
+
+In a hexagonal spiral, for a number on a side (not a corner), the six neighbors are:
+
+- The number before it in the spiral: n-1
+
+- The number after it in the spiral: n+1
+
+- The number directly inward (toward center): let's call it a
+
+- The number directly outward (away from center): b
+
+- The number on the previous layer, offset: c
+
+- The number on the next layer, offset: d
+
+But we can find a formula.
+
+I recall that in a hexagonal spiral, the **sum of the six neighbors of a number n (not on a corner)** is:
+
+> **6n - 6**
+
+Wait, let's test with n=2: 6*2 - 6 = 6, but we calculated 35 — no.
+
+Another idea: perhaps the sum is constant for all numbers in the same layer? Unlikely.
+
+Wait, here's a breakthrough.
+
+I found a resource: In a hexagonal spiral, the six neighbors of a number n are always:
+
+- n-1 and n+1 (adjacent on the spiral)
+
+- and four others that are related to the layer.
+
+But I recall a known result:
+
+> For a hexagonal spiral, the sum of the six neighbors of the number n is **6n - 6** for n > 1.
+
+But our calculation for n=2 gave 35, and 6*2-6=6, which is way off.
+
+Unless I have the wrong neighbor set.
+
+Wait — perhaps the diagram is not the standard one.
+
+Let me count the neighbors of 1.
+
+1 has neighbors: 2,3,4,5,6,7 — sum=27
+
+6*1 = 6, 27 = 6*1 + 21
+
+For n=2: neighbors are 1,3,4,8,9,10 — sum=35
+
+35 - 2 = 33
+
+33 = 6*5.5 — not helpful.
+
+Notice that 35 = 6*6 - 1 = 36-1, but 6 is the layer number? Layer 1.
+
+Layer 1 has 6 numbers, 2 to 7.
+
+For n=2 (layer 1), sum=35
+
+For n=8 (layer 2, first number)
+
+What are neighbors of 8?
+
+8 is at (1,1)
+
+Neighbors:
+
+- (0,1) = 7
+
+- (1,2) = ? next number after 8 is 9 at (2,0), 10 at (2,-1), 11 at (1,-2), 12 at (0,-2), 13 at (-1,-1), 14 at (-1,0), 15 at (-1,1), 16 at (0,2)
+
+So 8's neighbors:
+
+- (0,1) = 7
+
+- (1,2) = 16? Let's see: after 7 is 8, then 9,10,11,12,13,14,15,16
+
+16 is at (0,2)
+
+So (1,2) is not assigned yet — wait, 16 is at (0,2)
+
+Then (1,2) would be next after 16? 17?
+
+So perhaps 8's neighbors are:
+
+- (0,1) = 7
+
+- (1,2) = 17 (next layer)
+
+- (2,1) = ? not assigned
+
+This is getting too messy.
+
+I found a better approach.
+
+### Insight from known math competitions:
+
+In a **hexagonal spiral**, the **sum of the six neighbors of a number n** is always:
+
+> **6n - 6**
+
+But our calculation for n=2 gave 35, not 6.
+
+Unless the diagram is not the standard one.
+
+Wait — perhaps the numbering is different.
+
+Let me try to find a reliable source or pattern.
+
+Upon searching my memory, I recall that in the **hexagonal Ulam spiral**, the sum of the six neighbors of n is **6n - 6** for n > 1.
+
+Let me test with n=7.
+
+7 is at (0,1)
+
+Neighbors of 7:
+
+- (0,0) = 1
+
+- (0,2) = 16
+
+- (1,1) = 8
+
+- (1,0) = 2
+
+- (-1,1) = 6
+
+- (-1,0) = 5
+
+So neighbors: 1,16,8,2,6,5
+
+Sum = 1+16+8+2+6+5 = 38
+
+6*7 - 6 = 42 - 6 = 36 — not 38.
+
+Close but not equal.
+
+38 - 36 = 2
+
+n=2: sum=35, 6*2-6=6 — not close.
+
+Another try: perhaps it's 6n + 23 for n=2, 6n+19 for n=3 — not consistent.
+
+Perhaps the sum is 6 times the layer number or something.
+
+Let me try a different approach.
+
+### Use the layer structure.
+
+2026 is in layer 26, and it's the 75th number in the layer.
+
+Each side has 26 numbers.
+
+Side 3: numbers 2004 to 2029
+
+2026 is the 23rd number on side 3.
+
+In a hexagonal spiral, the six neighbors of a number on a side (not corner) are:
+
+- The number before it on the side: 2025
+
+- The number after it on the side: 2027
+
+- The number directly inward: this is on layer 25, at the same "angle"
+
+- The number directly outward: on layer 27
+
+- Two more: one from the previous side, one from the next side, on the same layer? No, those are already covered.
+
+Actually, in a hexagonal grid, the six neighbors are:
+
+1. Previous number in spiral: 2025
+
+2. Next number in spiral: 2027
+
+3. The number in the previous layer, same "radial line": let's call it A
+
+4. The number in the next layer, same radial line: B
+
+5. The number in the previous layer, one position clockwise: C
+
+6. The number in the next layer, one position counter-clockwise: D
+
+But how to compute A,B,C,D?
+
+For a number on side k of layer m, the inward neighbor is the number on the same side of layer m-1.
+
+For example, on side 3 of layer 26, the inward neighbor is the number on side 3 of layer 25.
+
+Layer 25 has 6*25 = 150 numbers, so side 3 of layer 25 has numbers from:
+
+Layer 25 starts at T(24)+1 = 1 + 3*24*25 +1 = 1 + 1800 +1 = 1802
+
+T(24) = 1 + 3*24*25 = 1 + 1800 = 1801
+
+So layer 25: 1802 to 1951
+
+Side 1: 1802 to 1826 (25 numbers)
+
+Side 2: 1827 to 1851
+
+Side 3: 1852 to 1876
+
+So the 23rd number on side 3 of layer 25 is: 1852 + 22 = 1874
+
+So inward neighbor of 2026 is 1874
+
+Similarly, outward neighbor: on layer 27.
+
+Layer 27 starts at T(26)+1 = 2107 +1 = 2108
+
+Layer 27 has 6*27 = 162 numbers, side 3 has 27 numbers.
+
+Side 3 of layer 27: starts at 2108 + 2*27 = 2108 + 54 = 2162? Let's see:
+
+Side 1: 2108 to 2134 (27 numbers)
+
+Side 2: 2135 to 2161
+
+Side 3: 2162 to 2188
+
+So the 23rd number on side 3 of layer 27 is: 2162 + 22 = 2184
+
+So outward neighbor: 2184
+
+Now, the other two neighbors: these are the numbers on the adjacent sides of the same layer, but one layer inward and outward.
+
+In a hexagonal grid, the other two neighbors are:
+
+- The number on the previous layer, on the next side (clockwise)
+
+- The number on the next layer, on the previous side (counter-clockwise)
+
+For side 3, the previous side is side 2, next side is side 4.
+
+On layer 25, side 2 ends at 1851
+
+The last number on side 2 of layer 25 is 1851
+
+The first number on side 3 of layer 25 is 1852
+
+The number on layer 25, side 2, position 23: side 2 has 25 numbers, positions 1 to 25.
+
+Side 2: 1827 to 1851
+
+23rd number: 1827 + 22 = 1849
+
+This is the number on layer 25, side 2, position 23.
+
+Similarly, on layer 27, side 4: side 4 starts at 2189 to 2215
+
+23rd number: 2189 + 22 = 2211
+
+So the two diagonal neighbors are:
+
+- 1849 (layer 25, side 2, pos 23)
+
+- 2211 (layer 27, side 4, pos 23)
+
+Now, the six neighbors of 2026 are:
+
+1. 2025 (previous in spiral)
+
+2. 2027 (next in spiral)
+
+3. 1874 (inward, layer 25, side 3, pos 23)
+
+4. 2184 (outward, layer 27, side 3, pos 23)
+
+5. 1849 (layer 25, side 2, pos 23)
+
+6. 2211 (layer 27, side 4, pos 23)
+
+Now compute the sum:
+
+2025 + 2027 + 1874 + 2184 + 1849 + 2211
+
+Let's compute step by step:
+
+2025 + 2027 = 4052
+
+1874 + 2184 = 4058
+
+1849 + 2211 = 4060
+
+Now sum: 4052 + 4058 = 8110
+
+8110 + 4060 = 12170
+
+So the sum is **12170**
+
+But let me verify the logic.
+
+We assumed that the six neighbors are:
+
+- n-1, n+1
+
+- inward on same side
+
+- outward on same side
+
+- inward on previous side
+
+- outward on next side
+
+In a hex grid, this makes sense.
+
+For example, for a cell on a side, the six neighbors are:
+
+- two on the same layer (adjacent)
+
+- two radially inward/outward on the same radial line
+
+- two radially inward/outward on the adjacent radial lines (the corners)
+
+Yes, that's standard.
+
+So we have:
+
+n = 2026
+
+n-1 = 2025
+
+n+1 = 2027
+
+inward same side: layer 25, side 3, position 23: 1852 + 22 = 1874
+
+outward same side: layer 27, side 3, position 23: 2162 + 22 = 2184
+
+inward previous side: layer 25, side 2, position 23: side 2 starts at 1827, so 1827 + 22 = 1849
+
+outward next side: layer 27, side 4, position 23: side 4 starts at 2189, so 2189 + 22 = 2211
+
+Sum: 2025 + 2027 = 4052
+
+1874 + 2184 = 4058
+
+1849 + 2211 = 4060
+
+Total: 4052 + 4058 = 8110; 8110 + 4060 = 12170
+
+So the answer is **12170**
+
+But let me double-check the starting numbers.
+
+Layer 25: starts at T(24)+1
+
+T(24) = 1 + 3*24*25 = 1 + 1800 = 1801 → so layer 25: 1802 to 1951
+
+Side 1: 1802 to 1826 (25 numbers) → 1802 + 24 = 1826
+
+Side 2: 1827 to 1851 → 1827 + 24 = 1851
+
+Side 3: 1852 to 1876 → 1852 + 24 = 1876
+
+So position 23: 1852 + 22 = 1874 — correct.
+
+Layer 27: starts at T(26)+1 = 2107 + 1 = 2108
+
+Layer 27: 2108 to 2108 + 161 = 2269
+
+Side 1: 2108 to 2134 (27 numbers: 2108 to 2108+26=2134)
+
+Side 2: 2135 to 2161
+
+Side 3: 2162 to 2188
+
+Side 4: 2189 to 2215
+
+So side 4, position 23: 2189 + 22 = 2211 — correct.
+
+Layer 25, side 2, position 23: 1827 + 22 = 1849 — correct.
+
+So all values are correct.
+
+Sum = 2025 + 2027 + 1874 + 2184 + 1849 + 2211 = 12170
+
+So the answer is:
+
+> **\boxed{12170}**
+----
+Usage(input=78, output=8050, details={'estimated_cost': 0.00886202})

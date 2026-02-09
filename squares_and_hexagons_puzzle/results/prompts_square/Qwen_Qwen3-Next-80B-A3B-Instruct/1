@@ -1,0 +1,641 @@
+We are given a spiral of natural numbers on a square grid, starting from 1 at the center, and spiraling outward. The example shows:
+
+```
+... 5  4  3 ...
+... 6  1  2 ...
+... 7  8  9 ...
+```
+
+This is a **clockwise spiral** starting at 1, moving right, then down, then left, then up, etc.
+
+We are to find the **sum of all 8 neighbors** of the number **2026**.
+
+---
+
+### Step 1: Understand the spiral structure
+
+The spiral grows in **layers** or **rings** around the center.
+
+- The center is 1 (layer 0).
+- Layer 1: numbers 2 to 9 (a 3×3 square)
+- Layer 2: numbers 10 to 25 (a 5×5 square)
+- Layer k: numbers from `(2k-1)^2 + 1` to `(2k+1)^2`
+
+In general, the **last number** in layer `k` is `(2k + 1)^2`.
+
+We can find which layer 2026 is in by finding the smallest odd square ≥ 2026.
+
+Compute:
+
+- 43² = 1849
+- 45² = 2025
+- 47² = 2209
+
+So:
+
+- 45² = 2025 → last number of layer 22 (since 2k+1 = 45 ⇒ k = 22)
+- So 2026 is the **first number of layer 23**
+
+Thus, **2026 is the first number in layer 23**, meaning it is the number immediately after 45² = 2025.
+
+In the spiral, after completing layer 22 (ending at 2025 at the **bottom-right corner** of the 45×45 square), the next number (2026) is placed **one step to the right** of that corner.
+
+So the spiral direction is:
+
+- After completing a layer (ending at bottom-right), the next layer starts by moving **right** one step.
+
+So:
+
+- 2025 is at position (22, -22) if we consider center (0,0) as (1)
+- Then 2026 is at (23, -22)
+
+Wait — let’s define coordinates properly.
+
+---
+
+### Step 2: Coordinate system
+
+Let’s place **1 at (0,0)**.
+
+Then the spiral moves:
+
+- Right → (1,0)
+- Up → (1,1)
+- Left → (0,1), (-1,1)
+- Down → (-1,0), (-1,-1)
+- Right → (0,-1), (1,-1), (2,-1)
+- Up → (2,0), (2,1), (2,2)
+- Left → (1,2), (0,2), (-1,2), (-2,2)
+- Down → (-2,1), (-2,0), (-2,-1), (-2,-2)
+- Right → (-1,-2), (0,-2), (1,-2), (2,-2), (3,-2)
+- etc.
+
+Each "layer" k corresponds to a square from -k to +k in both x and y.
+
+The **last number** in layer k is `(2k+1)^2`, located at **(k, -k)**.
+
+So:
+
+- Layer 0: k=0, ends at 1 = (0,0)
+- Layer 1: k=1, ends at 9 = (1,-1)
+- Layer 2: k=2, ends at 25 = (2,-2)
+- ...
+- Layer 22: k=22, ends at 45² = 2025 = (22, -22)
+
+Then the next number, **2026**, is placed **one step to the right** of (22, -22), so at **(23, -22)**
+
+So:
+
+> **2026 is at position (23, -22)**
+
+---
+
+### Step 3: Find the 8 neighbors of (23, -22)
+
+The 8 neighbors are the 8 adjacent cells in the grid:
+
+- (22, -23) — down-left
+- (23, -23) — down
+- (24, -23) — down-right
+- (22, -22) — left
+- (24, -22) — right
+- (22, -21) — up-left
+- (23, -21) — up
+- (24, -21) — up-right
+
+We need to find the numbers at these 8 positions.
+
+We know the spiral fills the grid in layers. Each layer is a square ring.
+
+We can compute the number at any coordinate (x,y) by determining which layer it's in, and then using the spiral's edge structure.
+
+---
+
+### Step 4: General method to find number at (x,y)
+
+We can use the following algorithm:
+
+Let `m = max(|x|, |y|)`. Then the point (x,y) is on layer `m`.
+
+The **last number** of layer `m` is `(2m+1)^2`.
+
+The layer has 4 sides:
+
+1. **Right edge**: from (m, -m+1) to (m, m) — moving **up**
+2. **Top edge**: from (m-1, m) to (-m, m) — moving **left**
+3. **Left edge**: from (-m, m-1) to (-m, -m) — moving **down**
+4. **Bottom edge**: from (-m+1, -m) to (m, -m) — moving **right**
+
+Wait — let's be precise.
+
+Actually, the spiral goes:
+
+- Start at (0,0)
+- Move right → (1,0)
+- Move up → (1,1)
+- Move left → (0,1), (-1,1)
+- Move down → (-1,0), (-1,-1)
+- Move right → (0,-1), (1,-1), (2,-1)
+- Move up → (2,0), (2,1), (2,2)
+- Move left → (1,2), (0,2), (-1,2), (-2,2)
+- Move down → (-2,1), (-2,0), (-2,-1), (-2,-2)
+- Move right → (-1,-2), (0,-2), (1,-2), (2,-2), (3,-2)
+- etc.
+
+So the pattern for layer `m` (from -m to m) is:
+
+- Starts at **(m-1, -m+1)**? Not quite.
+
+Actually, the **first number** of layer `m` is `(2m-1)^2 + 1`, and it is placed at **(m, -m+1)**? Let me think differently.
+
+Better approach:
+
+We know that the last number of layer `m-1` is `(2m-1)^2`.
+
+Then layer `m` starts at `(2m-1)^2 + 1`, and the spiral goes:
+
+1. **Right** along bottom edge: from `(m-1, -m)` to `(m, -m)` — but wait, the bottom edge is from `(-m+1, -m)` to `(m, -m)`
+
+Actually, here's a standard method:
+
+Let `m = max(|x|, |y|)`
+
+Then:
+
+- If `x == m` and `y > -m`: then we are on the **right edge** → moving **up**
+- If `y == m`: then we are on the **top edge** → moving **left**
+- If `x == -m`: then we are on the **left edge** → moving **down**
+- If `y == -m`: then we are on the **bottom edge** → moving **right**
+
+And the number at (x,y) can be computed as:
+
+Let `side_length = 2m + 1`
+
+Last number in layer m: `L = (2m+1)^2`
+
+Then:
+
+- **Right edge**: x = m, y from -m+1 to m → number = L - (m - y)
+- **Top edge**: y = m, x from m-1 down to -m → number = L - (2m) - (m - x)
+- **Left edge**: x = -m, y from m-1 down to -m → number = L - (4m) - (m - y)
+- **Bottom edge**: y = -m, x from -m+1 to m → number = L - (6m) - (m - x)
+
+Wait, let's derive it properly.
+
+Standard formula from known spiral problems:
+
+The number at (x, y) in the spiral can be computed as:
+
+Let `m = max(|x|, |y|)`
+
+Then the last number in the square of side `2m+1` is `L = (2m+1)^2`
+
+Now, depending on which side of the square the point lies:
+
+1. **If on the right side**: x == m and y > -m → number = L - (m - y)
+2. **If on the top side**: y == m and x < m → number = L - (2m) - (m - x)
+3. **If on the left side**: x == -m and y < m → number = L - (4m) - (m - y)
+4. **If on the bottom side**: y == -m and x > -m → number = L - (6m) - (m - x)
+
+Let me verify with a small example.
+
+Take (1, -1): m = 1, L = 9
+
+x=1, y=-1 → right side? x==m, y=-m → but condition says y > -m → false
+
+So it's on the **bottom edge**: y == -m, x > -m → x=1 > -1 → yes
+
+Then number = L - 6m - (m - x) = 9 - 6*1 - (1 - 1) = 9 - 6 - 0 = 3 → but (1,-1) should be 2? Wait.
+
+Wait, in the example:
+
+```
+... 5  4  3 ...
+... 6  1  2 ...
+... 7  8  9 ...
+```
+
+So (1,0) = 2, (1,-1) = 9? No.
+
+Wait, let's map coordinates properly.
+
+Let’s define:
+
+- (0,0) = 1
+- (1,0) = 2
+- (1,1) = 3
+- (0,1) = 4
+- (-1,1) = 5
+- (-1,0) = 6
+- (-1,-1) = 7
+- (0,-1) = 8
+- (1,-1) = 9
+
+So (1,-1) = 9 → which is the last number of layer 1 → m=1, L=9
+
+So for (1,-1): x=1, y=-1 → on bottom edge? y=-m, x=1 > -1 → yes
+
+Then formula: number = L - 6m - (m - x) = 9 - 6 - (1 - 1) = 3 → wrong.
+
+Wait, maybe the formula is different.
+
+Alternative standard formula (from known sources):
+
+For point (x,y), let m = max(|x|, |y|)
+
+If m == 0: number = 1
+
+Else:
+
+- If y == -m:  // bottom edge, moving right
+  number = (2m-1)^2 + (x - (-m) + 1) = (2m-1)^2 + x + m + 1
+- If x == m:   // right edge, moving up
+  number = (2m-1)^2 + 2m + (y - (-m) + 1) = (2m-1)^2 + 2m + y + m + 1
+- If y == m:   // top edge, moving left
+  number = (2m-1)^2 + 4m + (m - x + 1)
+- If x == -m:  // left edge, moving down
+  number = (2m-1)^2 + 6m + (m - y + 1)
+
+Let me test this with (1,-1): m=1, y=-m → bottom edge
+
+number = (2*1 -1)^2 + x + m + 1 = 1 + 1 + 1 + 1 = 4 → wrong, should be 9
+
+No, that can’t be.
+
+Wait, the **first number** of layer m is `(2m-1)^2 + 1`
+
+Layer m=1: first number = 2, last number = 9
+
+Bottom edge: from (-1+1, -1) = (0,-1) to (1,-1): numbers 8,9
+
+So for bottom edge: x from -m+1 to m → x from 0 to 1
+
+At x=0: 8, x=1:9
+
+So number = (2m-1)^2 + (x - (-m+1)) + 1 = 1 + (x - (-1+1)) +1 = 1 + (x - 0) +1 = 2 + x
+
+At x=0: 2 → wrong, should be 8
+
+Not working.
+
+Better idea: use the **last number** of the layer as reference.
+
+Let `L = (2m+1)^2`
+
+Then:
+
+- Bottom edge (y = -m): from ( -m+1, -m ) to ( m, -m ) → numbers from L - 6m + 1 to L
+- Right edge (x = m): from ( m, -m+1 ) to ( m, m ) → numbers from L - 4m + 1 to L - 6m
+- Top edge (y = m): from ( m-1, m ) to ( -m, m ) → numbers from L - 2m + 1 to L - 4m
+- Left edge (x = -m): from ( -m, m-1 ) to ( -m, -m+1 ) → numbers from L - 0m + 1 to L - 2m
+
+Wait, let's reverse engineer from known values.
+
+At layer m=1: L=9
+
+Bottom edge: y=-1, x from 0 to 1 → numbers 8,9 → so 9 - 1 = 8, 9 - 0 = 9
+
+So number = L - (m - x) for bottom edge? x=0: 9 - (1 - 0) = 8 → yes
+
+x=1: 9 - (1 - 1) = 9 → yes
+
+So for **bottom edge**: y == -m, x from -m+1 to m → number = L - (m - x)
+
+For **right edge**: x == m, y from -m+1 to m → number = L - (2m) - (m - y)
+
+At m=1, right edge: y from 0 to 1
+
+At y=0: number = 9 - 2 - (1 - 0) = 9 - 2 -1 = 6 → correct (point (1,0)=2? Wait no)
+
+Wait (1,0) = 2, but according to this, it's 6? Something wrong.
+
+Wait let's list all points in layer m=1:
+
+Points on layer m=1 (max(|x|,|y|)=1):
+
+- (1,0): 2
+- (1,1): 3
+- (0,1): 4
+- (-1,1): 5
+- (-1,0): 6
+- (-1,-1): 7
+- (0,-1): 8
+- (1,-1): 9
+
+So:
+
+- Right edge (x=1): y=-1,0,1 → 9,2,3 → not contiguous
+
+Ah! Here's the key: the **right edge** is **not** from bottom to top. The spiral moves **right, then up, then left, then down**.
+
+So the **first** number of the layer is at (m, -m+1), then moves up.
+
+Wait, after completing layer m-1 at (m-1, -m+1)? No.
+
+Actually, after layer m-1 ends at (m-1, -(m-1)) = (m-1, -m+1)
+
+Then the next step is to move **right** to (m, -m+1) — this is the **first** number of layer m.
+
+Then move **up** to (m, m)
+
+Then move **left** to (-m, m)
+
+Then move **down** to (-m, -m)
+
+Then move **right** to (m, -m) — but (m, -m) is the last number of layer m.
+
+So the 4 sides of layer m:
+
+1. **Right edge**: from (m, -m+1) to (m, m) — moving **up** → length = 2m
+2. **Top edge**: from (m-1, m) to (-m, m) — moving **left** → length = 2m
+3. **Left edge**: from (-m, m-1) to (-m, -m) — moving **down** → length = 2m
+4. **Bottom edge**: from (-m+1, -m) to (m, -m) — moving **right** → length = 2m
+
+Total: 8m numbers, which is correct since layer m has (2m+1)^2 - (2m-1)^2 = 8m numbers.
+
+So:
+
+- Start of layer m: S = (2m-1)^2 + 1
+- Then:
+
+  1. Right edge: from (m, -m+1) to (m, m): numbers S to S + 2m - 1
+     - So for point (m, y), where y from -m+1 to m: number = S + (y - (-m+1)) = S + y + m - 1
+
+  2. Top edge: from (m-1, m) to (-m, m): numbers S + 2m to S + 4m - 1
+     - For point (x, m), x from m-1 down to -m: number = S + 2m + (m - 1 - x)
+
+  3. Left edge: from (-m, m-1) to (-m, -m): numbers S + 4m to S + 6m - 1
+     - For point (-m, y), y from m-1 down to -m: number = S + 4m + (m - 1 - y)
+
+  4. Bottom edge: from (-m+1, -m) to (m, -m): numbers S + 6m to S + 8m - 1
+     - For point (x, -m), x from -m+1 to m: number = S + 6m + (x - (-m+1)) = S + 6m + x + m - 1 = S + 7m + x - 1
+
+Let me test this with m=1:
+
+S = (2*1 -1)^2 +1 = 1 +1 = 2
+
+Right edge: y from 0 to 1
+
+- (1,0): number = 2 + 0 + 1 - 1 = 2 → correct
+- (1,1): 2 + 1 + 1 - 1 = 3 → correct
+
+Top edge: x from 0 to -1
+
+- (0,1): number = 2 + 2*1 + (1 - 1 - 0) = 2 + 2 + (0) = 4 → correct
+- (-1,1): 2 + 2 + (1 - 1 - (-1)) = 4 + (1) = 5 → correct
+
+Left edge: y from 0 to -1
+
+- (-1,0): number = 2 + 4 + (1 - 1 - 0) = 6 + 0 = 6 → correct
+- (-1,-1): 2 + 4 + (1 - 1 - (-1)) = 6 + 1 = 7 → correct
+
+Bottom edge: x from 0 to 1
+
+- (0,-1): number = 2 + 7*1 + 0 - 1 = 2 + 7 -1 = 8 → correct
+- (1,-1): 2 + 7 + 1 -1 = 9 → correct
+
+Perfect!
+
+So the formulas are:
+
+Let m = max(|x|, |y|)
+
+S = (2m - 1)^2 + 1
+
+Then:
+
+- If x == m and y >= -m+1 and y <= m:  
+  `num = S + y + m - 1`
+
+- If y == m and x >= -m and x <= m-1:  
+  `num = S + 2m + (m - 1 - x)`
+
+- If x == -m and y >= -m and y <= m-1:  
+  `num = S + 4m + (m - 1 - y)`
+
+- If y == -m and x >= -m+1 and x <= m:  
+  `num = S + 7m + x - 1`
+
+---
+
+### Step 5: Apply to neighbors of (23, -22)
+
+We have 2026 at (23, -22)
+
+So we need the numbers at:
+
+1. (22, -23)
+2. (23, -23)
+3. (24, -23)
+4. (22, -22)
+5. (24, -22)
+6. (22, -21)
+7. (23, -21)
+8. (24, -21)
+
+We'll compute each.
+
+First, note that **2026** is the first number of layer 23 → S = (2*23 -1)^2 + 1 = 45² + 1 = 2025 + 1 = 2026 → correct.
+
+Now compute each neighbor.
+
+---
+
+#### 1. (22, -23)
+
+m = max(|22|, |-23|) = 23
+
+y = -23 = -m → bottom edge
+
+x = 22, which is between -23+1 = -22 and 23 → yes
+
+So use bottom edge formula:
+
+num = S + 7m + x - 1 = 2026 + 7*23 + 22 - 1
+
+Compute:
+
+7*23 = 161
+
+So: 2026 + 161 + 22 - 1 = 2026 + 182 = **2208**
+
+Wait: 161 + 22 -1 = 182 → 2026 + 182 = 2208
+
+But wait, layer 23 ends at (2*23+1)^2 = 47² = 2209
+
+So 2208 is just before the end — makes sense.
+
+---
+
+#### 2. (23, -23)
+
+m = max(23,23) = 23
+
+x=23, y=-23 → bottom-right corner
+
+y = -m → bottom edge
+
+x = 23 → within [-22, 23] → yes
+
+num = S + 7m + x - 1 = 2026 + 7*23 + 23 - 1 = 2026 + 161 + 23 - 1 = 2026 + 183 = **2209**
+
+Which is 47² → correct, last number of layer 23.
+
+---
+
+#### 3. (24, -23)
+
+m = max(24,23) = 24
+
+So this is in layer 24!
+
+We need to compute number at (24, -23)
+
+m=24, y = -23 ≠ -24 → not bottom edge
+
+x=24 = m → right edge
+
+Check y: from -24+1 = -23 to 24 → y=-23 is in range
+
+So right edge:
+
+num = S + y + m - 1
+
+S = (2*24 -1)^2 + 1 = 47² + 1 = 2209 + 1 = 2210
+
+y = -23, m=24
+
+num = 2210 + (-23) + 24 - 1 = 2210 + 0 = **2210**
+
+Wait: -23 +24 -1 = 0 → yes
+
+So number = 2210
+
+---
+
+#### 4. (22, -22)
+
+m = max(22,22) = 22
+
+So this is on layer 22.
+
+We need to find the number at (22, -22)
+
+Note: (22, -22) is the **last number** of layer 22 → (2*22 +1)^2 = 45² = 2025
+
+So number = 2025
+
+---
+
+#### 5. (24, -22)
+
+m = max(24,22) = 24
+
+x=24 = m → right edge
+
+y = -22
+
+Check if y in [-24+1, 24] = [-23, 24] → yes, -22 is in range
+
+So right edge:
+
+S = 2210 (as above)
+
+num = S + y + m - 1 = 2210 + (-22) + 24 - 1 = 2210 + 1 = **2211**
+
+---
+
+#### 6. (22, -21)
+
+m = max(22,21) = 22
+
+x=22, y=-21
+
+x = m = 22 → right edge
+
+y = -21, which is between -22+1 = -21 and 22 → yes
+
+So right edge:
+
+S = (2*22 -1)^2 +1 = 43² +1 = 1849 +1 = 1850
+
+num = S + y + m - 1 = 1850 + (-21) + 22 - 1 = 1850 + 0 = **1850**
+
+Wait: -21 +22 -1 = 0 → yes
+
+So number = 1850
+
+---
+
+#### 7. (23, -21)
+
+m = max(23,21) = 23
+
+x=23 = m → right edge
+
+y = -21, which is between -23+1 = -22 and 23 → yes
+
+S = 2026
+
+num = S + y + m - 1 = 2026 + (-21) + 23 - 1 = 2026 + 1 = **2027**
+
+---
+
+#### 8. (24, -21)
+
+m = max(24,21) = 24
+
+x=24 = m → right edge
+
+y = -21, which is in [-23,24] → yes
+
+S = 2210
+
+num = S + y + m - 1 = 2210 + (-21) + 24 - 1 = 2210 + 2 = **2212**
+
+---
+
+### Step 6: List of 8 neighbors and their values
+
+1. (22, -23): **2208**
+2. (23, -23): **2209**
+3. (24, -23): **2210**
+4. (22, -22): **2025**
+5. (24, -22): **2211**
+6. (22, -21): **1850**
+7. (23, -21): **2027**
+8. (24, -21): **2212**
+
+Now sum them up:
+
+Let’s add step by step:
+
+Group:
+
+- 2208 + 2209 + 2210 + 2211 + 2212 = sum of 5 numbers around 2210
+
+That’s 5 consecutive numbers: 2208 to 2212
+
+Average = 2210, so sum = 5 * 2210 = 11050
+
+Then:
+
+- 2025 + 2027 = 4052
+
+- 1850
+
+Total sum = 11050 + 4052 + 1850
+
+Compute:
+
+11050 + 4052 = 15102
+
+15102 + 1850 = **16952**
+
+---
+
+### ✅ Final Answer: **16952**
+
+---
+----
+Usage(input=65, output=6637, details={'estimated_cost': 0.007306549999999999})

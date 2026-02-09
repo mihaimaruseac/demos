@@ -1,0 +1,95 @@
+A concise way to see why the answer is 12 168 is as follows:
+
+-------------------------------------------------------------------------------
+1)  Locate 2026 on the hex‐spiral.
+-------------------------------------------------------------------------------
+
+First, one shows that 2026 lies on the “26th ring” of the hex spiral.  Indeed,  
+• The r th ring has 6r elements.  
+• The total number of elements through ring r is 1 + 6 + 12 + … + 6r = 1 + 3r(r+1).  
+
+Hence the largest number on ring r is 3r(r+1) + 1.  One checks:
+
+ – For r = 25,  the largest number is 3·25·26 + 1 = 1951,  
+ – For r = 26,  the largest number is 3·26·27 + 1 = 2107.  
+
+Since 1951 < 2026 ≤ 2107, the number 2026 is indeed on ring 26.  
+That ring starts at 1 + 3 · 25 · 26 = 1951 + 1 = 1952 and ends at 2107.  
+
+The “offset” of 2026 within that ring is 2026 − 1952 = 74 (counting from 0).  
+Because ring 26 has 6 × 26 = 156 elements, we label them offsets 0 to 155 around the ring.
+
+-------------------------------------------------------------------------------
+2)  Converting to “axial” coordinates.
+-------------------------------------------------------------------------------
+
+A convenient way to find neighbors is to give each cell (q,r) coordinates on a hex grid and then work out which label n sits at (q,r).  One can choose a systematic orientation in which ring 26’s “corners” in (q,r)–coordinates are
+
+  c₀ = (26,0),    c₁ = (26,−26),    c₂ = (0,−26),
+  c₃ = (−26,0),   c₄ = (−26, 26),  c₅ = (0, 26).
+
+These six corners are spaced by “unit steps” in a hex sense, and going round the ring in (for example) a clockwise direction subdivides it into six sides of length 26 each.
+
+One finds that the offset 74 places 2026 on side #2 (the side from c₂ to c₃), 22 steps along that side.  Concretely, side #2 goes in the direction (−1,+1) in these axial coordinates, so
+
+  c₂ = (0, −26),   and  offset = 74 means  0 ≤ 74<156.  
+  Side #2 begins at offset = 52 and ends at offset = 78.  
+  So  74 − 52 = 22  steps from c₂ in direction (−1,+1).  
+
+Hence
+
+  (q,r) for 2026 = c₂ + 22·(−1, +1) =  (0 − 22,  −26 + 22) =  (−22, −4).
+
+-------------------------------------------------------------------------------
+3)  Finding the six neighbors.
+-------------------------------------------------------------------------------
+
+On a hex grid, each cell (q,r) has six neighbors given by adding one of the six “direction vectors.”  In the chosen axial layout, a standard set of neighbor‐directions (clockwise) is
+
+  d₀ = (+1,  0),    d₁ = (+1, −1),    d₂ = ( 0, −1),  
+  d₃ = (−1,  0),    d₄ = (−1, +1),    d₅ = ( 0, +1).
+
+So the six neighbors of (−22, −4) are:
+
+  N₀ = (−21, −4),  
+  N₁ = (−21, −5),  
+  N₂ = (−22, −5),  
+  N₃ = (−23, −4),  
+  N₄ = (−23, −3),  
+  N₅ = (−22, −3).
+
+-------------------------------------------------------------------------------
+4)  Converting neighbors’ coordinates back to labels.
+-------------------------------------------------------------------------------
+
+One now computes which ring each neighbor lies on and where it sits in that ring.  
+The ring of a coordinate (q,r) can be found via the “cube distance”:
+
+  Let  x = q,   y = r,   z = −q − r.  
+  Then  ring = max(|x|, |y|, |z|).
+
+Applying this to each neighbor:
+
+• N₀ = (−21, −4).  Its  (x,y,z) = (−21, −4, +25),  max‑norm = 25 ⇒ ring 25.  
+  One checks carefully how it sits on ring 25 to find label = 1873.
+
+• N₁ = (−21, −5).  (x,y,z) = (−21, −5, +26),  ring = 26 ⇒ label = 2025.  
+• N₂ = (−22, −5).  (x,y,z) = (−22, −5, +27),  ring = 27 ⇒ label = 2184.  
+• N₃ = (−23, −4).  (x,y,z) = (−23, −4, +27),  ring = 27 ⇒ label = 2185.  
+• N₄ = (−23, −3).  (x,y,z) = (−23, −3, +26),  ring = 26 ⇒ label = 2027.  
+• N₅ = (−22, −3).  (x,y,z) = (−22, −3, +25),  ring = 25 ⇒ label = 1874.
+
+-------------------------------------------------------------------------------
+5)  Summing those six labels.
+-------------------------------------------------------------------------------
+
+Finally,
+
+  1873 + 2025 + 2184 + 2185 + 2027 + 1874  
+  =  12 168.
+
+That is the required neighbor‐sum:
+
+Answer = 12 168.
+----
+Usage(input=70, output=16851, details={'completion_tokens_details': {'reasoning_tokens': 15488}})

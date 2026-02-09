@@ -1,0 +1,270 @@
+Alright, let's break this down step-by-step.
+
+---
+
+## 1. Understanding the spiral
+
+The spiral given is:
+
+```
+...  5   4   3  ...
+...  6   1   2  ...
+...  7   8   9  ...
+```
+
+So the center is 1, and it goes:
+
+- Start at 1, right to 2, then up to 3, left to 4, left to 5, down to 6, down to 7, right to 8, right to 9, etc.
+
+This is essentially the same as the standard Ulam spiral starting at 1 in the center, moving right first.
+
+Let's reconstruct the spiral layout around 1:
+
+**Layer 1** (numbers 1 to 1): just 1 at (0,0).
+
+**Layer 2** (numbers 2 to 9):
+
+Positions:
+
+- Start at 1 at (0,0).
+- Move right to 2 at (1,0).
+- Move up to 3 at (1,1).
+- Move left to 4 at (0,1).
+- Move left to 5 at (-1,1).
+- Move down to 6 at (-1,0).
+- Move down to 7 at (-1,-1).
+- Move right to 8 at (0,-1).
+- Move right to 9 at (1,-1).
+
+So coordinates:
+
+```
+(-1,1)  5
+(0,1)   4
+(1,1)   3
+(1,0)   2
+(1,-1)  9
+(0,-1)  8
+(-1,-1) 7
+(-1,0)  6
+(0,0)   1
+```
+
+That matches the given snippet.
+
+---
+
+## 2. General layer structure
+
+The spiral is built in "rings" or layers:
+
+- Layer k (k ≥ 1) contains numbers from \((2k-1)^2 + 1\) to \((2k+1)^2\), but actually let's index layers:
+
+Actually, better:  
+Layer 0: just 1.  
+Layer 1: numbers 2 to 9 (3x3 square centered at origin).  
+Layer 2: numbers 10 to 25 (5x5 square).  
+Layer n: numbers from \((2n-1)^2 + 1\) to \((2n+1)^2\), with side length \(2n+1\).
+
+Wait, check:  
+n=1: side length 3, numbers 2 to 9 (since 1 is in layer 0). Yes.
+
+So:  
+Layer n has first number = \((2n-1)^2 + 1\), last number = \((2n+1)^2\).
+
+---
+
+## 3. Which layer is 2026 in?
+
+We find n such that:  
+\((2n-1)^2 < 2026 \le (2n+1)^2\).
+
+Test n:
+
+n=22: (2n-1)=43, \(43^2=1849\), (2n+1)=45, \(45^2=2025\).  
+So layer n=22: numbers 1849+1=1850 to 2025. Wait, 2025 is last number of layer 22? Check:  
+Layer 22: first=1849+1=1850, last=2025. Yes.
+
+So 2025 is at (22,22) maybe? Wait, but 2026 would be in layer 23.
+
+Check:  
+n=23: (2n-1)=45, \(45^2=2025\), so first number of layer 23 = 2025+1=2026, last number = (2n+1)^2 = 47^2=2209.
+
+Yes! So 2026 is the first number of layer 23.
+
+---
+
+## 4. Coordinates of first number of a layer
+
+Pattern: first number of layer n is at coordinate \((n, 1-n)\)? Let's check small n.
+
+Layer 1 (n=1): first number 2 at (1,0)? Wait, our earlier coordinates:  
+Layer 1: start after 1 at (0,0), move right to 2 at (1,0). Yes.
+
+Layer 2 (n=2): first number 10 after \(9=3^2\) at (2,-1)? Let's check:
+
+We had 9 at (1,-1). Then next step: from 9, move up to 10 at (1,0)? Wait, that's wrong — let's map carefully:
+
+Actually let's reconstruct layer 2 (n=2):
+
+From 9 at (1,-1), we go up to (1,0) for 10? No — standard algorithm: after completing layer n=1 (up to 9), we start layer n=2 by moving right from 9? Wait, let's check known rules:
+
+Known Ulam spiral rule:  
+Numbers: 1 at (0,0).  
+Right 1 step to 2, up 1 step to 3, left 2 steps to 5, down 2 steps to 7, right 2 steps to 9.  
+Then right 1 step to 10? No — actually: after 9 at (1,-1), next: up 3 steps? Wait, known: directions cycle: right, up, left, down, but step length increases every two directions.
+
+Better: known: step sizes: 1 right, 1 up, 2 left, 2 down, 3 right, 3 up, 4 left, 4 down, etc.
+
+So:  
+1 at (0,0).  
+Step size 1: right to 2 at (1,0).  
+Step size 1: up to 3 at (1,1).  
+Step size 2: left to 4 at (-1,1), left to 5 at (-1,1)? Wait, correction:
+
+Actually:  
+Start 0: 1 at (0,0).  
+Step length 1: right: 2 at (1,0).  
+Step length 1: up: 3 at (1,1).  
+Step length 2: left: 4 at (0,1), 5 at (-1,1).  
+Step length 2: down: 6 at (-1,0), 7 at (-1,-1).  
+Step length 3: right: 8 at (0,-1), 9 at (1,-1), 10 at (2,-1).  
+Step length 3: up: 11 at (2,0), 12 at (2,1), 13 at (2,2).  
+Step length 4: left: 14 at (1,2), 15 at (0,2), 16 at (-1,2), 17 at (-2,2).  
+Step length 4: down: 18 at (-2,1), 19 at (-2,0), 20 at (-2,-1), 21 at (-2,-2).  
+Step length 5: right: 22 at (-1,-2), 23 at (0,-2), 24 at (1,-2), 25 at (2,-2), 26 at (3,-2).  
+etc.
+
+So first number of layer n is at (n, 1-n) for n≥1? Check n=1: (1,0) yes for 2.  
+n=2: first number of layer 2 is 10 at (2,-1)? From above: 10 at (2,-1) yes.  
+n=3: first number of layer 3: after 25=5^2 at (2,-2), next step length 5 right: 26 at (3,-2). That’s (n,1-n)? n=3: (3,-2) yes.
+
+So formula: first number of layer n is at (n, 1-n).
+
+---
+
+## 5. Coordinates of 2026
+
+Layer n=23: first number 2026 at (23, 1-23) = (23, -22).
+
+---
+
+## 6. Neighbors of 2026
+
+Neighbors: all 8 adjacent grid points:
+
+(23,-22)'s neighbors:
+
+(22,-22), (24,-22),  
+(23,-21), (23,-23),  
+(22,-21), (24,-21),  
+(22,-23), (24,-23).
+
+---
+
+## 7. Which numbers are at these positions in the spiral?
+
+We can use the fact that the spiral is predictable:  
+The first number of layer 23 is at the rightmost column of the top row of that layer? Wait, check orientation: first number of layer n is at the rightmost bottom corner? Actually: (n,1-n) is bottom-right? Let's check n=1: (1,0) is to the right of center, yes. n=2: (2,-1) is right and down from center.
+
+Actually, easier: We can find coordinates-to-number mapping.
+
+Known closed-form for Ulam spiral (starting at 1, right first):
+
+Let \( m = \max(|x|,|y|) \) (the layer index).  
+If \( m=0 \), number=1.
+
+Otherwise, find where you are on the m-th layer.
+
+The last number of layer m-1 is \((2m-1)^2\).  
+Layer m starts at \((2m-1)^2+1\) at position (m, 1-m).
+
+Then we traverse:  
+1. Rightward from (m,1-m) to (m,-m+1)? Wait, let's test m=2: start (2,-1), go up to (2,0),(2,1),(2,2)? No — known algorithm:  
+From start (m,1-m), we go up (2m-1) steps? Actually known:  
+Path: start at (m,1-m), go up to (m,m) [2m-1 steps?], then left to (-m,m) [2m steps], then down to (-m,-m) [2m steps], then right to (m,-m) [2m steps], but stop before reaching start.
+
+Better: known formula: Let \( m=\max(|x|,|y|) \).  
+If y = -m: you're on bottom row: number = (2m+1)^2 - (m+x).  
+If x = -m: left col: number = (2m+1)^2 - 3m + y.  
+If y = m: top row: number = (2m+1)^2 - 5m - x.  
+If x = m: right col: number = (2m+1)^2 - 7m + y.
+
+Check m=1:  
+Bottom row y=-1: formula: 9 - (1+x). x from -1 to 1:  
+x=-1: 9-(1-1)=9-0=9? Wait, bottom row: y=-1, x from -1 to 1: numbers: 9 at (1,-1), 8 at (0,-1), 7 at (-1,-1). Let's test: x=1: 9-(1+1)=9-2=7? That gives 7 at (1,-1)? That’s wrong — oh, formula might be: number = (2m+1)^2 - (m+x) for y=-m:  
+m=1: (3^2=9) - (1+x).  
+x=1: 9-(1+1)=7 (at (1,-1)) — but we want 9 at (1,-1). So maybe m-x? Let's check known correct one:
+
+Actually known correct:  
+If y = -m: number = (2m+1)^2 - (m - x) ? Let's test: m=1, y=-1:  
+x=1: 9 - (1-1)=9-0=9 yes.  
+x=0: 9-(1-0)=8 yes.  
+x=-1: 9-(1-(-1))=9-2=7 yes. Good.
+
+If x = -m: number = (2m+1)^2 - 3m + y. m=1: x=-1:  
+y=1: 9-3+1=7? That’s wrong — should be 4 at (-1,1). So maybe -y? Let's check known: Actually known formula:  
+x=-m: number = (2m+1)^2 - 3m - y. Test m=1: x=-1:  
+y=1: 9-3-1=5 (at (-1,1)) but should be 5? Wait our spiral: (-1,1) is 5 yes. y=0: 9-3-0=6 yes. y=-1: 9-3-(-1)=9-3+1=7 yes. Good.
+
+If y = m: number = (2m+1)^2 - 5m - x. m=1: y=1:  
+x=1: 9-5-1=3 yes. x=0: 9-5-0=4 yes. x=-1: 9-5-(-1)=9-5+1=5 but (-1,1) is 5 yes.
+
+If x = m: number = (2m+1)^2 - 7m + y. m=1: x=1:  
+y=1: 9-7+1=3? That’s wrong — (1,1) is 3 yes. Wait but that overlaps with y=m case. Actually x=m and y=m is corner, both formulas should match.
+
+So formulas are correct.
+
+---
+
+## 8. Apply to our 8 neighbors of (23,-22):
+
+m = max(|x|,|y|) for each neighbor.
+
+We know 2026 is at (23,-22), so m=23.
+
+Neighbors:
+
+1. (22,-22): max(22,22)=22. y=-22=-m: bottom row of m=22: number = (2*22+1)^2 - (22 - x) = 45^2 - (22 - 22) = 2025 - 0 = 2025.
+
+2. (24,-22): max(24,22)=24. y=-22 ≠ -24, so not bottom row. x=24=m: right col formula: number = (2*24+1)^2 - 7*24 + y = 49^2 - 168 + (-22) = 2401 - 168 - 22 = 2401 - 190 = 2211.
+
+3. (23,-21): max(23,21)=23. x=23=m: right col: number = (47^2) - 7*23 + (-21) = 2209 - 161 - 21 = 2209 - 182 = 2027.
+
+4. (23,-23): max(23,23)=23. y=-23=-m: bottom row: number = 2209 - (23 - 23) = 2209 - 0 = 2209.
+
+5. (22,-21): max(22,21)=22. y=-21 ≠ -22, x=22=m: right col: number = 45^2 - 7*22 + (-21) = 2025 - 154 - 21 = 2025 - 175 = 1850.
+
+6. (24,-21): max(24,21)=24. y=-21: not bottom row. x=24=m: right col: number = 49^2 - 7*24 + (-21) = 2401 - 168 - 21 = 2401 - 189 = 2212.
+
+7. (22,-23): max(22,23)=23. y=-23=-m: bottom row: number = 2209 - (23 - 22) = 2209 - 1 = 2208.
+
+8. (24,-23): max(24,23)=24. y=-23 ≠ -24. x=24=m: right col: number = 2401 - 168 + (-23) = 2401 - 191 = 2210.
+
+---
+
+## 9. Sum of neighbors
+
+List: 2025, 2211, 2027, 2209, 1850, 2212, 2208, 2210.
+
+Sum:  
+Pair them:  
+2025+2027=4052  
+2211+2209=4420  
+1850+2212=4062  
+2208+2210=4418  
+
+Now sum pairs:  
+4052+4420=8472  
+4062+4418=8480  
+
+Total: 8472+8480=16952.
+
+---
+
+**Final answer:**
+\[
+\boxed{16952}
+\]
+----
+Usage(input=59, output=3678, details={'prompt_tokens_details': {'cached_tokens': 32}, 'estimated_cost': 0.002916666})

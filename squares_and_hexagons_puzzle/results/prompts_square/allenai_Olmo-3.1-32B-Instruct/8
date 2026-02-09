@@ -1,0 +1,1831 @@
+We need to find the sum of all eight neighbors of the number 2026 in this square spiral grid.
+
+First, let’s recall how the square spiral is constructed:
+- 1 is at the center.
+- The numbers spiral outward in layers (rings).
+- Each layer forms a square, and the numbers increase as we move outward.
+
+Let’s break the problem into steps:
+
+## Step 1: Find the position (coordinates) of 2026 in the spiral grid
+
+Let’s use a coordinate system where 1 is at (0,0).
+
+### How the spiral works:
+
+- Layer 0 (center): just 1 at (0,0)
+- Layer 1: forms a 3×3 square, numbers 2 to 9
+- Layer 2: forms a 5×5 square, numbers 10 to 25
+- Layer k: forms a (2k+1)×(2k+1) square, numbers from (2(k-1)+1)^2+1 to (2k+1)^2
+
+The last number in layer k is (2k+1)^2.
+
+Let’s find which layer 2026 is in.
+
+Let n = 2k+1, so n^2 ≥ 2026
+
+Let’s solve for k:
+
+Try n = 45: 45^2 = 2025
+Try n = 47: 47^2 = 2209
+
+2025 is 45^2, so that's the end of layer 22 (since n = 2k+1 → 45 = 2k+1 → k = 22)
+
+So layer 22 ends at 2025.
+
+Therefore, 2026 is the first number of layer 23.
+
+Layer 23 starts at (2*22+1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026
+
+Layer 23 is a 47×47 square.
+
+The numbers in layer 23 go from 2026 to 2209 (since 47^2 = 2209).
+
+The layer starts at the position to the right of the center of the bottom side of the previous layer.
+
+Let’s recall the pattern of how the layers are constructed:
+
+For layer k (starting at k=1), the bottom left corner is at (-k, -k), and the numbers proceed as follows:
+- Start at (-k, -k + 1) (to the right of the bottom left)
+- Move right along the bottom row to (-k, k)
+- Move up along the rightmost column to (k, k)
+- Move left along the top row to (k, -k + 1)
+- Move down along the leftmost column to (-k + 1, -k)
+
+But let's clarify the exact starting point and direction for layer k.
+
+Alternatively, a common way is:
+- The bottom left of layer k is at (-k, -k)
+- The starting point for the numbers in layer k is at (-k, -k + 1)
+- Move right to (-k, k)
+- Move up to (k, k)
+- Move left to (k, -k + 1)
+- Move down to (-k + 1, -k)
+
+But let's check for a small k.
+
+Let’s check for k=1 (layer 1, 3x3):
+
+Bottom left is (-1, -1). Starting point: (-1, 0)
+Let’s fill numbers 2 to 9:
+
+( -1, 0 ) = 2
+( 0, 0 ) = 3
+( 1, 0 ) = 4
+( 1, 1 ) = 5
+( 0, 1 ) = 6
+( -1, 1 ) = 7
+( -1, -1 ) = 8
+( 0, -1 ) = 9
+
+But in the example spiral given:
+
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+
+So center (0,0) = 1
+
+(1,0)=2, (0,1)=3, (-1,0)=4, (-1,1)=5, (-1,-1)=6, (0,-1)=7, (1,-1)=8, (1,1)=9
+
+Wait, let's map coordinates:
+
+Let’s define the grid as:
+
+y
+^
+|
+|   (1,1)  (0,1) (-1,1)
+|   (1,0)  (0,0) (-1,0)
+|   (1,-1) (0,-1)(-1,-1)
+
+But the usual numbering is:
+
+Start at (0,0)=1
+
+Then move right to (1,0)=2
+
+Then up to (1,1)=3
+
+Then left to (0,1)=4, (-1,1)=5
+
+Then down to (-1,0)=6, (-1,-1)=7
+
+Then right to (0,-1)=8, (1,-1)=9
+
+So the order is: right, up, left, down, and repeat, increasing the steps each time.
+
+But the standard Ulam spiral starts at (0,0)=1, then moves right, up, left, down, and each "leg" increases in length by 1 every two turns.
+
+But for our purposes, let's use a function to compute the coordinates for a given number.
+
+Alternatively, let's use the following approach:
+
+Let’s define a function that, given n, returns (x, y).
+
+Let’s find a formula.
+
+### Formula for coordinates in the Ulam spiral
+
+There are several formulas available. One is as follows (see OEIS A053793 and A060544):
+
+Let’s define:
+
+Let k = floor((sqrt(n-1) + 1)/2)
+Let t = 2k + 1  # side length of the square layer we're in
+Let m = n - (t-2)^2  # distance from the start of the layer (since (t-2)^2 is the last number of previous layer)
+Let s = t - 1  # steps on each side except the first (since first side starts at one less)
+If m <= s:  # right side, moving up
+    x = k - (m - 1)
+    y = -k + 1
+elif m <= 2*s:  # top side, moving left
+    x = -k + 1 - (m - s)
+    y = k - (m - s)
+elif m <= 3*s:  # left side, moving down
+    x = -k
+    y = -k + 1 - (m - 2*s)
+else:  # bottom side, moving right
+    x = -k + 1 + (m - 3*s)
+    y = -k
+
+But let's check with n=1:
+
+k = floor((sqrt(0)+1)/2) = floor(1/2) = 0
+t = 1
+m = 1 - (-1)^2 = 1 - 1 = 0? Wait, (t-2)^2 = (1-2)^2 = 1
+But for n=1: (t-2)^2 = (1-2)^2 = 1, but that's not correct since previous layer ends at 0.
+
+Better to use:
+
+Let k = floor((sqrt(n-1) + 1)/2)
+Let ring = k
+Let side_length = 2*ring + 1
+Let max_prev = (side_length - 2)^2  # last number of previous ring
+Let offset = n - max_prev
+
+Then, each side of the ring has length = side_length - 1, except the first side which is length = side_length
+
+But standard approach:
+
+From Wikipedia and OEIS, here's a Python function for Ulam spiral coordinates:
+
+def ulam_spiral(n):
+    if n == 1:
+        return (0, 0)
+    k = ((int((n-1)**0.5)+1)//2)
+    t = 2*k + 1
+    m = t*t
+    if m >= n:
+        m -= t
+        if m < t-1:
+            return (k - m, k)
+        m -= t - 1
+        if m < t-1:
+            return (-k + m + 1, k)
+        m -= t - 1
+        if m < t-1:
+            return (-k, -k + m + 1)
+        m -= t - 1
+        return ( -k + m + 2, -k )
+
+But let's check for n=1 to n=9
+
+n=1: (0,0)
+n=2: k = ((sqrt(1)+1)//2) = (1+1)//2 = 1
+t=3
+m=9
+m>=n: m=9-3=6
+6 < 2? no
+6-2=4
+4<2? no
+4-2=2
+2<2? no
+2-2=0
+return (-1 + 0 + 2, -1) = (1, -1)  But that's not matching.
+
+Alternatively, let's use the following formula from OEIS A053793/A060544:
+
+def spiral_coords(n):
+    if n == 1:
+        return (0, 0)
+    layers = ((int((n-1)**0.5) + 1)//2)
+    side = 2 * layers + 1
+    max_lower = (side - 2) ** 2
+    offset = n - max_lower
+    if offset <= side - 1:
+        # right side
+        return (layers - offset + 1, -layers + 1)
+    offset -= (side - 1)
+    if offset <= side - 1:
+        # top side
+        return (-layers + 1 - offset, layers - offset)
+    offset -= (side - 1)
+    if offset <= side - 1:
+        # left side
+        return (-layers, -layers + 1 - offset)
+    offset -= (side - 1)
+    # bottom side
+    return (-layers + 1 + offset, -layers)
+
+Let’s test this for n=1..9
+
+n=1: (0,0)
+n=2: layers = ((sqrt(1)+1)//2) = (1+1)//2=1
+side=3
+max_lower=(1)^2=1
+offset=2-1=1
+1<=2 (side-1=2): right side
+return (1 - 1 + 1, -1 + 1) = (1, 0)
+But in our mapping, 2 should be at (1,0)? Let's check the example grid:
+
+Given:
+
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+
+Let's assign coordinates so that (0,0)=1
+
+To the right: (1,0)=2
+Above: (1,1)=3
+Left: (0,1)=4, (-1,1)=5
+Down: (-1,0)=6, (-1,-1)=7
+Right: (0,-1)=8, (1,-1)=9
+
+So (1,0)=2 is correct.
+
+n=3: layers=1, side=3, max_lower=1, offset=3-1=2
+2<=2: right side
+return (1 - 2 + 1, -1 + 1) = (0,0)  Wait, that can't be right.
+
+Wait, the formula says:
+right side: (layers - offset + 1, -layers + 1)
+
+But for offset=2:
+layers=1, offset=2
+x=1-2+1=0
+y=-1+1=0
+
+But (0,0) is 1, not 3.
+
+Hmm, perhaps the formula is off by one.
+
+Alternatively, let's use the code from this source: https://stackoverflow.com/a/44250807
+
+def get_coordinates(n):
+    if n == 1:
+        return (0, 0)
+    k = 1
+    while (2 * k + 1) ** 2 < n:
+        k += 1
+    # Now, 2k+1 is the odd integer such that (2k+1)^2 >= n
+    # Previous square: (2k-1+1)^2 = (2k)^2
+    # But let's use:
+    # The ring number is k
+    # The side length is 2k+1
+    # The start of the ring is (2k-1)^2 + 1
+    # Let m = n - (2k-1)^2
+    # Each side has length 2k, except the first which has 2k
+    # But actually, each side has 2k numbers except the first which has 2k+1?
+    # Let's compute (2k-1)^2 is the last number of previous ring
+    prev = (2 * k - 1) ** 2
+    m = n - prev
+    # Each side has length 2k
+    if m <= 2 * k:
+        # right side, moving up
+        return (k - 1, -k + 1 + (m - 1))
+    m -= 2 * k
+    if m <= 2 * k:
+        # top side, moving left
+        return (-k + 1 + (m - 1), k - 1)
+    m -= 2 * k
+    if m <= 2 * k:
+        # left side, moving down
+        return (-k, -k + 1 + (m - 1))
+    m -= 2 * k
+    # bottom side, moving right
+    return (-k + 1 + (m - 1), -k)
+
+Let’s test for n=1..9
+
+n=1: returns (0,0)
+
+n=2: k=1, prev=(2*1-1)^2=1^2=1, m=2-1=1
+1 <= 2: right side
+return (1-1, -1+1 + (1-1)) = (0, 0+0) = (0,0)  # not right
+
+Wait, perhaps the formulas are not matching the exact spiral orientation.
+
+Alternatively, let's build the mapping manually for small n and generalize.
+
+Let’s lay out the spiral with coordinates:
+
+Let’s use:
+
+y
+^
+|
+|   (-1,1) (-0,1) (1,1)
+|   (-1,0) (0,0) (1,0)
+|   (-1,-1)(0,-1)(1,-1)
+
+But let's use x as column, y as row.
+
+Let (0,0) = 1
+
+Start at (0,0)
+Move right: (1,0)=2
+Move up: (1,1)=3
+Move left: (0,1)=4, (-1,1)=5
+Move down: (-1,0)=6, (-1,-1)=7
+Move right: (0,-1)=8, (1,-1)=9
+
+So mapping:
+(0,0)=1
+(1,0)=2
+(1,1)=3
+(0,1)=4
+(-1,1)=5
+(-1,0)=6
+(-1,-1)=7
+(0,-1)=8
+(1,-1)=9
+
+Now let's try to find a formula for n to (x, y):
+
+Let’s list (x, y) for n=1..9
+
+n : (x, y)
+1 : (0,0)
+2 : (1,0)
+3 : (1,1)
+4 : (0,1)
+5 : (-1,1)
+6 : (-1,0)
+7 : (-1,-1)
+8 : (0,-1)
+9 : (1,-1)
+
+Let’s see the pattern.
+
+For each "ring", the numbers go:
+
+Right (increasing x), Up (increasing y), Left (decreasing x), Down (decreasing y)
+
+But the first step is to the right, then up, then left, then down, and each "leg" increases in length by 1 every two turns.
+
+But for the first ring (from 1 to 9):
+
+From 1 to 2: right (1 step)
+2 to 3: up (1 step)
+3 to 4 to 5: left (2 steps)
+5 to 6 to 7: down (2 steps)
+7 to 8 to 9: right (2 steps)
+
+Wait, from 7 to 8 to 9 is right, but only 2 steps.
+
+But after 9, next would be up 2 steps, etc.
+
+Alternatively, let's use the code from Rosetta Code: https://rosettacode.org/wiki/Spiral_matrix#Python
+
+But perhaps it's faster to write a function that generates the spiral up to 2026 and then reads off the coordinates.
+
+Let’s write a small Python-like pseudocode to generate the spiral up to 2026 and get the coordinates of 2026.
+
+Let’s do that.
+
+We’ll create a dictionary mapping number to (x, y), starting from (0,0)=1
+
+Initialize:
+x, y = 0, 0
+dx, dy = 1, 0  # start by moving right
+steps = 1
+count = 1
+max_n = 2026
+number_to_coord = {1: (0,0)}
+
+while count < max_n:
+    for _ in range(steps):
+        if count >= max_n:
+            break
+        x += dx
+        y += dy
+        count += 1
+        number_to_coord[count] = (x, y)
+    # turn left (dx, dy) = (-dy, dx)
+    dx, dy = -dy, dx
+    if dx == 1 or dx == -1:
+        steps += 1  # after two turns, increase steps
+
+But let's check how the steps work.
+
+Standard spiral algorithm:
+
+- Move right 1
+- Move up 1
+- Move left 2
+- Move down 2
+- Move right 2
+- Move up 3
+- Move left 3
+- Move down 3
+- Move right 4
+- etc.
+
+So the pattern is: right 1, up 1, left 2, down 2, right 2, up 3, left 3, down 3, right 4, up 4, ...
+
+So after the first step, we do pairs of equal steps, increasing by 1 each pair.
+
+Let’s implement that:
+
+x, y = 0, 0
+dx, dy = 1, 0  # right
+number_to_coord = {1: (0,0)}
+count = 1
+layer = 1  # first "leg" is right 1
+# First move right 1
+for _ in range(1):
+    if count >= max_n:
+        break
+    x += dx
+    y += dy
+    count += 1
+    number_to_coord[count] = (x, y)
+# Now, for each subsequent pair of directions, increase step size by 1 each pair
+step = 1
+while count < max_n:
+    # up
+    dx, dy = 0, 1
+    for _ in range(step):
+        if count >= max_n:
+            break
+        x += dx
+        y += dy
+        count += 1
+        number_to_coord[count] = (x, y)
+    # left
+    dx, dy = -1, 0
+    for _ in range(step):
+        if count >= max_n:
+            break
+        x += dx
+        y += dy
+        count += 1
+        number_to_coord[count] = (x, y)
+    step += 1
+    # down
+    dx, dy = 0, -1
+    for _ in range(step):
+        if count >= max_n:
+            break
+        x += dx
+        y += dy
+        count += 1
+        number_to_coord[count] = (x, y)
+    # right
+    dx, dy = 1, 0
+    for _ in range(step):
+        if count >= max_n:
+            break
+        x += dx
+        y += dy
+        count += 1
+        number_to_coord[count] = (x, y)
+    step += 1
+
+But after the first right 1, then up 1, then left 2, down 2, right 2, up 3, left 3, down 3, right 4, etc.
+
+Wait, after the initial right 1, the first "pair" is up 1 and left 2? No, the increments are: after the first right, do up 1, left 2, down 2, then right 2, up 3, left 3, down 3, right 4, etc.
+
+But in the initial movement:
+- right 1 (to 2)
+- up 1 (to 3)
+- left 2 (to 4, 5)
+- down 2 (to 6, 7)
+- right 2 (to 8, 9)
+- up 3 (to 10, 11, 12)
+- left 3 (to 13, 14, 15)
+- down 3 (to 16, 17, 18)
+- right 4 (to 19, 20, 21, 22)
+etc.
+
+But let's code accordingly.
+
+Alternatively, let's use the following approach (from Wikipedia):
+
+Let n be the number.
+
+Let k = ceil((sqrt(n-1) + 1)/2)
+Let t = 2k - 1
+Let m = n - (t-2)^2
+Let s = t - 1
+If m <= s: x = k - 1; y = k - m
+elif m <= 2s: x = -k + m - s; y = k
+elif m <= 3s: x = -k; y = -k + m - 2s
+else: x = -k + m - 3s; y = -k
+
+But let's check for n=1 to n=9
+
+k = ceil((sqrt(n-1)+1)/2)
+
+n=1: sqrt(0)=0, (0+1)/2=0.5, ceil=1, t=1, m=1-( -1)^2=1-1=0? (t-2)^2 = (1-2)^2=1, m=1-1=0
+
+But for n=1, m=0
+
+But the formula seems a bit off.
+
+Alternatively, let's use the approach from here: https://stackoverflow.com/a/44250807
+
+But let's instead generate the coordinates for n up to, say, 25, and see the pattern.
+
+Let’s do that by hand for n up to 25.
+
+We already have 1 to 9:
+
+n : (x, y)
+1 : (0,0)
+2 : (1,0)
+3 : (1,1)
+4 : (0,1)
+5 : (-1,1)
+6 : (-1,0)
+7 : (-1,-1)
+8 : (0,-1)
+9 : (1,-1)
+
+Now continue:
+
+Next should be up 2 steps:
+From 9 at (1,-1), move up:
+10: (1,0)
+11: (1,1)
+
+Then left 3 steps:
+12: (0,1)
+13: (-1,1)
+14: (-2,1)
+
+Then down 3 steps:
+15: (-2,0)
+16: (-2,-1)
+17: (-2,-2)
+
+Then right 4 steps:
+18: (-1,-2)
+19: (0,-2)
+20: (1,-2)
+21: (2,-2)
+
+Then up 4 steps:
+22: (2,-1)
+23: (2,0)
+24: (2,1)
+25: (2,2)
+
+So the mapping is:
+
+n : (x, y)
+10: (1,0)
+11: (1,1)
+12: (0,1)
+13: (-1,1)
+14: (-2,1)
+15: (-2,0)
+16: (-2,-1)
+17: (-2,-2)
+18: (-1,-2)
+19: (0,-2)
+20: (1,-2)
+21: (2,-2)
+22: (2,-1)
+23: (2,0)
+24: (2,1)
+25: (2,2)
+
+Now, let's see if we can find a formula.
+
+But for our purposes, let's just use this method to compute the coordinates of 2026.
+
+But since 2026 is a large number, let's find which "ring" it's in.
+
+Let’s find the ring k such that the last number of ring (k-1) is less than 2026, and the last number of ring k is >= 2026.
+
+The last number in ring k is (2k+1)^2
+
+For k=0: 1^2=1
+k=1: 3^2=9
+k=2: 5^2=25
+k=3: 7^2=49
+...
+k=n: (2n+1)^2
+
+Let’s solve (2k+1)^2 >= 2026
+
+2k+1 >= sqrt(2026) ≈ 45.01
+
+So 2k+1 = 45 → k=22, 45^2=2025
+2k+1 = 47 → k=23, 47^2=2209
+
+So numbers 2026 to 2209 are in ring k=23, which is a 47x47 grid.
+
+The previous ring ended at 45^2=2025.
+
+So 2026 is the first number in ring 23.
+
+Now, the starting position for ring k is at (k, -(k-1)) or similar. Let's see the pattern.
+
+From our earlier mapping, for ring k=1 (numbers 2 to 9), started at (1,0) (which is to the right of center).
+
+But for ring k=2 (numbers 10 to 25), started at (1,0) but that was already used; actually, after 9 at (1,-1), we went up to (1,0), (1,1), then left to (-2,1), etc.
+
+But let's see the starting point for each ring.
+
+Alternatively, let's see the pattern of starting points for each ring:
+
+Ring 0: (0,0) = 1
+
+Ring 1: starts at (1,0) = 2
+Ring 2: starts at (1,1) = 10? But in our mapping, 10 is at (1,0)
+
+Wait in our mapping above, after 9 at (1,-1), we went up to (1,0)=10, (1,1)=11
+
+So ring 2 starts at (1,0)=10
+
+But (1,0) was previously (2). But in the spiral, each ring is a new outer layer.
+
+Alternatively, perhaps it's easier to continue the pattern programmatically.
+
+But let's try to find a formula for the starting position of ring k.
+
+Let’s see for k=1 (numbers 2 to 9): starts at (1,0)
+k=2 (10 to 25): starts at (1,0)? But (1,0) is already occupied by 2.
+
+But in the spiral, after finishing the previous ring, we move up one step to start the next ring.
+
+From 9 at (1,-1), move up to (1,0)=10
+
+So the start of ring k is at (k, -(k-1)) ?
+
+For k=1: (1,0)
+For k=2: (2,-1)? But in our mapping, 10 is at (1,0)
+
+Alternatively, let's define the starting point S_k for ring k:
+
+From the previous ring's end, we move up one step to start the new ring.
+
+From the end of ring k-1, which is at (k-1, -(k-1)), we move up to (k-1, - (k-1) + 1) = (k-1, -k + 2)
+
+But for k=2: (1, -2 + 2) = (1,0) which matches.
+
+So the starting point for ring k is (k-1, -k + 2)
+
+Let’s verify:
+
+For k=1: (0, -1 + 2) = (0,1)? But our ring 1 starts at (1,0). Hmm, not matching.
+
+Alternatively, let's look at the movement.
+
+After finishing ring k-1 at position P, the next move is up one step to start ring k.
+
+From the end of ring 0 (1 at (0,0)), move right to (1,0)=2 (start of ring 1)
+From end of ring 1 at (1,-1)=9, move up to (1,0)=10 (start of ring 2)
+From end of ring 2 at (2,-2)=21, move up to (2,-1)=22 (start of ring 3)
+
+So the starting point of ring k is at the same x as the previous ring's width, and y = - (k-1) + 1
+
+For ring 1: x=1, y=0
+For ring 2: x=1, y=0? But that's already used.
+
+Wait, after ring 1 ends at (1,-1), we go up to (1,0) for ring 2 start.
+
+So for ring k, starting position is (k, -k + 1)? Let's check:
+
+For k=1: (1, -1 + 1) = (1,0) ✔️
+For k=2: (2, -2 + 1) = (2,-1) ✖️, but in our mapping ring 2 starts at (1,0)
+
+Wait, perhaps the x coordinate increases every two rings.
+
+Alternatively, let's tabulate the starting positions:
+
+Ring 1: starts at (1,0) = 2
+Ring 2: starts at (1,0) = 10? But (1,0) was already used by 2.
+
+But in the spiral, after finishing the previous ring, we move in the next direction.
+
+Let’s define the steps for each ring:
+
+Ring k has 8k numbers (except the center).
+
+But perhaps it's easier to generate the coordinates up to 2026 using the step method.
+
+But since this is a reasoning exercise, let's try to find a pattern.
+
+Let’s note that for ring k (k >= 1), the numbers go as follows:
+
+- Move up k steps
+- Move left k steps
+- Move down k steps
+- Move right k steps
+
+But for k=1: up 1, left 1, down 1, right 1? But that's only 4 numbers, but we have 8 numbers in the first ring (from 2 to 9).
+
+Alternatively, for ring k, the steps per side are: up k, left k, down k, right k, but for k=1: up 1, left 2, down 2, right 2
+
+From the pattern above:
+
+After the initial right 1 to get to 2, then:
+- up 1 (to 3)
+- left 2 (to 4, 5)
+- down 2 (to 6, 7)
+- right 2 (to 8, 9)
+Then up 3, left 3, down 3, right 3, etc.
+
+So for ring m (where m >= 1), the sides are:
+- up m
+- left m
+- down m
+- right m
+
+But the first "ring" after the center is m=1: up 1, left 2, down 2, right 2
+
+But to generalize, for ring m (starting from m=1), the side lengths are:
+- up: m
+- left: m+1
+- down: m+1
+- right: m+1
+
+But for m=1: up 1, left 2, down 2, right 2
+
+But in our spiral, after the initial right 1 (to 2), then:
+up 1 (to 3)
+left 2 (to 4, 5)
+down 2 (to 6, 7)
+right 2 (to 8, 9)
+
+So the increments are: after the first right, then for m=1, up 1, left 2, down 2, right 2
+
+Then for m=2: up 3, left 3, down 3, right 3
+
+But actually, after 9 at (1,-1), we go up 2 steps to (1,0)=10, (1,1)=11
+Then left 3 steps to (0,1)=12, (-1,1)=13, (-2,1)=14
+Then down 3 steps to (-2,0)=15, (-2,-1)=16, (-2,-2)=17
+Then right 4 steps to (-1,-2)=18, (0,-2)=19, (1,-2)=20, (2,-2)=21
+Then up 4 steps to (2,-1)=22, (2,0)=23, (2,1)=24, (2,2)=25
+
+So the pattern after the center is:
+
+- right 1 (to 2)
+Then for m = 1 to ...:
+    - up (m+1)
+    - left (m+1)
+    - down (m+1)
+    - right (m+1)
+But for m=1: up 2, left 2, down 2, right 2? But we only went up 1 after 2.
+
+Alternatively, let's define the "layers" as the squares.
+
+But perhaps it's fastest to compute the offset within the ring and determine the side.
+
+Let’s define:
+
+Let k = 23 (since 2026 is in ring 23, as 2025 is the last of ring 22)
+
+The first number of ring 23 is 2026.
+
+The previous ring ended at 2025 at position (22, -22)
+
+Then, to start ring 23, we move up 1 step to (22, -21)
+
+Then, for ring 23, we have 4 sides, each of length 23
+
+But from the pattern, after finishing the previous ring at (22, -22), we move up 1 to (22, -21) [this is 2026]
+Then we move left 23 steps: from (22, -21) to (22-23, -21) = (-1, -21)
+Then down 23 steps: from (-1, -21) to (-1, -21-23) = (-1, -44)
+Then right 23 steps: from (-1, -44) to (22, -44)
+Then up 23 steps: from (22, -44) to (22, -21)
+
+But let's check with a smaller ring.
+
+For ring 2 (k=2), previous ring ended at (1,-1)=9
+Then up 1 to (1,0)=10
+Then left 2 to (0,0)=11? But in our earlier mapping, after 10 at (1,0), we went to (1,1)=11
+
+Wait, perhaps the directions are: after finishing the previous ring at (k-1, -(k-1)), move up 1 to (k-1, -k + 2), then for the new ring, the sides are: up k, left k, down k, right k
+
+But let's try for k=2:
+
+Previous ring ended at (1, -1)
+Move up 1 to (1,0) = 10
+Now, for ring 2 (k=2), the sides are:
+- up 2: (1,0) to (1,1) [11], (1,2) [but in our mapping, we only went to (1,1)=11]
+Wait in our mapping above, after 10 at (1,0), we went to (1,1)=11, then left to (0,1)=12, (-1,1)=13, (-2,1)=14
+
+So up 1 to (1,1), then left 3 to (-2,1)
+
+But in the standard square spiral, each ring has sides of length 2k, but the first movement is up k, then left k, then down k, then right k
+
+But our earlier step-by-step code had after the first right, then pairs of up/left, left/down, down/right, increasing by 1 each time.
+
+Given the complexity, perhaps the best way is to simulate the spiral up to 2026 and record the coordinates.
+
+But since I can't run code here, let's try to generalize.
+
+Let’s formalize the steps:
+
+Let’s define the starting point of ring k as S_k.
+
+For k=1:
+- S_1 = (1,0) = 2
+
+For k=2:
+- S_2 = (1,0) but that's already used, but in the spiral, after finishing ring 1 at (1,-1), move up to (1,0) = 10
+
+But (1,0) was already used by 2, but in the spiral, each cell is visited only once.
+
+Wait in our earlier mapping, after 2 at (1,0), we went to (1,1)=3, then to (0,1)=4, etc, and (1,0) is only assigned to 2.
+
+After finishing ring 1 at (1,-1)=9, we move up to (1,0), but (1,0) is already occupied. But in a proper spiral, we don't revisit cells.
+
+Let's re-examine the mapping:
+
+From 9 at (1,-1), next is up to (1,0), but (1,0) is already occupied by 2.
+
+But in the actual spiral, after 9 at (1,-1), the next number 10 is at (1,0)? But that's already taken.
+
+But in our earlier manual mapping, we had:
+
+From 9 at (1,-1), move up to (1,0)=10
+
+But that would overwrite 2.
+
+So perhaps my earlier mapping is off.
+
+Let’s reconstruct the spiral carefully, keeping track of visited cells.
+
+Let’s lay out a 5x5 grid, with coordinates from (-2,-2) to (2,2):
+
+Let’s start at (0,0)=1
+
+Move right to (1,0)=2
+
+Move up to (1,1)=3
+
+Move left to (0,1)=4, (-1,1)=5
+
+Move down to (-1,0)=6, (-1,-1)=7
+
+Move right to (0,-1)=8, (1,-1)=9
+
+Now, next should be up to (1,0), but that's already taken by 2.
+
+But in the standard spiral, after reaching (1,-1)=9, we move up to a new row above.
+
+But (1,0) is already filled, so we move up from (1,-1) to (1,0) is not possible.
+
+Instead, after reaching (1,-1)=9, we move up to (1,0)? But that's already filled.
+
+But in the standard Ulam spiral, after the first layer, you move up from the last point to the next layer.
+
+From (1,-1), move up to (1,0)? But that's already filled.
+
+Wait, perhaps I made a mistake in the initial mapping.
+
+Let’s look up a standard Ulam spiral grid:
+
+From Wikipedia: 
+
+The spiral starts at 1, moves right, up, left, down, with the side lengths increasing after every two turns.
+
+Let’s write out the 5x5 Ulam spiral:
+
+Let’s use a grid with coordinates:
+
+y
+^
+|
+|  17 16 15 14 13
+|  18  5  4  3 12
+|  19  6  1  2 11
+|  20  7  8  9 10
+|  21 22 23 24 25
+
+But let's assign coordinates so that (0,0) is the center (1):
+
+Let x increase to the right, y increase upwards.
+
+So (0,0)=1
+
+(1,0)=2
+(1,1)=3
+(0,1)=4
+(-1,1)=5
+(-1,0)=6
+(-1,-1)=7
+(0,-1)=8
+(1,-1)=9
+(2,-1)=10
+(2,0)=11
+(2,1)=12
+(2,2)=13
+(1,2)=14
+(0,2)=15
+(-1,2)=16
+(-2,2)=17
+(-2,1)=18
+(-2,0)=19
+(-2,-1)=20
+(-2,-2)=21
+(-1,-2)=22
+(0,-2)=23
+(1,-2)=24
+(2,-2)=25
+
+Let’s fill in the numbers:
+
+Let’s start at (0,0)=1
+
+Move right to (1,0)=2
+Move up to (1,1)=3
+Move left to (0,1)=4, (-1,1)=5
+Move down to (-1,0)=6, (-1,-1)=7
+Move right to (0,-1)=8, (1,-1)=9
+Move up to (1,0)? But that's taken, so move up to (1,1)? That's taken.
+
+Wait, after (1,-1)=9, we move up to (1,0)? That's taken by 2.
+
+But in the standard spiral, after completing the first layer, we move up from (1,-1) to (1,0), but since (1,0) is filled, we instead move up to a new row.
+
+But in the 5x5 spiral above, after 9 at (1,-1), the next is 10 at (2,-1)
+
+So from (1,-1), move right to (2,-1)=10
+
+Then up to (2,0)=11, (2,1)=12, (2,2)=13
+
+Then left to (1,2)=14, (0,2)=15, (-1,2)=16, (-2,2)=17
+
+Then down to (-2,1)=18, (-2,0)=19, (-2,-1)=20, (-2,-2)=21
+
+Then right to (-1,-2)=22, (0,-2)=23, (1,-2)=24, (2,-2)=25
+
+So the correct movement after the initial "square" is to move right to start the next layer.
+
+So the algorithm is:
+
+- Start at (0,0)=1
+- For each layer k=1,2,3,...:
+    - Move right k times
+    - Move up k times
+    - Move left k times
+    - Move down k times
+But for k=1, that would be: right 1, up 1, left 1, down 1 — but that only covers 4 numbers, but we have 8 numbers in the first layer.
+
+Actually, for the first layer (k=1), we do:
+- right 1 (to 2)
+- up 1 (to 3)
+- left 2 (to 4,5)
+- down 2 (to 6,7)
+- right 2 (to 8,9)
+Then for k=2:
+- up 2 (to 10,11)
+- left 2 (to 12,13)
+But in the standard, after the first square, the side lengths increase.
+
+But from the 5x5 grid, the steps are:
+From 1 at (0,0)
+right to (1,0)=2
+up to (1,1)=3
+left to (0,1)=4, (-1,1)=5
+down to (-1,0)=6, (-1,-1)=7
+right to (0,-1)=8, (1,-1)=9
+up to (1,0)? no, instead right to (2,-1)=10
+up to (2,0)=11, (2,1)=12
+left to (1,2)=13? No, left to (1,1)? But that's taken.
+
+Actually, let's follow the 5x5 numbering:
+
+Let's list the coordinates in order:
+
+1: (0,0)
+2: (1,0)
+3: (1,1)
+4: (0,1)
+5: (-1,1)
+6: (-1,0)
+7: (-1,-1)
+8: (0,-1)
+9: (1,-1)
+10: (2,-1)
+11: (2,0)
+12: (2,1)
+13: (2,2)
+14: (1,2)
+15: (0,2)
+16: (-1,2)
+17: (-2,2)
+18: (-2,1)
+19: (-2,0)
+20: (-2,-1)
+21: (-2,-2)
+22: (-1,-2)
+23: (0,-2)
+24: (1,-2)
+25: (2,-2)
+
+So after 9 at (1,-1), we go to (2,-1)=10 (right)
+Then up to (2,0)=11, (2,1)=12, (2,2)=13
+Then left to (1,2)=14, (0,2)=15, (-1,2)=16, (-2,2)=17
+Then down to (-2,1)=18, (-2,0)=19, (-2,-1)=20, (-2,-2)=21
+Then right to (-1,-2)=22, (0,-2)=23, (1,-2)=24, (2,-2)=25
+
+So the pattern is:
+- After the initial square (from 1 to 9), for each new layer, we increase the x or y as appropriate and make the "arms" longer by 1 each layer.
+
+But to get the coordinates for any n, we can use the following method:
+
+Let’s define the layers as squares of odd length: 1x1, 3x3, 5x5, ...
+
+Let k be the layer, where layer 0 is the center (1x1), layer 1 is 3x3, layer 2 is 5x3, etc.
+
+The last number in layer k is (2k+1)^2
+
+For a given n, find the smallest k such that (2k+1)^2 >= n
+
+Let side = 2k+1
+
+Let prev = (2k-1)^2  # last number of previous layer
+
+Let offset = n - prev - 1  # 0-based index in the layer
+
+Then, the layer has 4 sides, each of length (side - 1), but the first side may be shorter if n is near the beginning.
+
+But in the 5x5 example, from 10 to 25 is layer 2, side=5, prev=9
+
+Numbers 10 to 25: 16 numbers, 4 sides of length 4
+
+Let’s number the sides:
+
+Side 1: rightmost column, from bottom to top, excluding the corner already used
+But in our example, from (2,-1)=10 to (2,2)=13 (4 numbers)
+But (2,-1), (2,0), (2,1), (2,2)
+
+Side 2: top row, from right to left, (1,2)=14 to (-2,2)=17
+
+Side 3: leftmost column, from top to bottom, (-2,1)=18 to (-2,-2)=21
+
+Side 4: bottom row, from left to right, (-1,-2)=22 to (2,-2)=25
+
+But each side has 4 numbers.
+
+So for layer k, side = 2k+1
+
+Each side has (side - 1) = 2k numbers
+
+Let’s assign:
+
+Let ring = k
+Let side_length = 2*ring + 1
+Let start_num = (2*ring - 1) ** 2 + 1
+Let offset = n - start_num  # 0-based index in the ring
+
+Each side has len_side = 2*ring numbers
+
+Let side = offset // len_side
+Let pos_in_side = offset % len_side
+
+Now, determine the starting coordinate of each side:
+
+The starting point of the ring is at (ring, -(ring-1))
+
+But in the 5x5 example, ring=2, start at (2,-1)=10
+
+From there:
+
+Side 0 (rightmost column, up): from (2,-1) to (2,2)
+x = ring
+y ranges from -(ring-1) to ring-1
+
+But in our mapping, from (2,-1) to (2,2): y from -1 to 2
+
+So y0 = -(ring-1)
+y increments by 1 for each step
+
+So for side 0 (up the rightmost column):
+
+x = ring
+y = y0 + pos_in_side
+
+But for pos_in_side=0: y = -1 + 0 = -1 → (2,-1)=10
+pos_in_side=1: y = -1 + 1 = 0 → (2,0)=11
+pos_in_side=2: y = -1 + 2 = 1 → (2,1)=12
+pos_in_side=3: y = -1 + 3 = 2 → (2,2)=13
+
+But len_side=4, pos_in_side=0..3
+
+But in our ring, there are 16 numbers, 4 per side.
+
+But for n=10, offset=0, side=0, pos_in_side=0 → (2,-1)
+n=11, offset=1, side=0, pos_in_side=1 → (2,0)
+n=12, offset=2, side=0, pos_in_side=2 → (2,1)
+n=13, offset=3, side=0, pos_in_side=3 → (2,2)
+
+Then side 1 (top row, left):
+
+Start at (1,2)
+
+For side 1, we go left from (2,2) to (-2,2)
+
+x decreases from ring to -ring+1
+y = ring
+
+x = ring - pos_in_side
+y = ring
+
+For pos_in_side=0: x=2-0=2, y=2 → (2,2) but that's already used by n=13
+
+So we start at (1,2) for n=14
+
+So for side 1, starting point is (ring-1, ring)
+
+Then for pos_in_side=0 to len_side-1:
+x = ring-1 - pos_in_side
+y = ring
+
+n=14: pos_in_side=0, x=2-1-0=1, y=2 → (1,2)
+n=15: x=0, y=2 → (0,2)
+n=16: x=-1, y=2 → (-1,2)
+n=17: x=-2, y=2 → (-2,2)
+
+Side 2 (leftmost column, down):
+
+Start at (-2,1)
+
+x = -ring
+y decreases from ring-1 to -ring+1
+
+y = ring-1 - pos_in_side
+
+n=18: x=-2, y=1 → (-2,1)
+n=19: x=-2, y=0 → (-2,0)
+n=20: x=-2, y=-1 → (-2,-1)
+n=21: x=-2, y=-2 → (-2,-2)
+
+Side 3 (bottom row, right):
+
+Start at (-1,-2)
+
+x increases from -ring+1 to ring-1
+y = -ring
+
+x = -ring+1 + pos_in_side
+
+n=22: x=-1, y=-2 → (-1,-2)
+n=23: x=0, y=-2 → (0,-2)
+n=24: x=1, y=-2 → (1,-2)
+n=25: x=2, y=-2 → (2,-2)
+
+But (2,-2) is the last of the ring.
+
+But in our earlier 5x5 grid, (2,-2)=25
+
+Now, let's generalize the formulas for any ring k (starting from 0):
+
+Let ring = k
+side_length = 2*ring + 1
+start_num = (2*ring - 1) ** 2 + 1  # if ring > 0; for ring=0, start_num=1
+If n == 1: (0,0)
+Else:
+    offset = n - start_num
+    len_side = 2 * ring
+    side = offset // len_side
+    pos_in_side = offset % len_side
+
+    if side == 0:  # rightmost column, up
+        x = ring
+        y = -(ring - 1) + pos_in_side
+    elif side == 1:  # top row, left
+        x = ring - 1 - pos_in_side
+        y = ring
+    elif side == 2:  # leftmost column, down
+        x = -ring
+        y = ring - 1 - pos_in_side
+    elif side == 3:  # bottom row, right
+        x = -ring + 1 + pos_in_side
+        y = -ring
+
+But let's test for n=10, ring=2 (since 3^2=9 < 10 <= 5^2=25)
+
+start_num = 9 + 1 = 10
+offset = 10 - 10 = 0
+len_side = 4
+side = 0 // 4 = 0
+pos_in_side = 0
+x = 2
+y = -(2-1) + 0 = -1 + 0 = -1
+So (2, -1) ✔️
+
+n=11: offset=1, side=0, pos=1
+x=2
+y= -1 + 1 = 0 → (2,0) ✔️
+
+n=12: offset=2, side=0, pos=2
+x=2
+y= -1 + 2 = 1 → (2,1) ✔️
+
+n=13: offset=3, side=0, pos=3
+x=2
+y= -1 + 3 = 2 → (2,2) ✔️
+
+n=14: offset=4, side=4//4=1, pos=0
+x=2-1-0=1
+y=2
+(1,2) ✔️
+
+n=15: offset=5, side=1, pos=1
+x=2-1-1=0
+y=2
+(0,2) ✔️
+
+n=16: offset=6, side=1, pos=2
+x=2-1-2=-1
+y=2
+(-1,2) ✔️
+
+n=17: offset=7, side=1, pos=3
+x=2-1-3=-2
+y=2
+(-2,2) ✔️
+
+n=18: offset=8, side=8//4=2, pos=0
+x=-2
+y=2-1-0=1
+(-2,1) ✔️
+
+n=19: offset=9, side=2, pos=1
+x=-2
+y=2-1-1=0
+(-2,0) ✔️
+
+n=20: offset=10, side=2, pos=2
+x=-2
+y=2-1-2=-1
+(-2,-1) ✔️
+
+n=21: offset=11, side=2, pos=3
+x=-2
+y=2-1-3=-2
+(-2,-2) ✔️
+
+n=22: offset=12, side=12//4=3, pos=0
+x=-2+1+0=-1
+y=-2
+(-1,-2) ✔️
+
+n=23: offset=13, side=3, pos=1
+x=-2+1+1=0
+y=-2
+(0,-2) ✔️
+
+n=24: offset=14, side=3, pos=2
+x=-2+1+2=1
+y=-2
+(1,-2) ✔️
+
+n=25: offset=15, side=3, pos=3
+x=-2+1+3=2
+y=-2
+(2,-2) ✔️
+
+Perfect.
+
+Now, for our problem, n=2026
+
+First, find the ring k such that (2k-1)^2 < 2026 <= (2k+1)^2
+
+Compute sqrt(2026) ≈ 45.01
+
+Try k=22: (2*22-1)=43, 43^2=1849
+(2*22+1)=45, 45^2=2025 < 2026
+
+Try k=23: (2*23-1)=45, 45^2=2025
+(2*23+1)=47, 47^2=2209 >= 2026
+
+So ring k=23
+
+start_num = (2*23-1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026
+
+offset = 2026 - 2026 = 0
+
+len_side = 2*23 = 46
+
+side = 0 // 46 = 0
+pos_in_side = 0
+
+So side=0 (rightmost column, up)
+
+x = 23
+y = -(23-1) + 0 = -22 + 0 = -22
+
+So 2026 is at (23, -22)
+
+Now, the 8 neighbors are:
+
+(x±1, y±1), except (x,y)
+
+Let’s list them:
+
+(24, -21)
+(24, -23)
+(22, -21)
+(22, -23)
+(23, -21)
+(23, -23)
+(24, -22)
+(22, -22)
+
+But the 8 neighbors are all (x±1, y±1) except (x,y)
+
+So explicitly:
+
+(x+1, y+1) = (24, -21)
+(x+1, y-1) = (24, -23)
+(x-1, y+1) = (22, -21)
+(x-1, y-1) = (22, -23)
+(x+1, y)   = (24, -22)
+(x-1, y)   = (22, -22)
+(x, y+1)   = (23, -21)
+(x, y-1)   = (23, -23)
+
+Now, we need to find the numbers at these coordinates.
+
+But to get the number at a given coordinate, we need the inverse mapping.
+
+But since we have the ring structure, let's find for each neighbor which ring it is in and its number.
+
+But first, let's note that (23, -22) is the starting point of ring 23, which is at the bottom of the rightmost column.
+
+Recall that in the ring, side 0 is the rightmost column, from y = -(ring-1) to y = ring-1
+
+For ring 23, x = 23, y ranges from -22 to 22
+
+The numbers in this column are from offset 0 to 45
+
+At offset=0: (23, -22) = 2026
+offset=1: (23, -21) = 2027
+offset=2: (23, -20) = 2028
+...
+offset=45: (23, 22) = 2026 + 45 = 2071
+
+So for any (23, y), the offset is y - (-(23-1)) = y + 22
+
+So offset = y + 22
+
+So number at (23, y) = 2026 + (y + 22)
+
+Now, let's compute the numbers at the neighbors:
+
+1. (24, -21)
+This is to the right of (23, -21), which is in the next ring (ring 24)
+
+But let's see if we can compute it.
+
+But perhaps it's easier to note the pattern.
+
+But let's compute for each neighbor:
+
+Let’s handle each neighbor one by one.
+
+---
+
+**Neighbor 1: (24, -21)**
+
+This is to the right of (23, -21), which is in ring 23 at (23, -21)
+
+At (23, -21): offset = y + 22 = -21 + 22 = 1, so number = 2026 + 1 = 2027
+
+But (24, -21) is outside ring 23.
+
+It is in ring 24.
+
+Let’s find which ring contains (24, -21)
+
+The maximum |x| or |y| determines the ring.
+
+Here, |x| = 24, |y| = 21, so ring = max(24,21) = 24
+
+But let's check: for ring k, x ranges from -k to k
+
+So for x=24, k >= 24
+
+For y=-21, in ring 24, y ranges from -23 to 23
+
+So (24, -21) is in ring 24
+
+Let’s compute the number at (24, -21) in ring 24
+
+First, ring k=24
+
+start_num = (2*24 - 1)^2 + 1 = (48-1)^2 + 1 = 47^2 + 1 = 2209 + 1 = 2210
+
+side_length = 2*24 + 1 = 49
+
+Each side has len_side = 2*24 = 48 numbers
+
+Now, let's determine which side (24, -21) is on in ring 24
+
+First, find offset within the ring
+
+But to do that, we need to find the offset from the start of the ring
+
+But to do that, we need to know the starting coordinate of ring 24
+
+From the pattern, the starting point of ring k is (k, -(k-1))
+
+For k=24: (24, -23)
+
+But in our earlier pattern, for ring k, the starting point is (k, -(k-1)), and the first side is up the rightmost column
+
+But for ring 24:
+
+Start at (24, -23) = 2210
+
+Then up the rightmost column to (24, 23)
+
+So for (24, y), y from -23 to 23
+
+offset = y - (-(24-1)) = y + 23
+
+So for (24, -21): offset = -21 + 23 = 2
+
+So number = 2210 + 2 = 2212
+
+But let's double-check the mapping.
+
+For ring k, starting at (k, -(k-1)), and moving up the rightmost column
+
+At offset=0: (k, -(k-1)) = start_num
+offset=1: (k, -(k-1) + 1)
+...
+offset = m: (k, -(k-1) + m)
+
+So for (24, -21):
+
+y = -21
+We have y = -(24-1) + offset = -23 + offset
+So -21 = -23 + offset → offset = 2
+
+Thus, number = 2210 + 2 = 2212
+
+So (24, -21) = 2212
+
+---
+
+**Neighbor 2: (24, -23)**
+
+This is the starting point of ring 24
+
+(k, -(k-1)) = (24, -23) = 2210
+
+So (24, -23) = 2210
+
+---
+
+**Neighbor 3: (22, -21)**
+
+This is in ring 23
+
+In ring 23, x=22, so not in the rightmost column
+
+But let's see if it's in the top row, left column, or bottom row
+
+In ring 23, the rightmost column is x=23, leftmost is x=-23
+
+x=22 is in the "top row" or "bottom row" or "left column"?
+
+But let's see which side it's on.
+
+But perhaps we can find the offset by finding which side it's on.
+
+But for x=22, y=-21
+
+In ring 23, the top row is y=23, x from -23 to 23
+
+But y=-21 is not 23
+
+The leftmost column is x=-23
+
+The bottom row is y=-23
+
+But y=-21 is above the bottom row
+
+So it's not on the main sides of the ring.
+
+But in the spiral, all points are on one of the four sides of the square ring.
+
+But (22, -21) is inside the ring, not on the border.
+
+But for the neighbors, we only care about the 8 directly adjacent cells, which may or may not be on the spiral yet if they're outside the current ring.
+
+But in the infinite spiral grid, every integer coordinate has a number assigned eventually.
+
+But to compute the number at (22, -21), we need to know which ring it's in.
+
+|x| = 22, |y| = 21, so ring = 22
+
+But let's check: for ring k, the coordinates satisfy max(|x|, |y|) = k
+
+For (22, -21): max(22,21)=22, so it's in ring 22
+
+So let's compute the number at (22, -21) in ring 22
+
+Ring k=22
+
+start_num = (2*22-1)^2 + 1 = 43^2 + 1 = 1849 + 1 = 1850
+
+Each side length = 2*22 = 44
+
+Now, let's find which side (22, -21) is on in ring 22
+
+First, the starting point of ring 22 is (22, -21)
+
+From earlier formula, starting point is (k, -(k-1)) = (22, -21)
+
+So (22, -21) is the first number of ring 22: 1850
+
+So (22, -21) = 1850
+
+---
+
+**Neighbor 4: (22, -23)**
+
+Now, (22, -23): |x|=22, |y|=23, so ring = 23
+
+Because max(22,23)=23
+
+So in ring 23
+
+Let's find its number
+
+Ring 23: start_num = 2026
+
+Now, let's see which side (22, -23) is on
+
+In ring 23, the leftmost column is x=-23
+
+The bottom row is y=-23
+
+The bottom row is side 3
+
+For side 3 (bottom row, right):
+
+x ranges from -22 to 23
+y = -23
+
+x = -23 + 1 + pos_in_side = -22 + pos_in_side
+
+So for x=22:
+
+x = -22 + pos_in_side = 22 → pos_in_side = 22 - (-22) = 22 + 22 = 44? Let's see:
+
+x = -23 + 1 + pos_in_side = -22 + pos_in_side
+
+Set x = 22
+
+22 = -22 + pos_in_side → pos_in_side = 22 + 22 = 44
+
+But pos_in_side ranges from 0 to 45
+
+But len_side = 46
+
+So pos_in_side = x - (-22) = x + 22
+
+For x=22: pos_in_side = 22 + 22 = 44
+
+So offset = side * len_side + pos_in_side
+
+side=3
+
+offset = 3*46 + 44 = 138 + 44 = 182
+
+number = start_num + offset = 2026 + 182 = 2208
+
+But let's check the formula
+
+For side 3 (bottom row, right):
+
+x = -23 + 1 + pos_in_side = -22 + pos_in_side
+
+y = -23
+
+So for pos_in_side from 0 to 45:
+
+x = -22 + pos_in_side
+
+So for x=22:
+
+22 = -22 + pos_in_side → pos_in_side = 44
+
+So offset = 3*46 + 44 = 138 + 44 = 182
+
+number = 2026 + 182 = 2208
+
+So (22, -23) = 2208
+
+---
+
+**Neighbor 5: (23, -21)**
+
+This is in ring 23
+
+From earlier, in ring 23, rightmost column, x=23
+
+y = -21
+
+offset = y + 22 = -21 + 22 = 1
+
+number = 2026 + 1 = 2027
+
+So (23, -21) = 2027
+
+---
+
+**Neighbor 6: (23, -23)**
+
+x=23, y=-23
+
+In ring 23
+
+y = -23
+
+offset = y + 22 = -23 + 22 = -1
+
+But offset cannot be negative
+
+But y ranges from -22 to 22 in ring 23's rightmost column
+
+y = -23 is not in ring 23's rightmost column
+
+But |x|=23, |y|=23 → ring=23
+
+But in ring 23, the bottom row is y=-23, x from -22 to 23
+
+So (23, -23) is on the bottom row, rightmost cell
+
+Which is the last cell of side 3 (bottom row, right)
+
+For side 3, x from -22 to 23, y=-23
+
+x = -22 + pos_in_side
+
+Set x=23
+
+23 = -22 + pos_in_side → pos_in_side = 45
+
+offset = 3*46 + 45 = 138 + 45 = 183
+
+number = 2026 + 183 = 2209
+
+But let's check: the last number of ring 23 is at (23, -23)? 
+
+From the pattern, the last number of the ring is at (ring, -ring), i.e., (23, -23)
+
+And (2*23+1)^2 = 47^2 = 2209
+
+So (23, -23) = 2209
+
+So number at (23, -23) = 2209
+
+---
+
+**Neighbor 7: (24, -22)**
+
+x=24, y=-22
+
+max(|x|,|y|)=24, so ring=24
+
+Starting point of ring 24 is (24, -23)=2210
+
+Rightmost column, x=24, y from -23 to 23
+
+offset = y - (-(24-1)) = y + 23
+
+y = -22
+
+offset = -22 + 23 = 1
+
+number = 2210 + 1 = 2211
+
+So (24, -22) = 2211
+
+---
+
+**Neighbor 8: (22, -22)**
+
+x=22, y=-22
+
+max(|x|,|y|)=22, so ring=22
+
+In ring 22, let's find which side
+
+In ring 22, the bottom row is y=-22, x from -21 to 22
+
+So (22, -22) is on the bottom row, rightmost
+
+Side 3 (bottom row, right)
+
+For side 3:
+
+x = -22 + 1 + pos_in_side = -21 + pos_in_side
+
+Set x=22
+
+22 = -21 + pos_in_side → pos_in_side = 43
+
+offset = 3*44 + 43 = 132 + 43 = 175
+
+start_num = 1850
+
+number = 1850 + 175 = 2025
+
+But let's check if this matches the last number of ring 22
+
+Ring 22 ends at (22, -22), and (2*22+1)^2 = 45^2 = 2025
+
+So (22, -22) = 2025
+
+So that's correct.
+
+---
+
+Now, let's list all 8 neighbors and their numbers:
+
+1. (24, -21) = 2212
+2. (24, -23) = 2210
+3. (22, -21) = 1850
+4. (22, -23) = 2208
+5. (23, -21) = 2027
+6. (23, -23) = 2209
+7. (24, -22) = 2211
+8. (22, -22) = 2025
+
+Now, sum them up:
+
+Let’s add step by step:
+
+2212 + 2210 = 4422
+
+4422 + 1850 = 6272
+
+6272 + 2208 = 8480
+
+8480 + 2027 = 10507
+
+10507 + 2209 = 12716
+
+12716 + 2211 = 14927
+
+14927 + 2025 = 16952
+
+So the sum is 16,952
+
+But let's double-check the arithmetic:
+
+List:
+2212
+2210
+1850
+2208
+2027
+2209
+2211
+2025
+
+Sum in pairs:
+
+2212 + 2210 = 4422
+1850 + 2208 = 4058
+2027 + 2209 = 4236
+2211 + 2025 = 4236
+
+Now sum those:
+
+4422 + 4058 = 8480
+4236 + 4236 = 8472
+8480 + 8472 = 16952
+
+Yes.
+
+So the sum of all 8 neighbors of 2026 is 16952.
+
+But let's double-check one of the less obvious ones.
+
+For (22, -21): ring 22, start_num=1850, and (22, -21) is the start of ring 22, so 1850. Correct.
+
+For (24, -21): in ring 24, rightmost column, offset = y + 23 = -21 + 23 = 2, start_num=2210, so 2210+2=2212. Correct.
+
+For (22, -23): in ring 23, bottom row, x=22, pos_in_side=44, offset=3*46+44=182, 2026+182=2208. Correct.
+
+For (24, -22): in ring 24, rightmost column, offset = -22 + 23 = 1, 2210+1=2211. Correct.
+
+For (23, -21): in ring 23, rightmost column, offset = -21 + 22 = 1, 202
+----
+Usage(input=121, output=16384, details={'estimated_cost': 0.0098546})

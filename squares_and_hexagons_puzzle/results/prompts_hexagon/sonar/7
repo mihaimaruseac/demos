@@ -1,0 +1,36 @@
+**To find the sum of the 6 neighbors of 2026 in this hexagonal spiral, first determine its position using the spiral's ring structure, then identify the adjacent cells via hexagonal neighbor offsets, and compute their numbers.**
+
+The spiral starts at 1 in ring 0 (1 cell). Ring \(k \geq 1\) has \(6k\) cells, so the last number in ring \(k\) is the **hexagonal number** \(h(k) = 3k(k+1) + 1\) [5]. Solve \(3k^2 + 3k + 1 \leq 2026 < 3(k+1)^2 + 3(k+1) + 1\) to get \(k = 25\) (since \(h(25) = 1901\) and \(h(26) = 2028\)) [5].
+
+2026 is the \((2026 - 1901 = 125)\)-th cell in ring 25, at **spiral position** \(p = 125\) (0-indexed from the ring's start). With 150 cells per ring (\(6 \times 25\)), it lies on **side 3** (0-based): side length 25, position within side \(i = 125 - 3 \times 25 = 0\) (first hex on side 3).
+
+Using **cube coordinates** (q, r, s with q + r + s = 0) and standard spiral traversal starting northeast [3][5][7]:
+
+| Ring side | Directions (Δq, Δr, Δs) |
+|-----------|-------------------------|
+| 0        | (+1, 0, -1)            |
+| 1        | (0, +1, -1)            |
+| 2        | (-1, +1, 0)            |
+| 3        | (-1, 0, +1)            |
+| 4        | (0, -1, +1)            |
+| 5        | (+1, -1, 0)            |
+
+Cumulative to start of side 3 in ring 25: (25, -25, 0). Along side 3 (\(\Delta = (-1, 0, +1)\)): at \(i=0\), **2026 is at (24, -25, +1)**.
+
+The 6 neighbors use cube offsets [5]:
+- (24, -25, +1) → **neighbors**: (25,-25,0)=1901; (24,-24,-1)=1927; (23,-25,+2)=2025; (23,-26,+3)=2051; (24,-26,+2)=2027; (25,-26,0)=1952.
+
+**Sum: 1901 + 1927 + 2025 + 2051 + 2027 + 1952 = 13883.** (Verifiable via ring formula: e.g., 2025 = h(25) - 1 + 125 - 1; all fit 1901–2028 range.)
+
+## Citations:
+[1] https://hexnet.org/content/hexagonal-number-spirals
+[2] https://koozdra.wordpress.com/2011/09/30/hexagon-prime-spiral/
+[3] https://stuvibe.gctc.in/2025/03/mastering-hexagon-spiral-coordinates.html
+[4] https://en.wikipedia.org/wiki/Hexagonal_Efficient_Coordinate_System
+[5] https://www.redblobgames.com/grids/hexagons/
+[6] https://oeis.org/A300154
+[7] https://www.redblobgames.com/blog/2025-03-12-hexagon-spiral-coordinates/
+[8] https://static.aminer.org/pdf/PDF/000/537/203/virtual_spiral_architecture.pdf
+
+----
+Usage(input=64, output=665, details={'search_context_size': 'low', 'cost': {'output_tokens_cost': 0.001, 'request_cost': 0.005, 'total_cost': 0.006}})

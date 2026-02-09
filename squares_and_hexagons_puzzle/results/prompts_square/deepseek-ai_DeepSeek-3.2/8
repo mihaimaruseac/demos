@@ -1,0 +1,424 @@
+Alright, let's break down the problem step-by-step.
+
+---
+
+## **1. Understanding the spiral**
+The spiral given is known as an **Ulam clockwise spiral**, starting at 1, moving right, then up, left, down, etc.
+
+Tiles layout:
+
+```
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+```
+
+This means:
+- From 1, go right to 2, go up to 3, go left: 4, 5, etc. Actually, no — let's be precise:
+
+The usual “number spiral” starting at 1 at the origin (0,0), in **clockwise** orientation (right, up, left, down …) works as:
+- Step length pattern: 1, 1, 2, 2, 3, 3, …
+- Direction order: R, U, L, D, R, U, L, D, …
+
+Coordinates:
+- Start (0,0) = 1.
+- Move R 1: (1,0) = 2.
+- Move U 1: (1,1) = 3.
+- Move L 2: (-1,1) → (0,1) = 4 at (-1,1)? Wait, check carefully.
+
+Let’s lay out exactly:
+
+Number: coordinate
+1: (0,0)
+Right 1: 2: (1,0)
+Up 1: 3: (1,1)
+Left 2 steps:
+First step: 4: (0,1)
+Second step: 5: (-1,1)
+Down 2 steps:
+First step: 6: (-1,0)
+Second step: 7: (-1,-1)
+Right 3 steps:
+First step: 8: (0,-1)
+Second step: 9: (1,-1)
+Third step: 10: (2,-1)
+Up 3 steps:
+First step: 11: (2,0)
+Second step: 12: (2,1)
+Third step: 13: (2,2)
+Left 4 steps:
+14: (1,2)
+15: (0,2)
+16: (-1,2)
+17: (-2,2)
+etc.
+
+So the given snippet:
+Row y=1:  ( -1,1)=5, (0,1)=4, (1,1)=3
+Oops, actually 5 is (-1,1), 4 is (0,1), 3 is (1,1).
+Next row y=0: (-1,0)=6, (0,0)=1, (1,0)=2
+Next row y=-1: (-1,-1)=7, (0,-1)=8, (1,-1)=9
+
+It looks like the snippet they gave is arranged with axes such that UP is positive y? Actually maybe x increases right, y increases down? Let’s check given:
+
+Their arrangement:
+```
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+```
+
+If we read (col,row) in usual computer screen coords: top-left (x,y) with y downward? Maybe better to think in (x,y) math coords: y upward?
+
+Given: Row1: 5 4 3 → maybe y=1 row: x=-1:5, x=0:4, x=1:3.
+Row0: 6 1 2 → y=0: x=-1:6, x=0:1, x=1:2.
+Row-1: 7 8 9 → y=-1: x=-1:7, x=0:8, x=1:9.
+
+Checking: 1 at (0,0), right:2 at (1,0), up:3 at (1,1), left:4 at (0,1), left:5 at (-1,1), down:6 at (-1,0), down:7 at (-1,-1), right:8 at (0,-1), right:9 at (1,-1).
+
+Matches! So their snippet uses math coords with center (0,0) as 1. So:
+Coordinates:  
+5→(-1,1), 4→(0,1), 3→(1,1),  
+6→(-1,0), 1→(0,0), 2→(1,0),  
+7→(-1,-1),8→(0,-1),9→(1,-1).
+
+Yes.
+
+So spiral direction: from 1 right → 2; up→3; left→4→5; down→6→7; right→8→9→10; etc.
+
+---
+
+## **2. Finding coordinates of 2026**
+We need rule to find coordinates directly.
+
+We can use the fact that numbers appear on squares of odd side lengths centered at 1:
+- Square 1: side 1 (1, numbers 1)
+- Square 3: side 3 (numbers 2 to 9)
+- Square 5: side 5 (numbers 10 to 25)
+- Square 7: side 7 (numbers 26 to 49), etc.
+
+We note:
+Let k = ring index (0-based):
+Ring k has side length m = 2k+1.
+Numbers in ring k: from (2k-1)^2+1 to (2k+1)^2.
+
+Better: Ring r (r=1,2,...) has bottom-right corner number (2r-1)^2? Let's try:
+
+r=1: side 3, num 1..9? Wait: numbers at ring r=0: just {1}.
+Ring 1 (k=1): side 3, contains 2 through 9.
+Ring 2 (k=2): side 5, contains 10 through 25.
+Ring 3 (k=3): side 7, contains 26 through 49.
+Yes: First number of ring k: N_start = (2k-1)^2 + 1, k>=1.
+Max number of ring k: (2k+1)^2.
+
+Example k=1: N_start = (1)^2+1=2, max = 9.
+
+---
+
+**Find ring for 2026:**
+Find k such that:
+(2k-1)^2 + 1 <= 2026 <= (2k+1)^2.
+
+Try k=22: (44-1)^2+1 = 1849+1=1850, max=(45)^2=2025 → so 2025 is last of ring k=22.
+
+Check: k=22: (2k-1)=43 square=1849, so ring k starts at 1850, ends at 45^2=2025.
+Answer: 2025 is the last number in ring 22 → it is bottom-right corner (k,k) in coords? Actually maybe (k, -k)?
+
+Wait: Ring k: side = 2k+1, lower right corner number = (2k+1)^2.
+Here k=22: side=45, last number=2025.
+
+So 2026 is first number of next ring k=23? But  ring index definition consistent? Let's check:
+
+Ring k=0: just number 1 at (0,0).
+Ring k=1: numbers 2..9. But for k=1: start at (2k-1)^2+1 =1^2+1=2, ok. max=(2k+1)^2=3^2=9, ok.
+
+So ring k=1: numbers 2..9 (side length 3).
+Ring k=2: numbers 10..25 (side length 5).
+Ring k=3: numbers 26..49 (side length 7).
+Indeed: ring k: side length = 2k+1, last number in ring = (2k+1)^2.
+
+So 2025=45^2 ⇒ (2k+1)=45 ⇒ 2k=44 ⇒ k=22 ⇒ last number of ring k=22 is 2025.
+
+So 2026 is ring k=23? But ring k=23 would start at (2k-1)^2+1=(45)^2+1 = 2025+1=2026. Yes!
+So 2026 is first number of ring k=23.
+
+---
+
+## **3. Coordinates of first number in ring k**
+In this **clockwise** spiral:
+First number of ring k is placed just to the right of bottom-right number of previous ring.
+
+Coordinates of last number of ring k-1: bottom-right corner: coordinates (k-1, -(k-1))? Let's check small k.
+
+For k=1: ring k=1 starts with number 2 at (1,0). Last of previous ring k=0: number 1 at (0,0), just to the right is (1,0), yes.
+
+For k=2: ring k=2 starts with number 10 at (2,-1). Let's test: Last of ring k=1=9 at coordinate (1,-1). Just to the right is (2,-1), yes.
+
+Pattern:
+Last number of ring k-1 is at (k-1, -(k-1)).
+First of ring k (N_start=(2k-1)^2+1) is at (k-1+1, -(k-1)) = (k, -(k-1)).
+
+Test k=2: (2, -1) ok. k=1: (1,0) ok.
+
+So for k=23: Start of ring k=23: coordinates (23, -(22)) = (23, -22).
+
+Thus **2026 is at (23,-22)**.
+
+---
+
+## **4. 8 neighbors of (23,-22)**  
+Coordinates:  
+E: (24,-22)  
+NE: (24,-21)  
+N: (23,-21)  
+NW: (22,-21)  
+W: (22,-22)  
+SW: (22,-23)  
+S: (23,-23)  
+SE: (24,-23)
+
+---
+
+## **5. Find numbers at those positions**
+We know 2026 is first number of ring k=23: N_start = (2*23-1)^2+1=45^2+1=2026.
+
+We can compute coordinates relative to ring start to find numbers.
+
+Length of side m= 2k+1=47.  
+Numbers go right-up-left-down: first move right only 1 step… wait: Pattern for first side of ring k (right side):  
+The first number is at (k, -(k-1)). From there, we go **up** (since we started just to the right of previous ring's bottom-right, up along right side). The “right side” of ring m=47 has 47 numbers total? Let’s recall layout:
+
+Ring k has side length m=2k+1. The first number is on the right side, bottom cell excluding corner? Actually right side: coordinates starting (k, -(k-1)), (k, -k+2), …, up to (k, k). Wait k=23→ side=47: from (23,-22) up to (23,23)?? Let's check:
+
+Right side: from (k, -(k-1)) to (k, k), length:  k - (-(k-1)) + 1 = 2k. That’s not matching m=2k+1. So I’m confusing. Let’s derive smaller scale.
+
+k=2: ring starts at (2,-1) number 10. Right side: coords (2,-1),(2,0),(2,1),(2,2),(2,3)? Not (2,3) because max y=k=2. Check: sequence for ring k=2 (n=10..25):  
+Right side: 10 at (2,-1),11 at (2,0),12 at (2,1),13 at (2,2). That's length=4? But m=5; yes: top-right corner belongs to top side.
+
+Anyway, we don’t need full enumeration— we need neighbors.  
+
+Better: Use coordinates relative to ring start to compute offsets and neighbor numbers.
+
+General method: In ring k, number N has coordinates computable by figuring offset from N_start= ((2k-1)^2+1).
+
+Let pos=N - N_start.
+
+Right side (pos=0..m-2=0..2k-1): m=2k+1. Upwards movement: pos=0:(k,-(k-1)), pos increases: y increases by 1 each.
+
+So coords: x=k, y= -(k-1)+pos. For pos=0..(2k-1).
+
+Test k=23: N_start=2026 at (23,-22). For pos=0:  y=-22, x=23.
+
+Thus neighbors offsets from (23,-22):
+
+Coordinates:  
+E: (24,-22): to get (24,-22), note that right side x=k=23 fixed in right side. So E is on next ring? Actually x=24, y=-22: maybe x=23+1 outward — so along top side of next segment? Might be easier to brute-force logicically:
+
+---
+
+We can cheat logically: On right side:
+
+For (23,-22), its neighbor E (24,-22) is outside ring k=23; The next ring k=24 starts at 2026+something big … Actually, ring k=23 ends at (2k+1)^2=47^2=2209.
+
+E (x=24,y=-22): is x=24>23, so it's on right side of next ring? No — ring k=23 outer boundary has x from -23 to 23? Wait no: ring k edges: Right at x=k=23, Top y=k=23, Left x=-k=-23, Bottom y=-k=-23. So any x>23 is ring k+1.  
+
+Coordinate (24,-22): x=24, that’s ring k+1=24. That number will be slightly offset from start of ring 24 which starts late. So E belongs to next ring far away →  We must compute using coordinates→number formula.
+
+---
+
+Better: Derive from known location: For given point (x,y), find its ring r = max(|x|,|y|). Actually outermost coordinate: ring r = max(|x|,|y|).
+
+Then: if |x|=r and x>0 (right side) or similar to compute its number.
+
+Known formula: Let r = max(|x|,|y|).
+
+If r=0: n=1.
+
+If x=r and y>-r: we are on right side (excluding bottom corner which belongs to bottom side). Actually careful:
+
+It’s easier to note that Ulam spiral numbering works by: Start ring r (r=1,2,…) first number (2r-1)^2+1 at (r, 1-r), going up until (r,r), then left, then down, then right.
+
+But for neighbors maybe reverse: Given (x,y), compute n.
+
+Nevertheless, to avoid huge derivation, maybe easier: consider 8 points:  
+
+We know 2026=(23,-22). Let r23: ring r=23 has y ranges -23..23, x ranges -23..23. 2026 is on right side x=23, y=-22 (since -(r-1)=-22). So neighbors:
+
+E: (24,-22): ring r’= max(24,22)=24 >23 so it's in next outer ring r=24.
+
+N: (23,-21): x=23, y=-21. In right side (x=r=23 and y>-23), so position on right side: offset from N_start = y - (-(r-1)) = -21-(-22) = 1 → so number = N_start + 1 = 2027.
+
+NE: (24,-21): ring 24.
+
+NW: (22,-21): max(|22|,21)=22→ ring r=22 (inner ring). Bottom side: check later.
+
+W: (22,-22): max(|22|,22)=22→ ring r=22, on bottom side maybe.
+
+SW: (22,-23): ring r=23? Wait: y=-23→max(|22|,23)=23→ ring 23: left side? No, it’s bottom side (y=-23,x<23).
+
+S: (23,-23): on bottom side (y=-r=-23, x=right? Actually: Bottom side: y=-23, x from -23..22? Actually bottom side corners: BR (23,-23), BL (-23,-23). So (23,-23) is bottom-right corner (last num in ring r=23=2025!). Check: Bottom-right corner number: (2r+1)^2? Wait earlier: Last of ring k=22 was 2025. But (23,-23) is bottom-right corner for r=23: side m=47. Wait contradiction: earlier said ring k=22 last=2025 at coords (22,-22). ring index here r=23: contains 2026 at start; m=47; last=(2r+1)^2? That can't be: when r=23, m=47, last=47^2=2209.  
+
+Anyway: So for (23,-23): y=-23, x=23 → bottom-right corner of ring r=23 has number m^2=(47)^2=2209? Wait: For r=23, m=2r+1=47. We must be consistent index!
+
+Actually index confusion: earlier ring k=22 ⇒ last=45^2=2025. Then 2026 in what they call ring k=23 has m=47? Then last of that ring=2209. But 2026 at (r,-r+1)=(23,-22) if r=23. That fits: r=max(|x|,|y|)=23.
+
+So (23,-23): y=-r=-23, x=r=23 ⇒ bottom-right corner ⇒ number=?? It's the last number of ring r=23. Formula: First of ring r is (2r-3)^2+1 for r>=2? No: Ring r has side m=2r-1?? Check: r=1: side=3? Yes: max coord r=1 ⇒ m=3. r=2: m=5. So m=2r-1, not 2r+1. Yes! Derivation:  
+
+Rightmost x=r, leftmost x=-r, so width=2r+1? Wait: total side m=2r+1? For r=1: m=3=2*1+1. Yes! So m=2r+1. Right. Earlier I had r=k but flipped.
+
+So: r=max(|x|,|y|), side m=2r+1. Ring r starts at: first= ((m-2)^2+1) actually: previous ring r-1 had m’=2(r-1)+1=2r-1. Square previous=(m’)^2= (2r-1)^2. So first of ring r=(2r-1)^2+1.
+
+Earlier: r=23: first= (45)^2+1=2026. Yes! m=2r+1=47. Last in ring r= m^2=2209.
+
+---
+
+Within ring r, (x,y) position: we can find offset.
+
+Given r=23, first=2026 at (r,1-r)=(23,-22).
+
+Right side: x=23, y from -22 up to 23: length=46? Wait length = (23 - (-22)+1)=46 ? That's m-1=46. Right side length m-1=46.
+
+Top side: y=23, x from 22 down to -23 length m-1.
+
+Left side: x=-23, y from 22 down to -22 length m-1.
+
+Bottom side: y=-23, x from -22 up to 23 length m-1.
+
+---
+
+(23,-22): pos = y - (1-r) = y - (1-23) = y+22 = -22+22=0. So offset=0 ⇒ N=2026.
+
+Neighbor N: (23,-21): offset= y+22=1 ⇒ N=2027. Good.
+
+Neighbor NW: (22,-21): max(|22|,21)=22 ⇒ ring r=22. Is this bottom side? r=22: bottom side is y=-22? Wait check: Ring r=22: m=45, first=(43)^2+1=1850 at (22,-21)? Actually first of ring r=22: formula: (2r-1)^2+1=(43)^2+1=1849+1=1850 at (r,1-r)=(22,-21). Yes! So (22,-21) = start of ring 22! Number=1850.
+
+Neighbor W: (22,-22): max(|22|,22)=22,y=-22⇒ ring r=22 bottom side? Coordinates relative to ring r=22 start=(22,-21). We are (0,-1) from start: start's offset=0. So offset of bottom side: diff in y: -22-(-21)=-1⇒? Actually bottom side goes from x=21 down to x=-21 maybe. We must derive:
+
+But easier: We can actually compute coordinates→number directly by square layer.
+
+We know bottom side of ring r: y=-r, x from -r+1 to r. So (22,-22): y=-r=-22⇒ on bottom side of ring r=22. Offset from bottom-left corner: bottom-left corner of ring r=22: (-22,-22)? No, bottom-left is (-r,-r) = (-22,-22) — but that’s corner between left and bottom? Actually: ring r=22 bottom side: from x=-21 to x=22? Let’s recall: For ring r: start at (r,1-r)=(22,-21) in right side (x=22). Up to (22,22) top-right corner, then left along top y=22: down to x=-22 → (-22,22) top-left, then down left side x=-22 → (-22,-21) y decreases to -22. Wait (-22,-22) bottom-left?? Then bottom side x increases from -22 to 21? Or 22? Hmm, messy.
+
+Simpler: just note: Given 2026 at (23,-22):
+
+8 neighbors coordinates:
+
+List:
+E (24,-22)  
+NE (24,-21)  
+N (23,-21)  
+NW (22,-21)  
+W (22,-22)  
+SW (22,-23)  
+S (23,-23)  
+SE (24,-23)
+
+---
+
+Need function N(x,y):
+
+Step 1: r=max(|x|,|y|)
+
+Step 2: compute start of ring r: N_start=(2r-1)^2+1.
+
+Step 3: find on which side of square:
+
+If y = -r ⇒ bottom side ⇒ offset = r-1+x, if x<r etc. Wait:
+
+Cases:
+Right side: x=r and y<r ⇒ offset = y-(1-r) = y-(1-r) = y+r-1. So N = N_start+offset.
+
+Top side: y=r and x<r ⇒ offset = (m-1) + (r-x), actually:  
+Right side length m-1=2r, then top side: offset=2r+(r-x)=3r-x.
+
+Left side: x=-r and y>-r ⇒ offset = (m-1)*2 + (r-y)=? Let’s not mess. Rather: ring r: total per ring = 8r numbers arranged as: right: 2r numbers?? Wait m=2r+1, not 8r. Actually perimeters=4*(2r)=8r.
+
+Let’s derive systematically numerically for few small known r:
+
+Given small: r=1: start=2 at (1,0). Upward to (1,1), left to (-1,1), down to (-1,-1), right to (1,-1) enclosing.
+
+Better to use “spiral coordinates→number” known trick:
+
+But for time: Let’s compute logically small offsets.
+
+Actually known: Since 2026's N_start=2026 at (23,-22), ring r=23. Others:  
+
+NW (22,-21):  
+
+Max(|22|,21)=22 ⇒ ring r=22: start=1850 at (22,-21). Are coordinates (22,-21) same as start? offset=0⇒NW=1850.
+
+W (22,-22):
+
+Ring r=22: y=-22 → equals -r ⇒ bottom side of ring r=22: bottom side start at (-22,-22)? Actually bottom-left corner (-22,-22) is last of previous ring r-1=21? No, bottom-left corner belongs to this ring.
+
+Let’s compute bottom side length m-1=2r=44. Points: start of bottom side: y=-22, x from -21 to 22? No: Actually bottom side runs from x=-21 to x=22 inclusive length=44. The start of bottom side: first pt on bottom side sequence is right after bottom-left corner (-22,-22). Check order: Top-left to bottom-left is left side downward, bottom-left corner (-22,-22) then bottom side rightward to (22,-22). But bottom-left corner coordinate (-22,-22) is part of left side?? Actually earlier: left side ends at (-22,-22). Bottom side begins at (-22,-22)? Then steps right: (-21,-22), (-20,-22),...,(22,-22).
+
+So (22,-22) is last element of bottom side ⇒ offset = 44. Now N for bottom side: offset from start of ring: total before bottom side: right side length=2r=44, top side length=44, left side length=44, sum=132. Bottom side length=44. So total=176 in ring r=22 N_start=1850.
+
+Thus N_start + 132=1850+132=1982 first bottom side (-21,-22). Then offset within bottom side: x=22⇒ offset=22-(-21)=43. So N=1982+43=2025!
+
+Yes: so W=2025.
+
+So neighbors: NW=1850, W=2025.
+
+SW (22,-23):
+
+r= max(22,23)=23⇒ ring r=23. y=-23=-r⇒ bottom side of ring r=23.
+
+Bottom side sequence length=2r=46. Within ring r=23: right side:46, top:46, left:46 then bottom:46. N_start=2026. First bottom side: starting after left side ends at (-23,-23), bottom from (-22,-23) to (23,-23).
+
+Offset within bottom side for x=22: from (-22) to 22: 22-(-22)=44. Before bottom side: right+top+left=138. So N=2026+138+44=2208?? Check: bottom starts after left ends at (-23,-23). Let’s compute:  
+
+Right side: offset0..45 covering coords: (23,-22)→(23,23): then top side: offset46..91 covering (22,23)→(-23,23); then left side offset92..137 covering (-23,22)→(-23,-23); then bottom side offset138..183 covering (-22,-23)→(23,-23).
+
+So SW (22,-23): bottom offset= x-(-22)=22+22=44. So SW=2026+138+44=2026+182=2208.
+
+S (23,-23):
+
+Bottom side: x=23, bottom length=46, x=23 is last element of bottom side: relative x=-22→23 offset=45. So S=2026+138+45=2209.
+
+SE (24,-23):
+
+x=24 ⇒ r=24. Next outer ring: But r=24: start=(2*24-1)^2+1=47^2+1=2209+1=2210 at (24,-23)? Wait ring r=24 starts at (24,-23) ⇒ yes, so SE at (24,-23) =2210.
+
+E (24,-22):
+
+Ring r=24 start=2210 at (24,-23). (24,-22): offset from start (24,-23): y=-22 versus start y=-23 ⇒ offset=1 ⇒ E=2211.
+
+NE (24,-21):
+
+Ring r=24 start at (24,-23), offset= y+23=-21+23=2 ⇒ NE=2212.
+
+N (23,-21) earlier=2027.
+
+---
+
+So neighbors: NW=1850, W=2025, SW=2208, S=2209, SE=2210, E=2211, NE=2212, N=2027.
+
+---
+
+Check consistency: S=2209, SE=2210… makes sense.
+
+---
+
+**Sum all 8:**
+
+1850 + 2025 + 2208 + 2209 + 2210 + 2211 + 2212 + 2027  
+
+Pair: 1850+2025=3875  
+2208+2209=4417 → sum with 3875=8292  
+2210+2211=4421 → 8292+4421=12713  
+2212+2027=4239 → 12713+4239=16952.
+
+Also check quickly: mean ≈ 2100×8=16800 close.
+
+---
+
+Thus:
+
+\[
+\boxed{16952}
+\]
+
+Final answer is **16952**.
+----
+Usage(input=59, output=6490, details={'estimated_cost': 0.0025464399999999996})

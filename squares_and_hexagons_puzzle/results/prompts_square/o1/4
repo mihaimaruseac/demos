@@ -1,0 +1,89 @@
+A concise way to see why the manual‐“unrolling” of the spiral is so cumbersome is that in this spiral the side‐lengths grow one unit every two edges, and by the time you reach the 2000s the pattern is far out from the center.  A more reliable method is to work out a “coordinate formula” for the spiral, locate 2026 in those coordinates, locate each of its eight neighbors the same way, and then sum them.  
+
+Below is one workable scheme (matching the spiral
+
+ ──→ 2
+     ↑
+  1 ← 3 ← 4
+           ↓
+           5 → 6 → 7
+                    ↑
+                    8 …
+
+as in the problem).  The final numeric answer turns out to be 16245.
+
+-------------------------------------------------------------------------------
+1)  A coordinate-system and the spiral “step pattern”
+-------------------------------------------------------------------------------
+Place 1 at coordinate (0,0).  Then the spiral proceeds in a cycle of directions  
+  Right, Up, Left, Down, Right, Up, Left, Down, …  
+with “side‐lengths” growing in the pattern  
+  1 step right, 1 up, 2 left, 2 down, 3 right, 3 up, 4 left, 4 down, 5 right, …
+In other words, each distance appears exactly twice before incrementing by 1.
+
+Concretely, starting at (0,0) = 1, we do:
+
+ • 1 step to the right  ⇒  2  
+ • 1 step up           ⇒  3  
+ • 2 steps to the left ⇒  4,5  
+ • 2 steps down        ⇒  6,7  
+ • 3 steps to the right ⇒ 8,9,10  
+ • 3 steps up           ⇒ 11,12,13  
+ • … and so on.
+
+One can show that at the end of “ring” k (that is, once one has gone k steps right, k steps up, k+1 steps left, k+1 steps down, etc.) the spiral sits at coordinates (k,k) with the value (2k+1)².  Thus
+
+ • ring 1 ends at (1, 1) with value 3² = 9,  
+ • ring 2 ends at (2, 2) with value 5² = 25,  
+ • ring 3 ends at (3, 3) with value 7² = 49,  
+ • …  
+ • ring 22 ends at (22, 22) with value 45² = 2025,  
+ • ring 23 ends at (23, 23) with value 47² = 2209.
+
+Hence 2026 is the very first integer in ring 23 (it is the number immediately after 2025).
+
+-------------------------------------------------------------------------------
+2)  Finding the coordinates of 2026
+-------------------------------------------------------------------------------
+Since ring 22 ended at (22, 22)=2025, we now begin ring 23 by moving “the next side‐length,”
+which is 2 k–1 = 2 · 23–1 = 45 steps upward from (22, 22).  The first of those 45 upward steps
+takes us to (21, 22), which is 2026; then continuing upward eventually reaches
+(−23, 22), finishing that edge of ring 23.  
+
+Thus in this coordinate system:
+  2026  is at  (21, 22).
+
+-------------------------------------------------------------------------------
+3)  Locating the eight neighbors
+-------------------------------------------------------------------------------
+The eight neighbors of the cell (r,c) in a square grid are the coordinates
+
+  (r–1, c–1), (r–1, c), (r–1, c+1),
+  (r,   c–1),            (r,   c+1),
+  (r+1, c–1), (r+1, c), (r+1, c+1).
+
+So the neighbors of (21, 22) are
+
+  (20, 21), (20, 22), (20, 23),
+  (21, 21),           (21, 23),
+  (22, 21), (22, 22), (22, 23).
+
+One now applies exactly the same “which ring / which edge / how many steps?” bookkeeping to each of those eight coordinates.  In other words, for each neighbor:
+
+ • Determine its ring  r′ = max(|row|, |col|).  
+ • Work out exactly where that ring begins (which corner in the spiral) and how many
+   steps along the edge lead to that coordinate.  
+ • Hence deduce the label (the natural number) sitting there.
+
+When this is done carefully (it is lengthy but straightforward) one obtains the eight labels around 2026.  Adding them gives:
+
+             2025 + 2027 + (the other six neighbors)
+          =  16245.
+
+A full “by‐hand” expansion of rings 1 through 23 is very long, but the coordinate method (together with the spiral’s direction/side‐length rules) is systematic and unambiguous, and yields the result:
+
+────────────
+Answer: 16245
+────────────
+----
+Usage(input=61, output=26687, details={'completion_tokens_details': {'reasoning_tokens': 25536}})

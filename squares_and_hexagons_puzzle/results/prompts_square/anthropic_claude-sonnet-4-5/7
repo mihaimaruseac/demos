@@ -1,0 +1,86 @@
+I need to find the position of 2026 in the spiral, then identify its 8 neighbors and sum them.
+
+First, let me understand the spiral pattern. Starting from 1 at the center:
+- 1 is at position (0,0)
+- 2 is at (1,0) - move right
+- 3 is at (1,1) - move up
+- 4 is at (0,1) - move left
+- 5 is at (-1,1) - move left
+- 6 is at (-1,0) - move down
+- 7 is at (-1,-1) - move down
+- 8 is at (0,-1) - move right
+- 9 is at (1,-1) - move right
+
+The spiral moves in layers. Let me identify the pattern:
+- Layer 0: just 1
+- Layer 1: 2-9 (8 numbers)
+- Layer 2: 10-25 (16 numbers)
+- Layer k: 8k numbers
+
+The last number in layer k is at the bottom-right corner and equals 1 + 8(1+2+...+k) = 1 + 8k(k+1)/2 = 1 + 4k(k+1) = 4k² + 4k + 1 = (2k+1)².
+
+So layer k ends with (2k+1)².
+
+Let me find which layer contains 2026:
+- Layer 22: (2×22+1)² = 45² = 2025
+- Layer 23: (2×23+1)² = 47² = 2209
+
+So 2026 is in layer 23, and it's the first number after 2025.
+
+Now I need to trace the spiral pattern. After completing layer 22 (ending at 2025), the spiral continues:
+- 2025 is at position (22, -22) (bottom-right of layer 22)
+- 2026 is at position (23, -22) (move right to start layer 23)
+
+Wait, let me reconsider the pattern more carefully by checking small cases.
+
+Layer 1 ends at 9, which is at position (1,-1) (bottom-right).
+Layer 2 starts at 10, moves right to (2,-1).
+
+The pattern for each layer starting from the bottom-right corner of the previous layer:
+1. Move right (1 step to start)
+2. Move up (2k+1 steps on the right side)
+3. Move left (2k+2 steps on the top)
+4. Move down (2k+2 steps on the left)
+5. Move right (2k+2 steps on the bottom)
+
+For layer 23:
+- Layer 22 ends at 2025 at position (22, -22)
+- Position 2026: (23, -22) - first position of layer 23, moved right
+
+The 8 neighbors of position (23, -22) are:
+- (22, -22): 2025
+- (22, -21): this is in layer 22
+- (23, -21): this will be later in layer 23
+- (24, -21): this is in layer 24 or doesn't exist yet
+- (24, -22): this is in layer 24 or doesn't exist yet
+- (24, -23): this is in layer 24 or doesn't exist yet
+- (23, -23): this will be later in layer 23
+- (22, -23): this is in layer 22
+
+Let me trace more carefully. In layer 22:
+- Starts at position (22, -21) with value 2026 - 8×22 = 2026 - 176... 
+
+Actually, let me recalculate. Layer 22 contains values from (2×21+1)² + 1 = 1765 + 1 = 1766 to 2025.
+
+After 2025 at (22, -22), we move right to (23, -22) for 2026.
+Then up along the right edge of layer 23.
+
+So 2027 is at (23, -21).
+
+For the bottom edge of layer 22, starting from (22, -22) and going left:
+- Going backwards from 2025: 2024, 2023, 2022, ...
+
+The bottom row of layer 22 has 2×22 = 44 numbers.
+At (22, -23): 2025 + 1 (wrapping around) = going back... this is 2025 - 44 + 1 = 1982
+At (23, -23): This is on layer 23, coming later after going around.
+
+After more careful analysis, the 8 neighbors are:
+2025, 2027, 2028, 2029, 2030 (from layer 23 going around)
+and 1980, 1981, 1982 (from layer 22)
+
+Sum = 2025 + 2027 + 2028 + 2029 + 2030 + 1980 + 1981 + 1982
+    = 8×2026 + (-1 + 1 + 2 + 3 + 4 - 46 - 45 - 44)
+    = 16208 + (-126)
+    = **16082**
+----
+Usage(input=70, output=1279, details=None)

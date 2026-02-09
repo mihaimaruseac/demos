@@ -1,0 +1,690 @@
+<think>
+Okay, so I need to figure out the sum of all 8 neighbors of the number 2026 in this square spiral. Hmm, let me start by recalling how these spirals work. 
+
+First off, the spiral starts at 1, then moves right, up, left, down, etc., incrementing numbers as it goes. The numbers form concentric squares or rings around the center. Each ring seems to have a certain number of elements. For example, the first ring (just 1) is 1x1. The next ring would go from 2 to 9, forming a 3x3 square, then the next ring from 10 to 25 forming a 5x5 square, and so on. So each ring corresponds to an odd number squared. The numbers on each ring have a starting corner value of (2n+1)^2 where n is the ring number starting at 0. 
+
+Let me confirm that. If the first ring (n=0) has 1, then the next ring (n=1) should go up to (2*1 +1)^2 = 9, which matches. Then the next ring (n=2) goes up to (2*2 +1)^2 = 25. Yep, that seems right. So, the corners of each ring can be determined based on this formula.
+
+But maybe more importantly, for a given number, I need to figure out which ring it is on. Once I know that, I can figure out its position in the ring and then find its neighbors. 
+
+So let me try to figure out which ring 2026 is on. Let's denote the ring number as n, such that each ring corresponds to (2n + 1)^2. Let's find n such that (2n - 1)^2 < 2026 ≤ (2n + 1)^2. Wait, actually, the starting number for ring n is (2n - 1)^2 + 1? Wait, no. Let me think again. 
+
+The first ring (n=0) is 1, which is (2*0 + 1)^2 = 1. The next ring (n=1) starts at 2 and ends at 9, which is (2*1 + 1)^2 = 9. The next ring (n=2) starts at 10 and ends at 25 = (2*2 +1)^2. So ring n starts at (2n - 1)^2 + 1 and ends at (2n + 1)^2. Therefore, to find which ring 2026 is in, we need to solve for n in:
+
+(2n - 1)^2 < 2026 ≤ (2n + 1)^2
+
+Let me compute sqrt(2026) to approximate n. sqrt(2026) ≈ 45. So (2n + 1) ≈ 45, so 2n + 1 ≈ 45 ⇒ n ≈ (45 - 1)/2 = 22. So n is 22? Let's check. If n=22, then the upper bound is (2*22 + 1)^2 = 45^2 = 2025. Wait, 2025 is less than 2026. Therefore, 2026 is just beyond that. So then n would be 23? Because for n=23, (2*23 + 1)^2 = 47^2 = 2209. So 2026 is between (2*22 + 1)^2 = 45^2 = 2025 and (2*23 +1)^2 = 47^2 = 2209. Therefore, 2026 is in ring n=23. Wait, but hold on, ring n starts at (2n - 1)^2 + 1. Wait, if n=22, then the ring n=22 would be the one starting at (2*22 -1)^2 + 1? Wait, let me check my earlier thought.
+
+Earlier, I thought for ring n (starting at n=0), the starting number is (2n - 1)^2 + 1. But when n=0, that would be (-1)^2 + 1 = 2, which is the start of the first ring after the initial 1. So that works. For n=1, ring n=1 starts at (2*1 -1)^2 + 1 = 1^2 +1 = 2, and ends at (2*1 +1)^2 = 3^2 = 9. Wait, but we said ring n=1 starts at 2 and ends at 9. But (2*1 +1)^2 is 9. So actually, the upper bound of ring n is (2n +1)^2. Then the starting number of ring n is (2n -1)^2 +1. Therefore, the ring number can be determined by finding the minimal n where (2n + 1)^2 ≥ 2026. 
+
+Earlier, we saw that (2n +1)^2 for n=22 is 45^2 = 2025 < 2026. So for n=22, upper bound is 2025, so 2026 is in ring n=23? Wait, but ring n=23 would start at (2*23 -1)^2 +1. Let me calculate that: 2*23 -1 = 45, so 45^2 + 1 = 2025 +1 = 2026. So ring n=23 starts at 2026. Therefore, 2026 is the first number in ring n=23. Therefore, it's located at the position where the spiral starts for that ring. 
+
+But how is the spiral laid out? Let me think about the direction. The spiral goes right, then up, then left, then down, adding layers. For each ring, starting from 1, moving to the right, then up, then left, then down. But when you add a ring, you go along the four sides. 
+
+So if 2026 is the first number in ring n=23, then it's the next number after the previous ring ends at 2025. The previous ring (n=22) would have ended at (2*22 +1)^2 = 45^2 = 2025. Then 2026 is the next number, which would be to the right of 2025. Wait, but how does the spiral go? The direction when adding the next ring.
+
+Let me think about a smaller example. Let's take the 3x3 grid. The 1 is at center. The spiral goes right to 2, 3, then up to 4, then left to 5, 6, then down to 7, 8, then right to 9. Wait, but when you complete the ring, which is 3x3 grid, the last number is 9. Then the next ring (5x5 grid) starts at 10. So after 9, you move to the right? But to the right of 9 is... Well, the 3x3 grid goes from 1 at the center, then the next ring starts. Wait, maybe it's better to visualize the direction.
+
+Actually, when you complete the 3x3 grid, you end at 9. Then to go to the next ring (4x4?), no, the next ring is 5x5. Wait, perhaps the direction after completing the previous ring. Let me take an example. For the 1x1 grid, 1 is at the center. Then you move right to 2, then up to 4, then left to 6, then down to 8, then right to 9. Then, for the next ring, you would move up from 9? Wait, maybe not. Wait, the movement is always in the order right, up, left, down, repeating. So after completing the side of the ring, you turn left and go again. So after placing 9, you turn left (which direction?) If you were going right to place 9, then turning left would be up? Wait, direction is important.
+
+Let me try to outline the spiral direction. Let me take the standard Ulam spiral. Starting at 1 (center). Move right to place 2, then up to 3, left to 4, 5, 6, then down to 7, 8, then right to 9, 10, 11, 12... Wait, maybe my earlier examples were off. Let me actually think about the standard spiral.
+
+Actually, let's reconstruct the spiral step by step:
+
+Start at 1.
+
+Move east (right) to place 2, then move north (up) to 3, then move west (left) to 4, 5, then move south (down) to 6, 7, 8, then move east (right) to 9, 10, 11, 12, 13, then north, etc. So each ring is added by moving in the direction, increasing the number of steps when turning from east to north or west to south. Wait, maybe it's every two turns, you increase the number of steps. For example:
+
+Start at 1. 
+
+First, move right 1 step (to 2).
+
+Turn up, move 1 step (to 3).
+
+Turn left, move 2 steps (to 4,5).
+
+Turn down, move 2 steps (to 6,7).
+
+Turn right, move 3 steps (to 8,9,10).
+
+Turn up, move 3 steps, etc.
+
+Yes, that seems to be the pattern. The number of steps increases by 1 every two turns. So each "layer" of the spiral adds two sides with the same step count. Therefore, for each ring, which corresponds to a square with odd length, the starting number is when the step count increases.
+
+But maybe I don't need to dwell on the steps. Let me get back to my problem. 
+
+Since 2026 is the first number in ring n=23. Wait, earlier, I said ring n=23 starts at 2026, as the previous ring ended at 2025. Therefore, 2026 is placed in the next direction. 
+
+So to figure out the direction of the movement when placing 2026. Let's think of the last step of the previous ring. The previous ring (n=22) ended at (2n +1)^2 = 45^2 = 2025. At which point, what was the direction?
+
+Let me think recursively. Each ring is built by adding four sides, with the length of each side increasing as we go outward. The first side is length 1, then 1, then 2, then 2, then 3, then 3, etc. Each ring n has sides of length 2n? Wait, let's think. For the first ring (n=1), the sides are length 1,1, then for the second ring (n=2), sides length 2,2, etc. Wait, maybe for ring number corresponding to layer k, the sides are length k. However, the layers get more complicated. Maybe another approach.
+
+Alternatively, since each ring is between (2n -1)^2 +1 and (2n +1)^2, then each ring has a total of (2n +1)^2 - (2n -1)^2 = [4n² + 4n +1] - [4n² -4n +1] = 8n numbers. Therefore, each ring has 8n numbers. For example, n=1: 8 numbers (from 2 to 9 inclusive, which is 8 numbers). For n=2, 16 numbers, from 10 to 25 (16 numbers). So that seems correct.
+
+Therefore, the ring for n=23 has 8*23=184 numbers. However, since 2026 is the first number in the ring n=23, which starts at (2*23 - 1)^2 + 1 = (45)^2 +1 = 2025 + 1 = 2026. Therefore, 2026 is the first number of ring n=23. Therefore, to figure out where it is located in the spiral, we need to know the starting direction of this ring.
+
+So let's think again about the direction. When you complete a ring, how is the next number placed? Let's think about the last steps before ring n=23. 
+
+The previous ring (n=22) ends at 2025. The last step in the ring n=22 would be a side of the square. Since each ring n has sides of length 2n. Wait, earlier, for ring n (the numbers between (2n -1)^2 +1 and (2n +1)^2), the ring is built by four sides. Each side length? For ring n, the side length is 2n? Wait, for n=1, sides length is 1, 1, 2, 2? Or?
+
+Wait, earlier I thought that the steps increase by one every two turns. So for each ring, there are two sides with length, say, m steps and then two sides with m + 1 steps? Maybe not. Wait, perhaps it's better to think that each ring is formed by moving in a square around the previous one, adding a layer. 
+
+Let me try with ring n=1 (from 2 to 9). The movement after 1 is right to 2, 3; then up to 4; then left to 5, 6; then down to 7, 8; then right to 9. Wait, so first side (right) has length 2 steps? Or 1? Wait, starting at 1, moving right to 2 (first step), then another step to 3? Then turn up and move 1 step to 4, then turn left and move 2 steps to 5, then 6, then turn down and move 2 steps to 7, then 8, then turn right and move 3 steps to 9, 10, 11? Wait, no. Maybe my confusion comes from when exactly the steps increase. 
+
+Actually, the standard way to think about the spiral is that you move in directions in the order: right, up, left, down, right, up, etc., and each time you complete a "loop" (two directions), the step length increases by 1. For example:
+
+Start at 1.
+
+Step 1: Move right 1 time (placing 2). Then turn up, move 1 time (placing 3). Then turn left, move 2 times (placing 4, 5). Then turn down, move 2 times (placing 6, 7). Then turn right, move 3 times (placing 8, 9, 10). Then turn up, move 3 times... etc.
+
+So each "layer" of the spiral adds a loop where the step length increases after two directions. Therefore, the first side (right) has step length 1, then up step length 1, then left step length 2, then down step length 2, then right step length 3, up step length 3, etc. 
+
+Therefore, each ring corresponds to a full square, consisting of two side lengths. For example, the numbers from 2 to 9 are covered by steps of length 1 (right and up), then 2 (left and down). Then the next ring is steps of length 3 (right and up), length 4 (left and down?), no, perhaps not.
+
+Actually, each ring seems to be associated with a particular step length. Maybe if the step length is k, then moving in two directions builds a ring? 
+
+Alternatively, perhaps each ring corresponds to step lengths increasing by 1 each time you complete a loop. 
+
+But perhaps this is getting too abstract. Let me focus on the direction when inserting 2026.
+
+If 2026 is the first number of ring n=23, then the previous number is 2025, which is the last number of ring n=22. Where is 2025 located? 
+
+For ring n=22, the last number is (2*22 +1)^2 = 45² = 2025. According to the movement pattern, that number is placed after completing a side of the spiral. Let's determine which side.
+
+Since the step lengths increase every two directions. For ring n=22, wait, actually the step length associated with ring n is... Hmm, each ring is constructed with two sides of step length. Let me think. For the ring that ends at (2n +1)^2, which is 2025 for n=22, that ring would have been constructed with sides of length 2n. Wait, let me check with n=1. The ring ends at 9, which is (2*1 +1)^2 = 9. For that ring, the last side was of length 2 (down direction?), leading to 7 and 8, then the next direction is right with step length 3, leading to 9. So perhaps the ring is associated with step lengths 2n? For ring n=1, step length 2, leading to the last side?
+
+Wait, maybe. Let me think. If the number of rings is related to the step lengths. For each ring index n, the corners of the square can be determined.
+
+Alternatively, since each ring n has 8n numbers, and the last number is (2n +1)^2. The last number is placed at a corner of the square spiral.
+
+Given that, the last number (2025) of ring n=22 is at the corner. To figure out the direction from which the next number (2026) is placed, which direction was the previous movement?
+
+Since 2025 is at the corner, the movement ending at 2025 would be in a particular direction. Let's take the example with smaller numbers. For example, take 9 ending at (2*1 +1)^2. The number 9 is at the corner. What direction was the movement before placing 9? Let me reconstruct:
+
+Starting from 1, moving right to 2, 3; then up to 4; then left to 5, 6; then down to 7, 8; then right to 9. So the last movement to place 9 was moving right. Therefore, after placing 9, you would turn left (north?), and move up? Wait, the direction sequence is right, up, left, down, right, up, etc. So after placing the last number 9 (in the right direction), the next direction is up. Therefore, the next number after 9 is moving up? Wait, no, after completing a side, you turn left. So after moving right (east) to place 9, you turn left (north) and move up. However, in the standard spiral, after 9 comes 10, 11, 12... Let me see. 
+
+In a 5x5 grid, if 9 is at the upper right corner? Wait, maybe my previous example was not correct. Maybe I need to draw a small spiral.
+
+Let me try to write out numbers in the spiral up to, say, 25.
+
+Let me try to reconstruct:
+
+Start at 1 at center. Let's assume the grid is built as follows:
+
+Let me imagine moving clockwise:
+
+Starting at 1 (center). Moving right to 2, then up to 3, then left to 4, then down to 5, then right to 6, 7, then up to 8, 9, 10, then left to 11, 12, 13, then down to 14, 15, 16, then right to 17, 18, 19, 20, then up to 21, 22, 23, 24, then left to 25. Wait, maybe not. This is getting complex. Maybe I need to refer to the standard coordinates.
+
+Alternatively, perhaps use the fact that each corner of the square has specific numbers. For example, for each ring n, the four corners can be calculated. For ring n, the maximum number is (2n +1)^2. Then moving counterclockwise around the square, the corners are:
+
+Top right: (2n +1)^2
+
+Top left: (2n +1)^2 - (2n)
+
+Bottom left: (2n +1)^2 - 4n
+
+Bottom right: (2n +1)^2 - 6n
+
+Wait, let me check with n=1:
+
+Top right: 3² = 9
+
+Top left: 9 - 2(1) = 7
+
+Bottom left: 9 - 4(1) = 5
+
+Bottom right: 9 - 6(1) = 3
+
+But in the spiral, moving from 3 (top left?), going to 4, 5, then down to 6, 7, 8... Wait, perhaps not. Alternatively, perhaps another way.
+
+Alternatively, think of for a given ring n (the one with side length 2n +1), the corners are:
+
+Starting from the bottom right? Maybe. Wait, when moving in the spiral, the last number in the ring is the top right corner. For example, in the 3x3 grid, 9 is top right. Then moving counterclockwise:
+
+Previous corner is bottom right: 7? No, maybe need better formula.
+
+Alternatively, consider that when you move in the spiral, each layer adds numbers on four sides. Starting from the previous layer's top right corner, moving right to form the next layer's top side, then up for the next side, etc.
+
+Alternatively, maybe think of the four corners for a ring n (where the numbers go up to (2n +1)^2):
+
+Let me denote that the top right corner is (2n +1)^2.
+
+Then, moving counterclockwise, the top left corner would be (2n +1)^2 - 2n.
+
+Then the bottom left corner is (2n +1)^2 - 4n.
+
+Then the bottom right corner is (2n +1)^2 - 6n.
+
+Therefore, the four corners for ring n are:
+
+(2n +1)^2 - 6n (bottom right), (2n +1)^2 - 4n (bottom left), (2n +1)^2 - 2n (top left), and (2n +1)^2 (top right).
+
+Let me verify with n=1:
+
+Top right: 9 - 0 = 9
+
+Top left: 9 - 2*1 = 7
+
+Bottom left: 9 - 4*1 = 5
+
+Bottom right: 9 - 6*1 = 3
+
+Yes, so for the 3x3 grid (n=1), the four corners are 3, 5, 7, and 9. Which makes sense: 3 would be bottom right, 5 bottom left, 7 top left, 9 top right. Wait, but in the spiral, how are they placed? 
+
+If you imagine the 3x3 grid:
+
+Center is 1.
+
+Right side: 2, 3
+
+Up: 4, 1
+
+Left: 6, 5
+
+Down: 8, 7
+
+Right: 9
+
+But probably my coordinates here are not standard. However, regardless, the formula seems to give the four corners. 
+
+Therefore, in general, for each ring n, the four corners are as above. Therefore, if we take n=22, the last number (2025) is the top right corner of ring n=22. Therefore, the next number, which is 2026, is adjacent to it. Since movement direction after completing the top right corner is... when you finish moving right to reach top right corner (2025), the next movement is upward? Wait, but in the spiral, after moving in one direction, you turn left (changing direction counter-clockwise). If the last movement to reach 2025 was moving right, then after that you turn left (which would be up direction). However, since you just completed the top right corner, moving up from there would go outside the square? Wait, no. Wait, after completing the top right corner of a ring, the next direction is up, but since you are already at the top of the square, moving up would start the next side? Wait, maybe not. Wait, in the spiral, after placing the top right corner (2025), you turn left (from right direction to up direction) and start moving up. However, since you are already at the top row, moving up would mean going... but that's impossible. Therefore, perhaps the next movement is actually a different direction?
+
+Wait, confusion arises. Maybe the direction is not up. Let me check with n=1. After placing 9 (top right corner), the next number is 10. Where is 10? In the standard spiral, after 9, moving up is not possible because you're at the top of the 3x3 grid. Therefore, the next direction must be left? Wait, how does the spiral continue after 9? 
+
+Looking at the standard Ulam spiral:
+
+Let me try to write numbers from 1 to 25 in a 5x5 grid to see.
+
+But since I can't draw here, I need to mentally reconstruct.
+
+Starting at 1 in center (position (0,0)).
+
+Move right to 2 (1,0), 3 (2,0). Then turn up, move to 4 (2,1), then (2,2)? Wait, no. Wait, the standard spiral:
+
+Let me check coordinates:
+
+Let me recall that in the Ulam spiral, the movement is as follows:
+
+Starting at 1 (0,0).
+
+Right to 2 (1,0), 3 (2,0).
+
+Up to 4 (2,1), 5 (2,2).
+
+Left to 6 (1,2), 7 (0,2), 8 (0,1).
+
+Down to 9 (0,0), 10 (-1,0), 11 (-1, -1).
+
+Wait, this seems inconsistent. Maybe I need to recall the actual coordinates. Alternatively, maybe refer to a standard example.
+
+Alternatively, let me think about when the direction changes. After completing the top right corner (say, 3 for the 3x3 grid), moving up would lead to nothing, so maybe you turn left again? Wait, if you go right to place 3, then you turn left (which would be up) and move, but since you can't go up from there, you turn again? No, the turning is consistent. 
+
+Actually, the turning is always to the left. Each time you finish a side, you turn left. Therefore, if you finish moving right to place the top right corner (say, 9 in the 3x3 grid), you turn left (which is now up), but you can't go up from there, so perhaps the spiral continues in the next direction? Wait, this is confusing. Maybe I need to figure out the coordinates of the corners.
+
+Alternatively, since we know the four corners for ring n. For example, for ring n=1 (the 3x3 grid), the corners are 3, 5, 7, 9. The number after 9 is 10. Where is 10 located? According to the formula, after the top right corner (9), moving would be up? If 9 is at top right, moving up would be outside the grid. But since the next ring is ring n=2, which is a 5x5 grid. Therefore, maybe after 9, you turn around? Wait, maybe the direction after reaching 9 is down?
+
+Wait, another approach: When you complete a layer, the next number is placed in the next layer. The last number of ring n is at a corner, and the first number of ring n+1 is adjacent to it. 
+
+For example, in the 3x3 grid, after 9 comes 10. Where is 10? Let me think that moving from 9, if you turn left (from right to up), which isn't possible, so you turn again? Wait, no, the turning is always to the left. So after moving right to finish at 9, turn left (up) but since you can't, maybe the spiral continues moving in the same direction? No, the spiral must continue building the next layer. 
+
+Maybe my coordinate system is messed up. Let me think of the standard Ulam spiral coordinates as per Wikipedia or other references. 
+
+Alternatively, refer to the fact that when moving from the end of a ring (which is a top right corner), the next number is placed to the left of that corner? Wait, in the 3x3 grid example, after 9 (top right), the next number is 10. In the standard spiral, moving from 9, you go up? If you can't, maybe you go left? Which would be west? Let me think. Let's imagine the numbers:
+
+Imagine 1 at center.
+
+2 to the right, 3 right.
+
+Up to 4, up to 5.
+
+Left to 6, 7, left to 8.
+
+Down to 9, down to 10?
+
+Wait, maybe after placing 9, you turn down? That would make 10 below 9. But in the standard spiral, numbers increase as you spiral outwards. Let me check an actual diagram. 
+
+Upon recalling, for example, the number after 9 in the standard spiral is 10, which is located to the left (west) of 9. Wait, no. If I think of the 5x5 grid:
+
+Let me try to recall coordinates. Let me try to reconstruct the spiral up to 25.
+
+Let me define coordinates with (row, column), starting at center (0,0).
+
+1 is at (0,0).
+
+Move right to (1,0) = 2; (2,0) = 3.
+
+Turn up to (2,1) = 4; (2,2) = 5.
+
+Turn left to (1,2) = 6; (0,2) = 7.
+
+Turn down to (0,1) = 8; (-1, 1) = 9; (-1, 0) = 10; (-1, -1) = 11.
+
+Turn right to (-1, -1)... Wait, no, after moving down to 10 at (-1, 0), turning right would be east direction. So move right: from (-1, 0) to (-1, 1) is up? Wait, no, turning right from down direction is east. So moving east from (-1, 0) would be increasing column number. So moving east: (-1, 0) -> (-1, 1) -> (-1, 2)... But previously, we had 7 at (0, 2). So there's inconsistency here. 
+
+This is getting too confusing without a visual. Maybe I need to accept that after the top right corner of a ring, the next number is placed in a certain direction. Given that 2026 is the first number of ring n=23, which starts at (2*23 -1)^2 +1 = 45² +1 = 2026, and ends at (2*23 +1)^2 = 47² = 2209. Since this ring is for n=23, and according to the formula earlier, the four corners would be:
+
+Top right: (2*23 +1)^2 = 47² = 2209.
+
+Top left: 2209 - 2*23 = 2209 - 46 = 2163.
+
+Bottom left: 2209 - 4*23 = 2209 - 92 = 2117.
+
+Bottom right: 2209 - 6*23 = 2209 - 138 = 2071.
+
+Therefore, the four corners of ring n=23 are 2071, 2117, 2163, and 2209. 
+
+Since 2026 is the first number in this ring, and the previous ring ended at 2025, which is the bottom right corner of ring n=22? Wait, no, according to our earlier formula, the corners of ring n are  (2n +1)^2 - 6n, etc. So for ring n=22, which ends at 45²=2025, the four corners would be:
+
+Top right: 45² = 2025.
+
+Top left: 2025 - 2*22 = 2025 - 44 = 1981.
+
+Bottom left: 2025 - 4*22 = 2025 - 88 = 1937.
+
+Bottom right: 2025 - 6*22 = 2025 - 132 = 1893.
+
+Therefore, the four corners of ring n=22 are 1893 (bottom right), 1937 (bottom left), 1981 (top left), and 2025 (top right). Therefore, the number after 2025 (which is at top right of ring n=22) is the first number of ring n=23, which is 2026. 
+
+Since the previous movement ended at top right corner (2025), which direction was that? Based on the spiral movement, as after placing the top right corner, the next movement is... Assuming that each ring is formed by four sides, each side length. For ring n, the side length is 2n? Wait, not sure. 
+
+Alternatively, since ring n=22 ends at its top right corner, moving in what direction is 2026 placed? Since after finishing the top right corner, you turn left (which would be up direction), but since you can't go up from there, you must be turning again? No, the turning is consistent. Wait, in the previous example with n=1 (ending at 9), the next number is 10. If the movement after 9 is up, but since it's already at the top, maybe the direction is different. Maybe the movement continues in the same direction? 
+
+Alternatively, perhaps the movement is from bottom right to top right, then the next side is from top right going up? But how?
+
+Alternatively, think in terms of coordinates. Let me consider that 2025 is at a corner. Let's assume that 2025 is at top right corner. Then the next number, 2026 is to the left of 2025? 
+
+If that is the case, then the direction from 2025 to 2026 is left (west). But in terms of the spiral movement, after finishing the top right corner, the next movement is up? But if you move left instead, that might be a different turn. 
+
+Alternatively, since the ring n=23 has its four corners as calculated, the first number of the ring is 2026. Since the previous ring ended at 2025 (top right), the first number of ring n=23 would be moving in the next direction, which should be left? But according to the standard movement pattern, after moving in right direction (placing top right), the next direction is up? But since you're already at the top, that doesn't make sense. Therefore, perhaps the direction is actually left. 
+
+Alternatively, let's look at how the numbers increase. After the top right corner of ring n, which is (2n+1)^2, the next number is the first number of the next ring. The next ring (n+1) has its first number at (2n+1)^2 + 1. Where is this located? 
+
+In the standard spiral, after completing a square ring, the next ring starts by moving to the left. For example, after 3 (top right of ring n=1), the next number 4 is moving up? Wait no, in our earlier example, after 3 (which was upper? Maybe my example is conflicting. 
+
+Actually, given the difficulty in mentally reconstructing, perhaps I can use the fact that the first number of ring n is located on the bottom right corner of the previous ring? Or adjacent? 
+
+Alternatively, since the ring n=23 starts at 2026, and has four corners at 2026, 2071, 2117, and 2163, 2209. Wait, but earlier the four corners of ring n=23 are 2071, 2117, 2163, and 2209. Therefore, where is 2026 located in the ring?
+
+Since the ring starts at 2026, that must be one of the sides. Each ring has four sides. The first side is, for example, moving in a certain direction. 
+
+The total numbers in ring n=23 is 8*23 = 184 numbers. If 2026 is the first number of the ring, then where does it lie on the first side of the ring? 
+
+Assuming that the first side of the ring is the side that starts from the previous ring's end (2025) and moves in some direction. 
+
+Earlier, we have that ring n=23 has four corners: bottom right 2071, bottom left 2117, top left 2163, and top right 2209. Since 2026 is the first number of the ring, it's on the first side of the ring. 
+
+Each side of the ring has length equal to... For ring n, each side length is 2n? Wait, earlier for ring n=1, the first side is right direction with 2 numbers (2,3), then up direction with 2 numbers (4,5). Wait, and since 8n numbers in the ring, 8n / 4 sides = 2n numbers per side. Therefore, each side has 2n numbers. However, the first and third sides have that length, and the second and fourth sides have also? Wait, but if each side has 2n numbers, then total numbers is 4*2n=8n. Which matches. 
+
+Therefore, for ring n=23, each side has 2*23 = 46 numbers. Therefore, the first side has 46 numbers, starting at 2026 and ending at 2026 + 46 - 1 = 2026 + 45 = 2071. Which is the bottom right corner of this ring (as calculated earlier). Therefore, the first side of ring n=23 is from 2026 to 2071, which is 46 numbers. Therefore, the first side is moving in direction... Since the previous ring ended at 2025 (top right corner), then this first side must be moving either left or down. Given that it ends at the bottom right corner of the new ring, which is 2071. 
+
+So if the first side of ring n=23 is from 2026 to 2071, ending at bottom right corner. Therefore, movement is from top right of previous ring to bottom right of current ring. That movement would be downward direction. Because moving down from the top right of previous ring to the bottom right of next ring. Therefore, the first side of the new ring is moving south (down).
+
+Therefore, 2026 is located at the top right of previous ring (2025 is there), then we move down for 46 numbers to reach 2071 at the bottom right. Therefore, 2026 is the first number of that downward moving side.
+
+Therefore, the position of 2026 is at the top right corner of the previous ring, from which we start moving down to build the first side of the new ring. 
+
+Therefore, knowing that, the neighbors of 2026 would be:
+
+The numbers around it in the grid. Since it's located at a corner, it has three neighbors from the previous ring, and then the next number (2027) is directly below it.
+
+Wait, but 2026 is at the position that is adjacent to the previous ring. Let me think.
+
+If 2026 is at the top right of the previous ring's corner (which was 2025), then to its left is 2025, and to its right? Well, since it's on the edge of the previous ring, to its right would be outside the previous ring, but since we're starting the new ring by moving down, so 2026 is at the top of a vertical line going down. Therefore, the neighbors of 2026 would be:
+
+- To the left: 2025 (from previous ring)
+
+- To the southwest: 2026 + position?
+
+Wait, perhaps I need to figure out the coordinates or the relative positions.
+
+Alternatively, think of the 8 neighbors:
+
+- Above: None, since it's on the top row of its position?
+
+Wait, no. Wait, since 2026 is on the first side of the new ring, which is moving down from the top right of the previous ring. Therefore, 2026 is adjacent to 2025 to its west (left), and then the neighbors would also include numbers from the new ring (south) and numbers from other directions?
+
+Alternatively, considering it's on the edge between two rings.
+
+Alternatively, maybe I need to find the coordinates of 2026 and then calculate the coordinates of its neighbors, then find what numbers are at those coordinates.
+
+To do that, I need to figure out the coordinates of 2026 in the grid.
+
+But how?
+
+Since we can think of each ring, we can try to model coordinates.
+
+Alternatively, we can note that each ring n has sides of length 2n. For ring n=23, moving down from 2026 (which is at position that is top right of ring n=22), so let's assume that the previous ring (n=22) has a certain coordinate system.
+
+Alternatively, maybe there's a formula to find neighbors based on the numbers.
+
+But this might be complex. Alternatively, think about the numbers adjacent to 2026.
+
+Since 2026 is on the downward moving side of ring n=23. Therefore, the number directly below 2026 is 2026 + 1 = 2027. Then the number below that is 2028, etc., down to 2071 which is the bottom right corner.
+
+Therefore, the number directly below 2026 is 2027.
+
+What about the number to the west (left) of 2026 is 2025.
+
+What about the number to the northwest of 2026? That would be the number above 2025. What is that number?
+
+Since 2025 is the top right corner of ring n=22. The number above 2025 would be on the previous side of ring n=22. 
+
+Since ring n=22 has its top right corner at 2025. The side leading to that corner is the upward moving side. Let me recall the corners of ring n=22 are 1893 (bottom right), 1937 (bottom left), 1981 (top left), 2025 (top right). 
+
+Each side of ring n=22 has 2*22 = 44 numbers. Therefore:
+
+- First side (from previous ring's end? Not sure). Wait, ring n=22 has four sides:
+
+Starting from bottom right corner 1893, moving up? Or depending on the direction.
+
+Earlier, for ring n=23, first side is moving down. For ring n=22, the first side would have started moving...? Well, each ring is built starting from the bottom right corner of the previous ring? Maybe not. 
+
+Alternatively, for each ring, the four sides are:
+
+1. Right side (east)
+
+2. Top side (north)
+
+3. Left side (west)
+
+4. Bottom side (south)
+
+But I need to figure out the order.
+
+Given that the last number of the previous ring is at top right corner (2025), which is the end of the north side of ring n=22. Then the next ring starts by moving south, which would be the south side? No. Wait, according to our earlier logic, the first side of the next ring is moving down (south) from the top right corner.
+
+Therefore, ring n=22's four sides would be:
+
+- Starting from the bottom right corner 1893, moving up to reach the top right corner 2025.
+
+Wait, no. If each side has 44 numbers for ring n=22. 
+
+Let me think of the four sides of ring n=22:
+
+Assuming that the ring starts at the bottom right corner 1893, and the four sides are:
+
+1. Move up (north) to reach the top right corner 2025. The number of steps for this side: the distance from bottom right to top right is vertical. Since the ring is square of size (2*22 +1)x(2*22 +1)? Wait, no. Wait, ring n=22 corresponds to a square of side length 2*22 + 1 = 45. Wait, no, the ring number is n=22, which is between (2*22 -1)^2 +1 and (2*22 +1)^2. The square size would be (2n+1) x (2n+1). Therefore, for n=22, the square has side length 45. Therefore, moving from bottom right to top right is moving up by 44 steps? Because the vertical side of the square has length equal to side length minus 1? Wait, when moving along a side of the square, the number of steps is equal to the side length minus 1. Because if you have a square grid from (0,0) to (k,k), the number of steps along a side is k. But since our square is of side length 45, moving from bottom right to top right would be 44 steps? 
+
+But earlier we said that each side has 2n numbers. For n=22, each side has 44 numbers. Therefore, yes, 2n = 44 steps. Therefore, the side from bottom right to top right (north direction) has 44 numbers, starting at 1893 and ending at 1893 + 44 - 1 = 1893 + 43 = 1936? Wait, but earlier our calculation said that the top right corner is 2025. There is a contradiction here. 
+
+Therefore, my earlier assumption about the four corners must be wrong. There is a contradiction here. 
+
+Earlier I said that for ring n, the four corners are:
+
+Top right: (2n +1)^2
+
+Top left: (2n +1)^2 - 2n
+
+Bottom left: (2n +1)^2 - 4n
+
+Bottom right: (2n +1)^2 - 6n
+
+But for n=22, this would give bottom right corner as 2025 - 6*22 = 2025 - 132 = 1893. But according to the other logic, that side (north side) starting at bottom right 1893 and having 44 numbers would end at 1893 + 44 - 1 = 1936, but according to the formula, it should end at 2025. Therefore, something is wrong.
+
+Therefore, my formula for the corners must be incorrect. 
+
+Let me try to derive the corners correctly. Let's consider ring n, which is the square with side length s = 2n +1. The numbers on this ring go from (previous ring end) +1 to s². The previous ring end is (s - 2)². For example, for s=45 (n=22), previous ring end is 43²=1849. Then the numbers in this ring go from 1850 to 45²=2025. Wait, this conflicts with my earlier statement that ring n=22 starts at (2n -1)^2 +1. Let me check:
+
+For ring n=22, previous ring ends at (2*22 -1)^2 = (43)^2 = 1849. Then ring n=22 starts at 1849 + 1 = 1850 and ends at (2*22 +1)^2=45²=2025. And the total numbers is 8*22 = 176 numbers. Let's confirm: 2025 - 1849 = 176. Yes! Because 2025 - 1849 = 176. Therefore, each ring n has 8n numbers. Therefore, that formula is correct.
+
+Now, to find the corners: for ring n, with side length s=2n +1, starting at s_prev² + 1 = (s - 2)^2 + 1, and ending at s². 
+
+The four corners can be calculated by stepping along the sides. 
+
+Each side has length L = s - 1 = 2n +1 - 1 = 2n. Wait, side length minus 1 steps to move along the side. 
+
+But since there are four sides, each contributing L steps, total numbers per ring is 4L = 4*2n = 8n, which matches.
+
+So starting at the starting number of the ring, which is (s - 2)^2 + 1, moving along the first side (let's say east), then north, then west, then south.
+
+Let me figure out the four corners:
+
+Start at bottom right corner (starting point of the ring). Moving east to the next corner (bottom right to top right?), no, moving east would be along the bottom side.
+
+Wait, perhaps the ring starts at the bottom right corner, moves up (north) L steps to top right, then moves left (west) L steps to top left, then down (south) L steps to bottom left, then moves right (east) L-1 steps to bottom right? Wait, no, because that would make the last side have L-1 steps to not overlap with the starting point. 
+
+Actually, the first three sides have L steps, and the fourth side has L - 1 steps to avoid duplicating the starting point. 
+
+But in our case, since the ring has exactly 4L steps? Wait no, if L is 2n, then 4L = 8n, but the last side is L - 1? Then total numbers would be 3L + (L - 1) = 4L -1 = 8n -1. But we know there are 8n numbers. Therefore, that doesn't add up. 
+
+Therefore, perhaps all four sides have L steps, but the last step of the fourth side overlaps with the starting point. So, the four corners are:
+
+1. Bottom right: starting point, number A
+
+2. Top right: A + L
+
+3. Top left: A + L + L = A + 2L
+
+4. Bottom left: A + 3L
+
+And then back to bottom right: A + 4L, but since A + 4L = end of ring: s². Therefore, s² = A + 4L. Let's check with n=22, s=45, L=2n=44, A = (s - 2)^2 +1 = 43² +1 = 1849 + 1 = 1850.
+
+Then s² = 2025. A + 4L = 1850 + 4*44 = 1850 + 176 = 2026. But s² is 2025. Contradiction! Therefore, something's wrong.
+
+Wait, the end of the ring is s² = 2025. But according to this, it would be A + 4L = 2026. Therefore, there's a +1 discrepancy. Therefore, likely one of the sides has L-1 steps. 
+
+Assume that the first three sides have L steps and the fourth side has L - 1 steps. Then total numbers would be 3L + (L -1) = 4L - 1. For our case n=22, that would be 4*44 -1 = 176 -1 = 175, but we should have 8n = 176 numbers. Still discrepancy.
+
+Wait, perhaps the first side has L -1 steps? This is getting confusing. Let me think differently.
+
+The total numbers in the ring is 8n = 4L. Since L=2n. For example, n=22, L=44, 8*22 = 176 = 4*44. Therefore, each side has exactly L steps. Therefore, when moving along four sides of L steps, you end up back at the starting point. Therefore, the four corners would be:
+
+Start at bottom right: number A.
+
+After moving north L steps, reach top right: A + L.
+
+After moving west L steps, reach top left: A + L + L = A + 2L.
+
+After moving south L steps, reach bottom left: A + 3L.
+
+After moving east L steps, return to bottom right: A + 4L = A, which implies 4L = 0, which is impossible. 
+
+Therefore, my assumption is wrong. The issue is that moving along four sides of length L would result in overlapping, hence the last side must be shorter. Therefore, the fourth side has L - 1 steps. Then total steps is 3L + (L - 1) = 4L - 1. But since we need 4L steps (8n), there must be an additional step somewhere. 
+
+Perhaps the first side has L + 1 steps? 
+
+Alternatively, think about when you start at the bottom right corner. To move to the top right, you have to go north for (s - 1) steps where s is the side length. For a square of side length s, the number of steps between two opposite corners is s - 1. 
+
+Given the ring has side length s=2n+1. For example, n=22, s=45. Steps from bottom right to top right: s - 1 = 44 steps. Then from top right to top left: s - 1 = 44 steps. Then from top left to bottom left: s - 1 = 44 steps. Then from bottom left back to bottom right: s - 1 - 1 = 43 steps, because you don't want to step back on the starting point. Therefore, total steps: 44 + 44 + 44 + 43 = 175. But 8n = 176. There is a missing step. 
+
+Therefore, one of the sides must have an extra step. Most likely, the first side has one extra step. 
+
+Alternatively, when constructing the spiral, after completing the previous ring, the next number is added in the first step of the new ring. For example, the previous ring ends at some corner, and the new ring starts from there. 
+
+Maybe a better approach is to think about the positions of the corners based on the numbers.
+
+For the ring starting at A = (s - 2)^2 + 1, where s=2n+1.
+
+First corner (bottom right): A.
+
+Second corner (top right): A + (s - 1) = A + 2n.
+
+Third corner (top left): A + 2(s - 1) = A + 4n.
+
+Fourth corner (bottom left): A + 3(s - 1) = A + 6n.
+
+Fifth point (bottom right): A + 4(s - 1) = A + 8n. But since the ring ends at s², which is A + 8n = s². Let's check with n=22, A=1850, s=45, s²=2025.
+
+A + 8n = 1850 + 8*22 = 1850 + 176 = 2026. But s² is 45² = 2025. So 2026 ≠ 2025. Therefore, there is a discrepancy of 1. This suggests that the last side has one fewer step. So the fourth corner (bottom left) is at A + 6n, then from there, instead of moving east for (s - 1) = 2n steps to return to A, it moves for (2n - 1) steps, ending at A + 6n + (2n - 1) = A + 8n - 1 = s². Let's check:
+
+A + 8n - 1 = 1850 + 176 - 1 = 2025, which is correct. Therefore, the four corners are:
+
+1. Bottom right: A
+
+2. Top right: A + 2n
+
+3. Top left: A + 4n
+
+4. Bottom left: A + 6n
+
+And the last side (from bottom left to bottom right) has 2n - 1 steps, bringing the total number to 8n.
+
+Therefore, for ring n=22, A=1850, and the four corners are:
+
+1850 (bottom right), 1850 + 44 = 1894 (top right), 1850 + 88 = 1938 (top left), 1850 + 132 = 1982 (bottom left). Wait, but earlier I had a different calculation with corners at 1893, 1937, etc. This suggests there was an error in my previous corner calculations. 
+
+This formula says that for ring n, corners are A, A + 2n, A + 4n, A + 6n, where A = (s - 2)^2 + 1 = (2n - 1)^2 + 1. For n=22, s=45, A = (43)^2 +1 = 1849 +1 = 1850. Then:
+
+- Bottom right: 1850
+
+- Top right: 1850 + 44 = 1894
+
+- Top left: 1894 + 44 = 1938
+
+- Bottom left: 1938 + 44 = 1982
+
+Then from bottom left (1982), moving east for 43 steps (since s-2=43?) No, earlier we said 2n -1 steps. For n=22, 2n -1 = 43. So from bottom left (1982), moving east for 43 steps to reach bottom right, which should be 1982 + 43 = 2025. And indeed, 1982 + 43 = 2025, which is s² = 45². Correct.
+
+Therefore, my previous corner calculations were wrong. The correct formula for the four corners of ring n is:
+
+- Bottom right: A = (2n - 1)^2 + 1
+
+- Top right: A + 2n
+
+- Top left: A + 4n
+
+- Bottom left: A + 6n
+
+And the total numbers in the ring is 3*(2n) + (2n -1) = 6n + 2n -1 = 8n -1? Wait, no, the number of numbers on each side is the number of steps + 1? Wait, if you move for m steps, you add m + 1 numbers? No, when moving from one corner to the next, the number of numbers on that side is equal to the number of steps + 1? Or is it the number of steps?
+
+Wait, if you start at a number and move one step, you place one number. Wait, no. Let's think: starting at number X, moving one step in a direction places the next number X + 1. Therefore, moving m steps places m numbers, ending at X + m. Therefore, the number of numbers on a side is m. 
+
+Therefore, the first side (bottom right to top right) has m = 2n numbers (since it takes 2n steps to go from A to A + 2n). Wait, no, if A is the starting number, then moving 2n steps (each step increments the number by 1) would end at A + 2n. Therefore, the side has 2n + 1 numbers? Wait, starting at A, after 0 steps: A; after 1 step: A + 1; ... after m steps: A + m. So if you move 2n steps, you have 2n + 1 numbers. But earlier we said that the total numbers in the ring is 8n. Let me recheck with n=22. If each side has 2n +1 numbers, then four sides would have 4*(2n +1) = 8n + 4, which is way more than 8n. Therefore, clearly something is wrong here.
+
+This suggests a fundamental confusion between the number of steps and the number of numbers. Let me clarify:
+
+Each move from one number to an adjacent number is one step, and each step generates a new number. Therefore, if you start at number X and move m steps in a direction, you generate m new numbers, ending at X + m. Therefore, the total numbers on that side is m + 1 (starting number + m numbers).
+
+However, for the entire ring, the total numbers should be 8n. Let's see with n=22:
+
+If each side has 2n steps, generating 2n +1 numbers, but the four sides would have overlap, it's complex. But earlier we saw that for the ring starting at A=1850 (n=22), the four corners are 1850, 1894, 1938, 1982, and the ring ends at 2025. So from A to top right is 1894 - 1850 = 44 = 2n. Therefore, this side has 44 numbers, from A to A + 44 -1 = A + 43? Wait, 1894 is A + 44, but the numbers are from A (1850) to 1894 inclusive, which is 45 numbers. 1894 - 1850 + 1 = 45 numbers. Which would be 44 steps. Therefore, the number of numbers on the side is m + 1, where m is the number of steps.
+
+Given that, for ring n, each of the first three sides has m = 2n steps, generating m + 1 numbers, and the last side has m = 2n -1 steps, generating m + 1 = 2n numbers. Therefore total numbers per ring is:
+
+3*(2n + 1) + 2n = 6n + 3 + 2n = 8n + 3. Which is still more than 8n. Clearly, there is inconsistency here.
+
+But we know from earlier that for n=22, the ring has 176 numbers (8*22). From A=1850 to 2025 inclusive, that's 2025 - 1850 + 1 = 176 numbers. 
+
+From A=1850 to top right corner (1894) is 1894 - 1850 + 1 = 45 numbers.
+
+From 1894 to top left corner (1938) is 1938 - 1894 + 1 = 45 numbers.
+
+From 1938 to bottom left corner (1982) is 1982 - 1938 + 1 = 45 numbers.
+
+From 1982 to bottom right corner (2025) is 2025 - 1982 + 1 = 44 numbers.
+
+Total: 45 + 45 + 45 + 44 = 179, which is more than 176. Still inconsistency. 
+
+Clearly, my approach is flawed. Let me step back.
+
+The total numbers in the ring is s² - (s - 2)² = 8n, where s=2n+1. Let's calculate:
+
+s² - (s - 2)² = (s - (s - 2))(s + (s - 2)) = (2)(2s - 2) = 4s - 4 = 4(2n + 1) - 4 = 8n + 4 - 4 = 8n. Correct. So this is correct.
+
+Therefore, the ring has 8n numbers. 
+
+Now, if I want to distribute these numbers across four sides, each side must have 2n numbers, since 4*2n = 8n. Therefore, each side must have exactly 2n numbers, meaning that each side is from one corner to the next, and includes 2n numbers. Therefore, the number of steps between corners is 2n - 1, and the number of numbers is 2n.
+
+Therefore, for example, from A (bottom right) to top right: 2n numbers, which means the difference between the numbers is (2n - 1). Hence, top right number = A + (2n - 1) = A + 2n -1. Similarly for other sides.
+
+Let me verify with n=22, A=1850:
+
+- From A to top right: 2n = 44 numbers, so top right number = A + 44 -1 = 1850 + 43 = 1893
+
+- From top right to top left: another 44 numbers, so top left = 1893 + 44 = 1937
+
+- From top left to bottom left: 1937 + 44 = 1981
+
+- From bottom left to bottom right: 1981 + 44 = 2025
+
+Total numbers: 44 + 44 + 44 + 44 = 176, which is correct. And 2025 is s² = 45²=2025, correct. 
+
+Therefore, the four corners for ring n are:
+
+- Bottom right: A
+
+- Top right: A + 2n - 1
+
+- Top left: A + 4n - 2
+
+- Bottom left: A + 6n - 3
+
+- And finally, bottom right: A + 8n - 4 = s² - 1 + 1 = s² (since s² = A + 8n). Wait, let's check: A + 8n = s², but from above, bottom left is A + 6n - 3, then adding 2n - 1 gives A + 6n - 3 + 2n - 1 = A + 8n - 4. To reach s² = A + 8n, there is a gap of 4? This suggests an inconsistency. 
+
+Wait, for n=22, A=1850, and the last side should go from bottom left (1981) to bottom right (2025), which is 2025 - 1981 = 44 numbers, i.e. 2n=44 numbers. 2025 - 1981 + 1 = 45 numbers, which would be 44 steps. But according to the formula above, from bottom left A + 6n - 3 = 1850 + 132 - 3 = 1979 + 1850? Wait, n=22, 6n - 3 = 132 - 3 = 129? Wait, no, A is 1850, so bottom left is A + 6n - 3 = 1850 + 132 - 3 = 1850 + 129 = 1979. Then adding 2n -1 = 43 gives 1979 + 43 = 2022, but we need to reach 2025. Clearly something wrong.
+
+Wait, this suggests my formulas for the corners are still incorrect. Let me recast.
+
+Let me define for ring n, starting number A = (s - 2)^2 + 1 = (2n - 1)^2 + 1, where s = 2n + 1.
+
+Each side has 2n numbers. 
+
+First side: A to top right: A + 2n - 1.
+
+Second side: top right to top left: (A + 2n - 1) + 2n - 1 = A + 4n - 2.
+
+Third side: top left to bottom left: A + 6n - 3.
+
+Fourth side: bottom left to bottom right: A + 8n - 4. 
+
+But since the ring ends at A + 8n - 4, which should be equal to s² = (2n +1)^2. Let's check with n=22:
+
+A + 8n - 4 = 1850 + 176 - 4 = 1850 + 172 = 2022. But s² = 2025. There is a discrepancy of 3. 
+
+Where is the error? 
+
+The total numbers in the ring is 4*2n = 8n numbers. Starting from A, ending at A + 8n - 1. Because if each side adds 2n numbers, then the final number is A + 4*(2n) - 1 = A + 8n - 1. For n=22: 1850 + 176 -1 = 1850 + 175 = 2025, which is correct. 
+
+Therefore, the error in the previous calculation was in the cumulative addition of the sides. If each side is 2n numbers, then:
+
+- First side: A to A + 2n - 1 (2n numbers)
+
+- Second side: A + 2n to A + 4n - 1 (another 2n numbers)
+
+- Third side: A + 4n to A + 6n - 1 (another 2n numbers)
+
+- Fourth side: A + 6n to A + 8n - 1 (another 2n numbers)
+
+Total: 8n numbers, from A to A + 8n - 1, which equals s² = (2n +1)^2. Let's verify for n=22:
+
+A + 8n - 1 = 1850 + 176 - 1 = 2025, which is correct. 
+
+Therefore, the four corners are:
+
+- Bottom right: A
+
+- Top right: A + 2n - 1 = 1850 + 44 - 1 = 1893
+
+- Top left: A + 4n - 1 = 1850 + 88 - 1 = 1937
+
+- Bottom left: A + 6n - 1 = 1850 + 132 - 1 = 1981
+
+- Bottom right: A + 8n - 1 = 2025
+
+Therefore, the four corners are 1893, 1937, 1981, 2025 for ring n=22. Which matches my initial calculation, which is different from the previous erroneous ones. 
+
+So the four corners are:
+
+1. Bottom right: A
+
+2. Top right: A + 2n - 1
+
+3. Top left: A + 4n - 1
+
+4. Bottom left: A + 6n - 1
+
+And the ring ends at A + 8n - 1 = s².
+
+Therefore, returning to the original problem: the number 2026 is the first number of ring n=23, which starts at A = (2*23 -1)^2 + 1 = (45)^2 +1 = 2025 + 1 = 2026. Wait, this is interesting! So for n=23, A = 2026. 
+
+Therefore, ring n=23 starts at A = 2026, and has four corners:
+
+- Bottom right: A = 2026
+
+- Top right: A + 2*23 - 1 = 2026 + 46 -1 = 2071
+
+- Top left: A + 4*23 - 1 = 2026 + 92 -1 = 2117
+
+- Bottom left: A
+----
+Usage(input=65, output=16384, details={'estimated_cost': 0.00459272})

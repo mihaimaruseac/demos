@@ -1,0 +1,196 @@
+
+**Solution Overview**
+
+The numbers are written on an infinite hexagonal lattice.  
+Each cell of the lattice can be described using **cube coordinates**  
+
+\[
+(c_x ,c_y,c_z), \qquad c_x+c_y+c_z = 0 ,
+\]
+
+and the six neighbours of a cell are obtained by adding one of the six
+vectors  
+
+\[
+\begin{aligned}
+v_0 &= ( 1,-1, 0) &&\text{(east)}\\
+v_1 &= ( 1, 0,-1) &&\text{(north‑east)}\\
+v_2 &= ( 0, 1, -1) &&\text{(north‑west)}\\
+v_3 &= (-1, 0, 1) &&\text{west}\\
+v_4 &= (-1, 1, 0) &&\text{south‑west}\\
+v_5 &= ( 0, 1,-1) &&\text{south‑east}
+\end{aligned}
+\]
+
+(I use the same six directions that appear in ordinary “hex‑spiral’’
+implementations.)
+
+The numbers are written consecutively in a **spiral**: starting from
+the centre we first walk one step east, then one step north‑east,
+then one step north‑west, etc., gradually increasing the step length.
+The path that is walked is a simple “hexagonal” walk; after we have
+walked 6·r steps we have finished the outer border of the *r*‑th ring,
+where the distance from the centre is the index `r` of the ring.  
+The total amount of cells that are at distance ≤ `r` is  
+
+\[
+T(r)=1+3r(r+1) .
+\]
+
+Consequently the **ring index** (distance) of a number `n>1` is the unique
+`r≥1` satisfying  
+
+\[
+1+3(r-1)r < n \le 1+3r(r+1).
+\]
+
+Let  
+
+* `ring = r`                         … the distance from the centre,
+* `ring_start = 1+3(r-1)r + 1 = 2+3r(r-1)`.
+
+The offset inside the ring is  
+
+\[
+\text{off}= n-\text{ring\_start}
+\qquad (0\le\text{off}<6r) .
+\]
+
+Then  
+
+\[
+\begin{aligned}
+\text{side}   & = \big\lfloor \dfrac{\text{off}}{r}\big\rfloor
+               \in\{0,\dots ,5\}, \\[2mm]
+\text{pos\_in\_side} & = \text{off}\bmod r .
+\end{aligned}
+\]
+
+The coordinates of a cell with parameters `(ring,side,pos)` can be
+written explicitly:
+
+```
+if side==0   // (east)          : (  r , 0)
+else if side==1   // north‑east   : ( 0 , -r+pos )
+else if side==2   // north‑west   : ( -r , r-pos )
+else if side==3   // west         : ( -r+pos , 0 )
+else if side==4   // south‑west   : ( 0 , r-pos )
+else            // south‑east       : ( r , 1+r-pos )
+```
+
+(Every cell of the ring can be obtained in exactly one of the six
+forms; the formulas are linear in the offset `k` and the ring radius `r`.)
+
+The six neighbours of a cell are the six cells obtained by adding the
+six direction vectors `v_0,…,v_5` to its coordinate.  
+Thus, for each direction `d` we compute the new axial coordinate and
+re-apply the `index` → number conversion (which again uses the same
+formula as above) to obtain the neighbour’s value; finally we add the
+six numbers.
+
+Because the mapping from **indices** to **coordinates** and back is a
+bijection, the resulting six values are uniquely determined.
+
+All the above can be performed with elementary arithmetic:
+the only operations we need are multiplication, addition and the integer
+square‑root (to obtain the ring index).  Performing the arithmetic for
+`n=2026` gives the required sum.
+
+--------------------------------------------------------------------
+
+### Computation for the specific number 2026
+
+1. **Ring index**
+
+   Solve \(1+3r(r+1)\ge 2026\).  
+   The smallest integer \(r\) is \(r=26\).  
+
+   Hence `ring = 26`.
+
+2. **Position inside the ring**
+
+   - Ring‑start: 
+     \[
+     \text{ring\_start}=2+3\cdot25\cdot26=1952.
+     \]
+   - Offset in the ring:  
+     \[
+     \text{off}=2026-1952=74 .
+     \]
+   - Side index: \(s = \lfloor 74/26\rfloor = 2\).
+   - Offset inside the side: \(k = 74\bmod 26 = 22\).
+
+   So the coordinate of the number 2026 is obtained from side 2,
+   offset `k=22`.
+
+3. **Computing the six neighbours**
+
+   Using the direction vectors listed above, the six neighbour
+   offsets from a cell whose `(r,s,k)` parameters are known are:
+
+   \[
+   \begin{aligned}
+   &\text{(direction 5)} &&\rightarrow\; (k,\, r-1) \\
+   &\text{(direction 0)} &&\rightarrow\; (k+1,\, r) \\
+   &\text{(direction 5)} &&\rightarrow\; (r-1,\; k) \\
+   &\text{(direction 4)} &&\rightarrow\; (r, k-1) \\
+   &\text{(direction 5)} &&\rightarrow\; (r-1,\; k+1) \\
+   &\text{(direction 1)} &&\rightarrow\; (r-1,\; 0) .
+   \end{aligned}
+   \]
+
+   (The explicit formulas depend on the side; the above is a concrete
+   example for the side `s=2`; other sides give analogous relations.)
+
+   Applying these formulas we obtain the **six neighbour indices**:
+
+   * On ring`r=26` the two inner neighbours have indices  
+
+     \[
+      1952 + (s\cdot r + k-1) = 1952 + (2\cdot26+21)=1952+73=2025,
+     \]
+     \[
+      1952 + (s\cdot r + (k+1)\bmod 26) = 1952 + 75 = 2027 .
+     \]
+
+   * One neighbour lies on ring `r-1=25\); its index is  
+
+     \[
+      1+3\cdot25\cdot26 = 1951 .
+     \]
+
+   * The remaining three neighbours lie on ring `r+1=27`; their
+     indices are the first three numbers of that next ring, which are
+
+     \[
+      1+3\cdot26\cdot27 = 2028,\qquad
+      1+3\cdot26\cdot27 + 1 = 2029,\qquad
+      2030 .
+     \]
+
+   Consequently the six neighbours of **2026** are
+
+   \[
+   2025,\;2027,\;1951,\;2028,\;2029,\;2030 .
+   \]
+
+4. **Summation**
+
+   \[
+   \begin{aligned}
+      \text{Sum}
+      &= 2025+2027+1951+2028+2029+2030   \\
+      &= (2025+2027)+(1951+2028)+(2029+2030) \\
+      &= 4052 + 4079 + 4059 \\
+      &= 12190 .
+   \end{aligned}
+   \]
+
+Thus the sum of the six neighbours of the number **2026** in the
+hexagonal spiral is **12190**.
+
+\[
+\boxed{12190}
+\]
+----
+Usage(input=None, output=None, details=None)

@@ -1,0 +1,546 @@
+We are given a spiral of natural numbers on a square grid, starting from 1 at the center, and spiraling outward. The example shows:
+
+```
+... 5  4  3 ...
+... 6  1  2 ...
+... 7  8  9 ...
+```
+
+This is a **clockwise spiral**, starting at 1, moving right → up → left → down → right, etc.
+
+We are to find the **sum of all 8 neighbors** of the number **2026**.
+
+---
+
+### Step 1: Understand the spiral structure
+
+The spiral grows in **layers** or **rings** around the center.
+
+- Layer 0: just the center, number 1 (at position (0,0))
+- Layer 1: numbers 2 to 9 (a 3x3 square)
+- Layer 2: numbers 10 to 25 (a 5x5 square)
+- Layer 3: numbers 26 to 49 (a 7x7 square)
+- ...
+- Layer k: numbers from `(2k-1)^2 + 1` to `(2k+1)^2`
+
+Actually, let's define it properly.
+
+Let’s define the **side length** of the square at layer k: `2k + 1`
+
+So the largest number in layer k is `(2k + 1)^2`
+
+The **first number** in layer k is `(2k - 1)^2 + 1` for k ≥ 1, and layer 0 is just 1.
+
+So:
+
+- Layer 0: 1 = 1² → side length 1
+- Layer 1: 2 to 9 = 3² → side length 3
+- Layer 2: 10 to 25 = 5² → side length 5
+- Layer 3: 26 to 49 = 7² → side length 7
+- ...
+- Layer k: from `(2k - 1)^2 + 1` to `(2k + 1)^2`
+
+So to find which layer 2026 is in, we need to find k such that:
+
+`(2k - 1)^2 < 2026 ≤ (2k + 1)^2`
+
+Let’s solve for k.
+
+Compute sqrt(2026) ≈ 45.01
+
+So the largest square ≤ 2026 is 45² = 2025
+
+So 2025 = 45² = (2k + 1)² → 2k + 1 = 45 → k = 22
+
+So 2025 is the **last number** of layer k=22.
+
+Therefore, **2026 is the first number of layer k=23**
+
+So layer 23 starts at 2026 and ends at (2*23 + 1)² = 47² = 2209
+
+So 2026 is the **first number** of layer 23.
+
+---
+
+### Step 2: Determine position of 2026
+
+In each layer, we start at the **bottom right corner** of the previous layer and move **right** one step, then go **up**, **left**, **down**, **right**.
+
+Wait — let's recall the spiral direction.
+
+Standard Ulam spiral (clockwise, starting at center):
+
+- Start at 1 (center)
+- Move right to 2
+- Move up to 3
+- Move left to 4,5
+- Move down to 6,7
+- Move right to 8,9
+- Then up to 10,11,12
+- Left to 13,14,15,16
+- Down to 17,18,19,20,21
+- Right to 22,23,24,25
+- etc.
+
+Actually, the pattern of movement per layer is:
+
+Each layer k (k ≥ 1) has 8k numbers (since the perimeter of a square of side 2k+1 is 4*(2k+1) - 4 = 8k)
+
+But the starting point of layer k is immediately to the **right** of the top-right corner of the previous layer.
+
+Wait, let's get the **direction** right.
+
+Standard Ulam spiral:
+
+- Start at (0,0): 1
+- Move right → (1,0): 2
+- Move up → (1,1): 3
+- Move left → (0,1): 4, then (-1,1): 5
+- Move down → (-1,0): 6, (-1,-1): 7
+- Move right → (0,-1): 8, (1,-1): 9
+- Move up → (1,0) already filled, so next: (2,-1): 10? Wait, no.
+
+Actually, after 9 at (1,-1), we move **up** to (1,0) is already 2, so we go to (2,-1)? No.
+
+Wait, let's map coordinates properly.
+
+Let me build the spiral with coordinates:
+
+We'll use (x, y), with (0,0) = 1.
+
+Direction order: Right → Up → Left → Down → Right...
+
+Let’s build step by step:
+
+- 1: (0,0)
+- Move right → (1,0): 2
+- Move up → (1,1): 3
+- Move left → (0,1): 4, (-1,1): 5
+- Move down → (-1,0): 6, (-1,-1): 7
+- Move right → (0,-1): 8, (1,-1): 9, (2,-1): 10
+- Move up → (2,0): 11, (2,1): 12, (2,2): 13
+- Move left → (1,2): 14, (0,2): 15, (-1,2): 16, (-2,2): 17
+- Move down → (-2,1): 18, (-2,0): 19, (-2,-1): 20, (-2,-2): 21
+- Move right → (-1,-2): 22, (0,-2): 23, (1,-2): 24, (2,-2): 25, (3,-2): 26
+
+Wait, 25 is at (2,-2), then next is up? But (2,-1) is already 9, so we move to (3,-2) for 26? That doesn’t make sense.
+
+Actually, the standard Ulam spiral after 9 (at (1,-1)) moves right to (2,-1)=10, then up to (2,0)=11, (2,1)=12, (2,2)=13, then left to (1,2)=14, (0,2)=15, (-1,2)=16, (-2,2)=17, then down to (-2,1)=18, (-2,0)=19, (-2,-1)=20, (-2,-2)=21, then right to (-1,-2)=22, (0,-2)=23, (1,-2)=24, (2,-2)=25, then up to (3,-2)=26? But (3,-2) is not adjacent to (2,-2) vertically — it's right then up? No, after completing the square, you move to the next layer.
+
+Wait, actually, after 25 at (2,-2), the next number 26 is placed at (3,-2), which is one step to the **right** from (2,-2). But (2,-2) is the bottom-right corner of the 5x5 square? Let's see:
+
+The square of side 5 goes from x=-2 to 2, y=-2 to 2. So (2,-2) is the bottom-right corner.
+
+Then the next layer (7x7) starts by moving **right** one step to (3,-2) = 26.
+
+So the pattern is:
+
+- Each layer k starts at position: **(k, -(k-1))** ? Let's check.
+
+Wait, for layer 1 (k=1): numbers 2 to 9. Starts at 2 = (1,0)
+
+But layer 0 ends at (0,0). Then layer 1 starts at (1,0) — right of center.
+
+Layer 2 (k=2): starts at 10 = (2,-1)
+
+Layer 3 (k=3): starts at 26 = (3,-2)
+
+So the starting point of layer k is at:
+
+**x = k, y = -(k - 1)**
+
+Check:
+
+- k=1: (1, 0) → yes, 2
+- k=2: (2, -1) → yes, 10
+- k=3: (3, -2) → yes, 26
+- k=23: (23, -22)
+
+So **2026** is the first number of layer 23 → at position **(23, -22)**
+
+---
+
+### Step 3: Find the 8 neighbors of 2026 at (23, -22)
+
+The 8 neighbors are the 8 surrounding cells:
+
+We need to find the numbers in the 8 adjacent positions:
+
+- (22, -23) — southwest
+- (23, -23) — south
+- (24, -23) — southeast
+- (22, -22) — west
+- (24, -22) — east
+- (22, -21) — northwest
+- (23, -21) — north
+- (24, -21) — northeast
+
+We need to find the numbers in these 8 positions.
+
+Note: 2026 is at (23, -22), which is the **start** of layer 23.
+
+The previous layer (layer 22) ends at 45² = 2025.
+
+We need to find what numbers are in the 8 adjacent cells.
+
+Let’s think about the structure.
+
+The cell (23, -22) is just to the right of the top-right corner of the previous layer.
+
+The previous layer (layer 22) is a square from x = -22 to 22, y = -22 to 22.
+
+So the top-right corner of layer 22 is (22, 22) = 2025
+
+The next number, 2026, is placed at (23, -22), which is **not adjacent** to (22,22). So we need to trace the spiral path.
+
+Wait — perhaps I made a mistake.
+
+Let me reconsider the spiral construction.
+
+After layer k ends at (k, k), the next layer starts by moving **right** one step to (k+1, k)? But that doesn't match our earlier mapping.
+
+Wait — let's look at how the spiral proceeds.
+
+From the example:
+
+After 9 at (1,-1), next is 10 at (2,-1) — so moving right along the bottom row.
+
+Then up along x=2: (2,0)=11, (2,1)=12, (2,2)=13
+
+Then left along y=2: (1,2)=14, (0,2)=15, (-1,2)=16, (-2,2)=17
+
+Then down along x=-2: (-2,1)=18, (-2,0)=19, (-2,-1)=20, (-2,-2)=21
+
+Then right along y=-2: (-1,-2)=22, (0,-2)=23, (1,-2)=24, (2,-2)=25
+
+Then next: move **up** from (2,-2) to (3,-2)=26? But (3,-2) is not adjacent to (2,-2) vertically — it's right then up? No, (2,-2) to (3,-2) is right.
+
+So after finishing the bottom row at (2,-2)=25, we move **right** to (3,-2)=26, which starts the next layer.
+
+So the **starting point** of layer k is at (k, -(k-1))? For k=3: (3,-2) — yes, since k-1=2.
+
+So for layer k, start at (k, -(k-1))
+
+So for k=23: (23, -22) = 2026
+
+Now, we want the 8 neighbors of (23, -22)
+
+Let’s list them:
+
+1. (22, -23) — SW
+2. (23, -23) — S
+3. (24, -23) — SE
+4. (22, -22) — W
+5. (24, -22) — E
+6. (22, -21) — NW
+7. (23, -21) — N
+8. (24, -21) — NE
+
+We need to find what numbers are in these positions.
+
+Let’s analyze each.
+
+---
+
+### Step 4: Find numbers in neighbor positions
+
+We know:
+
+- Layer 22 ends at (22,22) = 2025
+- Layer 23 starts at (23, -22) = 2026
+- Layer 23 runs from 2026 to 47² = 2209
+
+The path of layer 23 is:
+
+- Start at (23, -22) = 2026
+- Move **up** along x=23: from y=-22 to y=23 → that’s 46 steps? Let's see.
+
+Actually, in each layer, we move:
+
+- Up: from (k, -(k-1)) to (k, k) → that's from y = -(k-1) to y = k → number of steps: k - (-(k-1)) = 2k - 1? Wait, number of cells: from y = -22 to y = 23 → that's 23 - (-22) + 1 = 46 cells? But we already have the first cell at (23,-22), so we move up 45 steps to reach (23,23)
+
+Wait, let's think of the **directions** in layer k:
+
+Each layer has 8k numbers.
+
+For layer k=23: 8*23 = 184 numbers → from 2026 to 2026+183=2209
+
+The path is:
+
+1. **Right**? No — we start at (k, -(k-1)) = (23, -22)
+
+Then we move **up** along x = k = 23, from y = -(k-1) = -22 to y = k = 23
+
+That’s from y=-22 to y=23 → number of steps: 23 - (-22) = 45 → so 46 positions including start? But we already placed 2026 at (23,-22), so we move **up 45 times** to reach (23,23)
+
+So:
+
+- Step 1: (23, -22) = 2026 (start)
+- Step 2: (23, -21) = 2027
+- ...
+- Step 46: (23, 23) = 2026 + 45 = 2071
+
+So (23, 23) = 2026 + 45 = 2071
+
+Then we move **left** along y=23, from x=23 to x=-23
+
+That’s 46 steps? From x=23 to x=-23 → 47 positions, but we already have (23,23), so we move left 46 times to ( -23, 23)
+
+So:
+
+- (22,23) = 2072
+- ...
+- (-23,23) = 2071 + 46 = 2117
+
+Then move **down** along x=-23, from y=23 to y=-23
+
+From y=23 to y=-23: 47 positions, minus the start → 46 steps
+
+So:
+
+- (-23,22) = 2118
+- ...
+- (-23,-23) = 2117 + 46 = 2163
+
+Then move **right** along y=-23, from x=-23 to x=23
+
+From x=-23 to x=23: 47 positions, minus start → 46 steps
+
+So:
+
+- (-22,-23) = 2164
+- ...
+- (23,-23) = 2163 + 46 = 2209
+
+Wait, but the last number of the layer is 2209, which is at (23, -23)
+
+But we started at (23, -22) = 2026
+
+So the entire layer:
+
+- Up: 46 numbers (from (23,-22) to (23,23)) → 2026 to 2071
+- Left: 46 numbers (from (22,23) to (-23,23)) → 2072 to 2117
+- Down: 46 numbers (from (-23,22) to (-23,-23)) → 2118 to 2163
+- Right: 46 numbers (from (-22,-23) to (23,-23)) → 2164 to 2209
+
+Total: 46*4 = 184 numbers → 2026 to 2209 → 2209 - 2026 + 1 = 184 → correct.
+
+Now, we want the 8 neighbors of (23, -22) = 2026
+
+List again:
+
+1. (22, -23) — SW
+2. (23, -23) — S
+3. (24, -23) — SE
+4. (22, -22) — W
+5. (24, -22) — E
+6. (22, -21) — NW
+7. (23, -21) — N
+8. (24, -21) — NE
+
+Let’s find each:
+
+---
+
+#### 1. (22, -23): SW
+
+This is on the **bottom row** of layer 23, which is y = -23
+
+On the bottom row, we have numbers from 2164 to 2209, moving from x=-23 to x=23
+
+So at x=22, y=-23: this is the **second-to-last** number in the rightward leg.
+
+The rightward leg starts at (-23,-23)=2163? Wait no:
+
+Wait, down leg ends at (-23,-23)=2163
+
+Then rightward leg starts at (-22,-23)=2164
+
+So:
+
+- x = -23: 2163 (from down leg)
+- x = -22: 2164
+- x = -21: 2165
+- ...
+- x = 22: 2164 + (22 - (-22)) = 2164 + 44 = 2208
+- x = 23: 2209
+
+So (22, -23) = 2208
+
+#### 2. (23, -23): S
+
+That’s the last number of layer 23: 2209
+
+#### 3. (24, -23): SE
+
+This is **outside** layer 23 — it's in layer 24!
+
+We need to find what number is at (24, -23)
+
+Layer 24 starts at (24, -23) — because layer k starts at (k, -(k-1)) = (24, -23)
+
+So (24, -23) is the **first number** of layer 24.
+
+Layer 24 starts at 47² + 1 = 2209 + 1 = 2210
+
+So (24, -23) = 2210
+
+#### 4. (22, -22): W
+
+This is one step left of (23, -22)
+
+What layer is this in? (22, -22) is on the **bottom-right corner** of layer 22.
+
+Layer 22 ends at (22,22) = 2025
+
+The bottom-right corner of layer 22 is (22, -22)
+
+In layer 22, the rightward leg is along y = -22, from x=-22 to x=22
+
+Layer 22 has 8*22 = 176 numbers, from (2*22 -1)^2 +1 = 43² +1 = 1849 +1 = 1850 to 45² = 2025
+
+The rightward leg of layer 22 is the last leg: from (-22,-22) to (22,-22)
+
+The down leg ends at (-22,-22) = ?
+
+Layer 22:
+
+- Up: from (22, -21) to (22,22): 44 steps? Let's compute.
+
+Layer k=22:
+
+- Start at (22, -21) = 1850
+- Up: to (22,22): 22 - (-21) = 43 steps → 44 numbers → 1850 to 1850+43=1893
+- Left: to (-22,22): 44 steps → 1894 to 1937
+- Down: to (-22,-22): 44 steps → 1938 to 1981
+- Right: to (22,-22): 44 steps → 1982 to 2025
+
+So (22, -22) = 2025
+
+So (22, -22) = 2025
+
+#### 5. (24, -22): E
+
+This is one step right of 2026 — at (24, -22)
+
+Is this in layer 23? Layer 23 is from x=-23 to 23, y=-23 to 23
+
+(24,-22) is outside — it's in layer 24.
+
+What is the position of (24,-22) in layer 24?
+
+Layer 24 starts at (24, -23) = 2210
+
+Then moves **up** along x=24 from y=-23 to y=24
+
+So:
+
+- (24, -23) = 2210
+- (24, -22) = 2211
+- (24, -21) = 2212
+- ...
+- (24, 24) = 2210 + 47 = 2257
+
+So (24, -22) = 2211
+
+#### 6. (22, -21): NW
+
+This is at (22, -21)
+
+This is on the **upward leg** of layer 22.
+
+Layer 22 upward leg: from (22, -21) to (22,22)
+
+We said:
+
+- Start of upward leg: (22, -21) = 1850
+- Then (22, -20) = 1851, ..., up to (22,22)=1893
+
+So (22, -21) = 1850
+
+#### 7. (23, -21): N
+
+This is one step up from 2026 → (23, -21)
+
+That’s the **second number** in layer 23: 2027
+
+#### 8. (24, -21): NE
+
+This is (24, -21)
+
+As above, in layer 24, upward leg: (24, -23)=2210, (24,-22)=2211, (24,-21)=2212
+
+So 2212
+
+---
+
+### Step 5: Sum all 8 neighbors
+
+List:
+
+1. (22, -23) = 2208  
+2. (23, -23) = 2209  
+3. (24, -23) = 2210  
+4. (22, -22) = 2025  
+5. (24, -22) = 2211  
+6. (22, -21) = 1850  
+7. (23, -21) = 2027  
+8. (24, -21) = 2212  
+
+Now sum them:
+
+Let’s group:
+
+- 2208 + 2209 + 2210 + 2211 + 2212 = ?
+
+That’s 5 consecutive numbers from 2208 to 2212
+
+Sum = (2208 + 2212) * 5 / 2 = (4420) * 5 / 2 = 2210 * 5 = 11050
+
+Wait: average is 2210, times 5 = 11050
+
+Now add the other three:
+
+- 2025
+- 1850
+- 2027
+
+Sum of these three: 2025 + 2027 = 4052; 4052 + 1850 = 5902
+
+Total sum = 11050 + 5902 = **16952**
+
+Wait, let me verify:
+
+2208 + 2209 = 4417  
++2210 = 6627  
++2211 = 8838  
++2212 = 11050 → yes
+
+2025 + 1850 = 3875  
+3875 + 2027 = 5902 → yes
+
+11050 + 5902 = 16952
+
+---
+
+### ✅ Final Answer: **16952**
+
+But wait — let me double-check (22, -21) = 1850? Is that correct?
+
+In layer 22, upward leg: starts at (22, -21) = 1850, yes, as we computed earlier.
+
+And (22, -22) = 2025, which is the end of layer 22.
+
+And (24, -21) = 2212, yes.
+
+All positions checked.
+
+So the sum is:
+
+**16952**
+
+---
+
+### ✅ Answer: $\boxed{16952}$
+----
+Usage(input=65, output=6289, details={'estimated_cost': 0.006923749999999999})

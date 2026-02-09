@@ -1,0 +1,614 @@
+We have a number spiral laid out on a square grid as follows:
+
+\[
+\begin{matrix}
+5 & 4 & 3 \\
+6 & 1 & 2 \\
+7 & 8 & 9 \\
+\end{matrix}
+\]
+
+where the numbers spiral starting at 1 in the center and moving to the right, then up, then left, then down, and so forth in a counter-clockwise spiral.
+
+---
+
+### Step 1: Understand the Spiral Layout
+
+The spiral starts with:
+
+- 1 at (0,0)
+- 2 at (1,0)
+- 3 at (1,1)
+- 4 at (0,1)
+- 5 at (-1,1)
+- 6 at (-1,0)
+- 7 at (-1,-1)
+- 8 at (0,-1)
+- 9 at (1,-1)
+
+and so on.
+
+The pattern is a well-known **Ulam spiral** or a square spiral where the numbers increase as you go outward in rings.
+
+---
+
+### Step 2: Find the coordinates of number 2026 in the spiral
+
+We need to find the x,y coordinates of the number 2026.
+
+---
+
+### Step 2a: Understanding the layer (or "ring") of 2026
+
+The spiral is constructed in "rings" or layers around 1:
+
+- Ring 0: just number 1 at (0,0)
+- Ring 1: numbers from 2 to 9 on the square with side length 3 centered at (0,0)
+- Ring n has numbers filling a square ring of side \(2n+1\) with:
+
+Largest number in ring \(n\) = \((2n+1)^2\).
+
+Thus:
+
+- Ring 0: largest number = \(1^2 = 1\)
+- Ring 1: largest number = \(3^2 = 9\)
+- Ring 2: largest number = \(5^2 = 25\)
+- Ring 3: largest number = \(7^2 = 49\)
+- ...
+- Ring \(n\): largest number = \((2n+1)^2\)
+
+We want the ring \(n\) such that:
+
+\[
+(2n-1)^2 < 2026 \le (2n+1)^2
+\]
+
+because the previous ring ended at \((2n-1)^2\).
+
+Calculate:
+
+- \(44^2 = 1936\)
+- \(45^2 = 2025\)
+- \(46^2 = 2116\)
+
+So:
+
+- \(44^2 = 1936 < 2026 \le 45^2=2025\) ... no, 2026 > 2025
+- \(45^2=2025 < 2026 \le 46^2=2116\) here \(46\) is even, but the formula uses odd numbers.
+
+Because side lengths must be odd: \(2n+1\) is odd.
+
+Check \(45^2 = 2025 < 2026 \le 47^2 = 2209\)
+
+So ring with side length 47 corresponds to:
+
+\[
+(2n + 1) = 47 \implies n = \frac{47 - 1}{2} = 23
+\]
+
+- Ring 22 ends at \(45^2 = 2025\)
+- Ring 23 ends at \(47^2 = 2209\)
+
+So 2026 is in ring \(n=23\).
+
+---
+
+### Step 2b: Determine the side length and the first number of ring 23
+
+- Side length of ring 23 is \(2 \times 23 + 1 = 47\).
+- The last number of ring 22 is \(45^2 = 2025\).
+- Hence, the first number of ring 23 is 2026.
+
+---
+
+### Step 2c: Identify the ring coordinates boundaries
+
+The coordinates of ring 23 go from:
+
+- x and y in \([-23, 23]\)
+- The ring forms a square shell with side length 47 centered at (0,0).
+
+---
+
+### Step 2d: How numbers proceed in ring n?
+
+The spiral pattern (starting from the last number of previous ring \( (2n-1)^2 \)) proceeds like this for ring \(n\):
+
+- Starts right next square coordinate (n, -(n-1))? 
+- Actually, the last number of ring \(n-1\) is at position \((n-1, -(n-1))\), and the first number of ring \(n\) is at \((n, - (n-1))\). 
+
+(From known formulas for these spirals.)
+
+For ring \(n\):
+
+- Start at coordinate \((n, -(n-1))\) with number \((2n - 1)^2 + 1\).
+
+---
+
+Let's verify with a smaller \(n=1\):
+
+- \(n=1\)
+- Start number at ring 1: \((2*1 - 1)^2 + 1 = 1^2 + 1 = 2\)
+- Start coordinate: \((1, -(1-1)) = (1, 0)\)
+- Number 2 is at (1,0) (matches initial spiral)
+
+---
+
+### Step 2e: Coordinates for ring 23 start:
+
+- Number \(2026 = (2*23 - 1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026\)
+- Coordinates: \((23, -(23-1)) = (23, -22)\)
+
+So \(2026\) is at \((23, -22)\).
+
+---
+
+### Step 3: How do numbers go along the ring?
+
+For each ring \(n\), the path of numbers goes **up**, then **left**, then **down**, then **right** around the square:
+
+Each side has length \(2n\) (because the total side length is \(2n + 1\) but one corner is shared by previous ring).
+
+Sequence in ring \(n\) (starting at \((n, -(n-1))\)):
+
+- Up: \(2n\) steps
+- Left: \(2n\) steps
+- Down: \(2n\) steps
+- Right: \(2n\) steps
+
+Total steps: \(8n\) steps.
+
+Number count in ring \(n\) is \( (2n + 1)^2 - (2n - 1)^2 = 8n\), which matches the total steps around a ring.
+
+---
+
+### Step 4: Find neighbors of \(2026\) at \((23, -22)\)
+
+Neighbors are the 8 surrounding positions:
+
+\[
+(x-1, y-1), (x, y-1), (x+1, y-1), \\
+(x-1, y), \quad\quad\quad (x+1, y), \\
+(x-1, y+1), (x, y+1), (x+1, y+1) \\
+\]
+
+---
+
+### Step 5: Find the number at a general coordinate \((x,y)\)
+
+We need a formula to find the number at \((x,y)\).
+
+---
+
+### Step 5a: Determine the ring \(n\) for \((x,y)\):
+
+\[
+n = \max(|x|, |y|)
+\]
+
+because the ring number equals the maximum of the absolute values of coordinates.
+
+---
+
+### Step 5b: Find total count up to previous ring:
+
+\[
+\text{max number in prev ring} = (2n - 1)^2
+\]
+
+---
+
+### Step 5c: Calculate the offset from start of ring \(n\)
+
+Coordinates of ring \(n\) range from \(-n\) to \(+n\).
+
+The spiral number along ring \(n\) starts at:
+
+\[
+(2n - 1)^2 + 1
+\]
+
+at \((n, -(n-1))\), moving:
+
+- Up along \(x = n\), from \((n, -(n-1))\) to \((n, n)\) (distance \(d: 0 \to 2n-1\))
+- Left along \(y = n\), from \((n, n)\) to \((-n, n)\) (distance \(d: 2n \to 4n - 1\))
+- Down along \(x = -n\), from \((-n, n)\) to \((-n, -n)\) (distance \(d: 4n \to 6n -1\))
+- Right along \(y = -n\), from \((-n, -n)\) to \((n, -(n-1))\) (distance \(d: 6n \to 8n - 1\))
+
+---
+
+### Step 5d: Calculate offset \(d\) along the ring based on \((x,y)\)
+
+- If \(x = n\) and \(y\) in \([-(n-1), n]\):
+
+\[
+d = y + (n - 1)
+\]
+
+(steps going upward)
+
+- If \(y = n\) and \(x\) in \([ -n, n-1]\):
+
+\[
+d = (2n - 1) + (n - x)
+\]
+
+(steps going left)
+
+- If \(x = -n\) and \(y\) in \([-n, n-1]\):
+
+\[
+d = (4n - 1) + (n - y)
+\]
+
+(steps going down)
+
+- If \(y = -n\) and \(x\) in \([ -n + 1, n-1]\):
+
+\[
+d = (6n - 1) + (x + n)
+\]
+
+(steps going right)
+
+---
+
+### Step 5e: The position number at \((x,y)\) is:
+
+\[
+\text{number} = (2n - 1)^2 + d + 1
+\]
+
+---
+
+### Step 6: Verify with example number 2026 at \((23,-22)\)
+
+- \(n = \max(|23|, |-22|) = 23\)
+- Since \(y = -22\), and \(y = -n+1 = -23+1 = -22\), and \(x = 23\), we check which case it fits:
+
+\(y = -n + 1 = -22\) but this does not fit exactly.
+
+Check if \(y = -n\):
+
+\(y = -23\)? No, y = -22
+
+Is \(x = n\) and \(y \in [-(n-1), n]\)?
+
+\(x = 23\), \(y \in [-22, 23]\) yes, fits this case.
+
+Using:
+
+\[
+d = y + (n-1) = -22 + 22 = 0
+\]
+
+Calculate number:
+
+\[
+(2*23 -1)^2 + d + 1 = 45^2 + 0 + 1 = 2025 + 1 = 2026
+\]
+
+Perfect!
+
+---
+
+### Step 7: Calculate the neighbors' numbers
+
+Neighbors' coordinates:
+
+| dx | dy | Coordinate       |
+|-----|-----|-----------------|
+| -1  | -1  | (22, -23)       |
+| 0   | -1  | (23, -23)       |
+| +1  | -1  | (24, -23)       |
+| -1  | 0   | (22, -22)       |
+| +1  | 0   | (24, -22)       |
+| -1  | +1  | (22, -21)       |
+| 0   | +1  | (23, -21)       |
+| +1  | +1  | (24, -21)       |
+
+We compute the number at each.
+
+---
+
+### Step 7a: Calculate the ring \(n\) for each neighbor and then the number
+
+---
+
+1. Coordinate (22, -23):
+
+- \(n = \max(|22|,| -23|) = 23\)
+- \(y = -23 = -n\)
+- \(x = 22\) which is in \([-n+1, n-1] = [-22, 22]\) true.
+- So this is the case:
+
+\[
+y = -n = -23
+\]
+
+Use "right" side formula:
+
+\[
+d = (6n - 1) + (x + n) = (6*23 - 1) + (22 + 23) = (138 - 1) + 45 = 137 + 45 = 182
+\]
+
+Number:
+
+\[
+(2n - 1)^2 + d + 1 = 45^2 + 182 + 1 = 2025 + 182 + 1 = 2208
+\]
+
+---
+
+2. Coordinate (23, -23):
+
+- \(n = \max(|23|, 23) = 23\), \(y = -23 = -n\), \(x = 23\)
+
+- \(x = n\), but "right" side for \(y = -n\) only covers \(x \in [-n+1, n-1]\). Here \(x = n\), not in the range.
+
+- Since \(x = n\) and \(y = -n\), the corner point
+
+Let's see if any case fits:
+
+Borders:
+
+- Up: \(x=n, y \in [-(n-1), n]\) → \(y \geq -22\), no because \(y=-23\)
+- Left: \(y=n=23\), no \(y=-23\)
+- Down: \(x=-n=-23\), no \(x=23\)
+- Right: \(y=-n=-23\), \(x \in [-n+1, n-1] = [-22, 22]\), but \(x=23\) is out of this range.
+
+Hence, the point (23, -23) is not on ring 23 but on ring \(n = \max(|23|,|-23|) = 23\), but since \(x=23\) and \(y=-23\), and \(x = n\), \(y = -n\), it is the bottom right corner.
+
+According to the spiral, the start position at ring 23 is at (23,-22).
+
+The corner points last positions correspond to last positions in the ring.
+
+The last step of ring \(n\) is \(8n-1 = 183\) steps (0-based).
+
+The distance \(d\) from start is 183 for bottom-right corner (where the ring started).
+
+Calculate:
+
+- \(d = 8n - 1 = 8 \times 23 -1 = 184 -1 =183\)
+- Number:
+
+\[
+(2n - 1)^2 + d + 1 = 2025 + 183 + 1 = 2209
+\]
+
+So (23, -23) corresponds to 2209.
+
+---
+
+3. Coordinate (24, -23):
+
+- \(n = \max(|24|,| -23|) = 24\)
+
+This means (24,-23) is in ring 24.
+
+Calculate number at ring 24:
+
+- Max ring 23 number = \( (2*23 + 1)^2 = 47^2 = 2209 \)
+
+- Ring 24 starts at \(2209 + 1 = 2210\)
+- Starting coordinate ring 24:
+
+\[
+(n, -(n-1)) = (24, -23)
+\]
+
+This coordinate matches starting point for ring 24, so number = 2210.
+
+---
+
+4. Coordinate (22, -22):
+
+- \(n = \max(|22|, |-22|) = 22\)
+
+- \(y = -22 = -n\), \(x=22\)
+
+For \(n=22\):
+
+- Side \(y = -n = -22\), \(x \in [-21, 21]\)? \(x=22\) no, \(22 > 21\), so \(x=22\) is outside ring 22.
+
+Check ring 23 if \(n=23\):
+
+- \(n=23\), but \(\max(|22|,| -22 |)=22\), so ring 22 holds.
+
+Our coordinate is outside of ring 22 boundary?
+
+For ring 22:
+
+- Coordinates range in \([-22, 22]\):
+- \(x=22\), \(y = -22\) is valid on ring 22 boundary.
+
+On ring 22, \(y = -n = -22\), and \(x = 22\), which is max x.
+
+Check position in ring 22:
+
+- Since \(y = -n\) and \(x\) in \([-n+1, n-1]\) means \([-21, 21]\). \(x=22\) is greater than 21, so invalid on ring 22.
+
+Check ring 23:
+
+- \(n=23\), \(x=22\), \(y = -22\), max(|22|,| -22|) = 22 < 23
+
+Hence \(n=22\) ring
+
+But \(x=22\) is on the boundary of ring 22.
+
+We need to check if \(x = n\), which is 22 here.
+
+Since \(x=22 = n\), \(y = -22\), check if:
+
+- Up side: \(x=n=22\), \(y \in [-(n-1), n] = [-21, 22]\): \(y = -22\) no
+- Right side: \(y=-n=-22\), \(x \in [-n+1, n-1] = [-21, 21]\): \(x=22\), no
+- Hence, this coordinate might be corner of ring 22 or outside?
+
+If \(x=n=22\) and \(y=-n=-22\), i.e. (22,-22), the corner point.
+
+Distance \(d = 8n-1 = 8*22-1=176-1=175\).
+
+Number:
+
+\[
+(2n -1)^2 + d + 1 = 43^2 + 175 + 1 = 1849 + 176 = 2025
+\]
+
+This matches the last number of ring 22, which we know is 2025.
+
+Ok this fits.
+
+---
+
+5. Coordinate \( (24, -22) \):
+
+- \(n = 24\)
+
+Ring 24 start at \((24, -23)\) is number 2210
+
+\(y = -22\)
+
+Check d in ring 24:
+
+- \(y = -22\), which is \(y = -n + 1 = -23 + 1 = -22\).
+
+Hence on side "right" of ring 24.
+
+From formula for "right" side:
+
+\[
+d = (6n -1) + (x + n) = (6*24 -1) + (24 + 24) = (144 - 1) + 48 = 143 + 48 = 191
+\]
+
+Number in ring 24:
+
+\[
+(2*24 -1)^2 + d + 1 = 47^2 + 191 + 1 = 2209 + 192 = 2401
+\]
+
+Wait, \(47^2 = 2209\) is ring 23 last number.
+
+Ring 24 last number is:
+
+\[
+(2*24 + 1)^2 = 49^2 = 2401
+\]
+
+So 2401 is the max ring 24 number.
+
+Hence point at \(d=191\) in ring 24 is indeed \(2401\).
+
+So number at (24, -22) is 2401.
+
+---
+
+6. Coordinate (22, -21):
+
+- \(n = \max(|22|, | -21|)=22\)
+
+- \(x = 22 = n\), 
+
+- Check if \(y \in [-(n-1), n] = [-21, 22]\), \(y = -21\) ok.
+
+Ring 22 "up" side:
+
+\[
+d = y + (n -1) = -21 + 21 = 0
+\]
+
+Number:
+
+\[
+(2*22 -1)^2 + d + 1 = 43^2 + 0 + 1 = 1849 + 1 = 1850
+\]
+
+---
+
+7. Coordinate (23, -21):
+
+- \(n= \max(|23|, 21) =23\)
+
+- \(x=23=n\)
+
+- \(y = -21 \in [-(n-1), n] = [-22, 23]\)
+
+Ring 23 "up" side:
+
+\[
+d = y + (n -1) = -21 + 22 = 1
+\]
+
+Number:
+
+\[
+(2*23 -1)^2 + 1 + 1 = 45^2 + 2 = 2025 + 2 = 2027
+\]
+
+---
+
+8. Coordinate (24, -21):
+
+- \(n = 24\)
+
+- \(y = -21\)
+
+Check if "right" side: \(y = -n = -24\)? No
+
+"up": \(x = n = 24\), \(y \in [-(n-1), n]\) i.e. \([-23, 24]\) \(y=-21\) in.
+
+Hence "up" side ring 24:
+
+\[
+d = y + (n -1) = -21 + 23 = 2
+\]
+
+Number:
+
+\[
+(2*24 -1)^2 + d + 1 = 47^2 + 2 + 1 = 2209 + 3 = 2212
+\]
+
+---
+
+### Step 8: Summary of neighbors' numbers
+
+| Coordinate | n  | d  | Number |
+|------------|----|----|--------|
+| (22,-23)   | 23 |182 | 2208   |
+| (23,-23)   | 23 |183 | 2209   |
+| (24,-23)   | 24 |0   | 2210   |
+| (22,-22)   | 22 |175 | 2025   |
+| (24,-22)   | 24 |191 | 2401   |
+| (22,-21)   | 22 |0   | 1850   |
+| (23,-21)   | 23 |1   | 2027   |
+| (24,-21)   | 24 |2   | 2212   |
+
+---
+
+### Step 9: Calculate the sum of all neighbors
+
+\[
+2208 + 2209 + 2210 + 2025 + 2401 + 1850 + 2027 + 2212
+\]
+
+Calculate step-by-step:
+
+- \(2208 + 2209 = 4417\)
+- \(4417 + 2210 = 6627\)
+- \(6627 + 2025 = 8652\)
+- \(8652 + 2401 = 11053\)
+- \(11053 + 1850 = 12903\)
+- \(12903 + 2027 = 14930\)
+- \(14930 + 2212 = 17142\)
+
+---
+
+### **Final answer:**
+
+\[
+\boxed{17142}
+\]
+
+The sum of all 8 neighbors of the number 2026 in the spiral is **17142**.
+----
+Usage(input=62, output=5102, details={})

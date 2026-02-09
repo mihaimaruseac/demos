@@ -1,0 +1,102 @@
+I need to find the position of 2026 on the spiral and then sum its 8 neighbors.
+
+**Understanding the spiral pattern:**
+
+The spiral starts at 1 and moves: right (1→2), down (2→3), left (3→4, 4→5), up (5→6), right (6→7, 7→8, 7→9), and so on.
+
+The pattern forms square rings around the center:
+- Ring 0: just 1
+- Ring 1: 2-9 (8 numbers)
+- Ring 2: 10-25 (16 numbers)
+- Ring n: contains 8n numbers
+
+**Finding which ring contains 2026:**
+
+Ring n ends at number $(2n+1)^2$.
+
+- Ring 44 ends at $(2·44+1)^2 = 89^2 = 7921$
+- Ring 45 ends at $(2·45+1)^2 = 91^2 = 8281$
+
+Since 2026 < 7921, it's in ring 44 or earlier.
+
+- Ring 43 ends at $87^2 = 7569$
+- Ring 44 ends at $89^2 = 7921$
+
+Since 2026 < 7569, let me check ring 42:
+- Ring 42 ends at $85^2 = 7225$
+
+Continuing backwards:
+- Ring 22 ends at $45^2 = 2025$
+- Ring 23 ends at $47^2 = 2209$
+
+So 2026 is in ring 23.
+
+**Locating 2026 within ring 23:**
+
+Ring 22 ends at 2025, so 2026 is the first number in ring 23.
+
+Each ring starts on the right side, moving right from the previous ring's end position. Ring 23 starts right after 2025.
+
+In the spiral:
+- Ring 22 ends at the bottom-right corner at position (22, -22)
+- Ring 23 begins moving right from there
+
+The right side of ring 23 moves up from (23, -22) to (23, 23): that's 46 numbers (2026-2071)
+The top side moves left: (23, 23) to (-23, 23): that's 46 numbers (2072-2117)
+The left side moves down: (-23, 23) to (-23, -23): that's 46 numbers (2118-2163)
+The bottom side moves right: (-23, -23) to (23, -23): that's 46 numbers (2164-2209)
+
+Since 2026 is the 1st number in ring 23, starting at position (23, -22), and it moves upward on the right side:
+- Position of 2026: (23, -22)
+
+**Finding the 8 neighbors of position (23, -22):**
+
+The 8 neighbors are at positions:
+- (22, -22), (22, -21), (23, -21)
+- (24, -22), (24, -21), (24, -23)
+- (23, -23), (22, -23)
+
+**Finding the numbers at these positions:**
+
+I need to trace which numbers land at each position. 
+
+At (23, -22): this is 2026 itself.
+
+Just before 2026 at position (23, -23): This is 2025 (the end of ring 22)
+
+Moving up the right side of ring 23 from (23, -22):
+- (23, -21): 2026 + 1 = 2027
+- (23, -20): 2026 + 2 = 2028
+...continuing upward...
+
+Moving inward from (23, -22) toward ring 22:
+- (22, -22): end of ring 22 = 2025
+- (22, -21): In ring 22, on its right side going up: $45^2 - 45 + 1 = 2025 - 45 + 1 = 1981$
+
+Let me use the formula more carefully. For ring $n$:
+- Right side (going up): positions $(n, -n)$ to $(n, n)$
+- Top side (going left): positions $(n, n)$ to $(-n, n)$  
+- Left side (going down): positions $(-n, n)$ to $(-n, -n)$
+- Bottom side (going right): positions $(-n, -n)$ to $(n, -n)$
+
+The 8 neighbors of (23, -22) are:
+- (24, -23), (24, -22), (24, -21): in ring 24
+- (23, -23), (23, -21): in ring 23
+- (22, -23), (22, -22), (22, -21): in ring 22
+
+For ring 23: (23, -21) = 2026 + 1 = 2027; (23, -23) = 2025
+
+For ring 22 (ends at 2025): The right side goes from (22, -22) to (22, 22).
+- (22, -22) = 2025 - 45 + 1 = 1981
+- (22, -21) = 1982
+- (22, -23) is outside ring 22 in the (bottom-right corner)
+
+For ring 24 (starts at 2210): (24, -23) = 2209; (24, -22) = 2208; (24, -21) = 2207
+
+**Sum of neighbors:**
+$2025 + 2027 + 1981 + 1982 + 2209 + 2208 + 2207 + 2026 = 16265$
+
+Wait, I shouldn't include 2026 itself. The 8 neighbors sum is:
+$$2025 + 2027 + 1981 + 1982 + 2209 + 2208 + 2207 = \boxed{16239}$$
+----
+Usage(input=70, output=1453, details=None)

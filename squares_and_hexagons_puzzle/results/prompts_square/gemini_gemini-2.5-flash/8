@@ -1,0 +1,125 @@
+The problem asks for the sum of all 8 neighbors of the number 2026 in a square spiral grid.
+
+**1. Determine the coordinates of number 1 and the spiral direction.**
+Let's place the number 1 at (0,0). The spiral progresses as follows:
+1: (0,0)
+2: (1,0) (right)
+3: (1,1) (up)
+4: (0,1) (left)
+5: (-1,1) (left)
+6: (-1,0) (down)
+7: (-1,-1) (down)
+8: (0,-1) (right)
+9: (1,-1) (right)
+This is a counter-clockwise spiral starting by moving right from 1.
+
+**2. General formula for numbers on the spiral.**
+The numbers that are perfect squares (N^2) are significant in this spiral.
+Odd squares (2m+1)^2:
+1^2 = 1 at (0,0) (m=0)
+3^2 = 9 at (1,-1) (m=1)
+5^2 = 25 at (2,-2) (m=2)
+In general, (2m+1)^2 is at coordinates (m, -m). This is the bottom-right corner of an (2m+1) x (2m+1) square.
+
+Even squares (2m)^2:
+2^2 = 4 at (0,1) (m=2, not m=1 for (2m)^2)
+4^2 = 16 at (-1,2)
+6^2 = 36 at (-2,3)
+In general, (2m)^2 is at coordinates (-(m-1), m). This is the top-left corner of the previous (2m-1) x (2m-1) square. This is not strictly useful here.
+
+Let's define the "layer" of a point (x,y) as `m = max(|x|, |y|)`.
+The largest number in layer `m` is (2m+1)^2, which is located at (m, -m).
+Let `C_m = (2m+1)^2`.
+
+We can define the number `N(x,y)` for a point `(x,y)` in layer `m` as follows:
+*   If `y = -m` (bottom edge of the square, moving from right to left):
+    `N(x, -m) = C_m - (m - x)` for `-m <= x <= m`.
+*   If `x = -m` (left edge of the square, moving from bottom to top):
+    `N(-m, y) = C_m - 2m - (m + y)` for `-m < y <= m`.
+*   If `y = m` (top edge of the square, moving from left to right):
+    `N(x, m) = C_m - 4m - (m + x)` for `-m < x < m`. (Note: The value *decreases* as x increases for this segment in this spiral orientation)
+*   If `x = m` (right edge of the square, moving from top to bottom):
+    `N(m, y) = C_m - 6m - (m - y)` for `-m <= y < m`.
+
+**3. Find the coordinates of 2026.**
+First, find the largest odd square close to 2026.
+√2026 ≈ 45.01.
+45^2 = 2025.
+This corresponds to `(2m+1)^2` where `2m+1 = 45`, so `m = 22`.
+Thus, the number 2025 is at coordinates `(m, -m) = (22, -22)`.
+
+From the spiral pattern, the number 2025 is at (22,-22). The spiral goes right from this point to start the next layer.
+So, 2026 is at `(22+1, -22) = (23, -22)`.
+
+Let's check this using our formula. For (23, -22), `m = max(|23|, |-22|) = 23`.
+`C_m = (2*23+1)^2 = 47^2 = 2209`.
+The point (23, -22) has `x = m = 23`. It's on the right edge.
+`N(23, -22) = C_m - 6m - (m - y)`
+             `= 2209 - 6*23 - (23 - (-22))`
+             `= 2209 - 138 - (23 + 22)`
+             `= 2209 - 138 - 45`
+             `= 2071 - 45 = 2026`.
+This confirms that 2026 is at (23, -22).
+
+**4. Find the coordinates of the 8 neighbors of 2026.**
+Let (x,y) = (23, -22). The 8 neighbors are:
+*   (x-1, y) = (22, -22)
+*   (x+1, y) = (24, -22)
+*   (x, y-1) = (23, -23)
+*   (x, y+1) = (23, -21)
+*   (x-1, y-1) = (22, -23)
+*   (x-1, y+1) = (22, -21)
+*   (x+1, y-1) = (24, -23)
+*   (x+1, y+1) = (24, -21)
+
+**5. Calculate the number for each neighbor.**
+We use the general formula `N(x,y)` for each neighbor, determining `m` and `C_m` for each point.
+
+1.  **(22, -22)**
+    `m = max(|22|, |-22|) = 22`. `C_m = (2*22+1)^2 = 45^2 = 2025`.
+    `y = -m`. Bottom edge. `N(22, -22) = C_m - (m - x) = 2025 - (22 - 22) = 2025`.
+
+2.  **(24, -22)**
+    `m = max(|24|, |-22|) = 24`. `C_m = (2*24+1)^2 = 49^2 = 2401`.
+    `x = m`. Right edge. `N(24, -22) = C_m - 6m - (m - y) = 2401 - 6*24 - (24 - (-22)) = 2401 - 144 - 46 = 2211`.
+
+3.  **(23, -23)**
+    `m = max(|23|, |-23|) = 23`. `C_m = (2*23+1)^2 = 47^2 = 2209`.
+    `y = -m`. Bottom edge. `N(23, -23) = C_m - (m - x) = 2209 - (23 - 23) = 2209`.
+
+4.  **(23, -21)**
+    `m = max(|23|, |-21|) = 23`. `C_m = (2*23+1)^2 = 47^2 = 2209`.
+    `x = m`. Right edge. `N(23, -21) = C_m - 6m - (m - y) = 2209 - 6*23 - (23 - (-21)) = 2209 - 138 - 44 = 2027`.
+
+5.  **(22, -23)**
+    `m = max(|22|, |-23|) = 23`. `C_m = (2*23+1)^2 = 47^2 = 2209`.
+    `y = -m`. Bottom edge. `N(22, -23) = C_m - (m - x) = 2209 - (23 - 22) = 2208`.
+
+6.  **(22, -21)**
+    `m = max(|22|, |-21|) = 22`. `C_m = (2*22+1)^2 = 45^2 = 2025`.
+    `x = m`. Right edge. `N(22, -21) = C_m - 6m - (m - y) = 2025 - 6*22 - (22 - (-21)) = 2025 - 132 - 43 = 1850`.
+
+7.  **(24, -23)**
+    `m = max(|24|, |-23|) = 24`. `C_m = (2*24+1)^2 = 49^2 = 2401`.
+    `x = m`. Right edge. `N(24, -23) = C_m - 6m - (m - y) = 2401 - 6*24 - (24 - (-23)) = 2401 - 144 - 47 = 2210`.
+
+8.  **(24, -21)**
+    `m = max(|24|, |-21|) = 24`. `C_m = (2*24+1)^2 = 49^2 = 2401`.
+    `x = m`. Right edge. `N(24, -21) = C_m - 6m - (m - y) = 2401 - 6*24 - (24 - (-21)) = 2401 - 144 - 45 = 2212`.
+
+**6. Sum the neighbor values.**
+The numbers of the 8 neighbors are:
+2025 (left)
+2211 (right)
+2209 (down)
+2027 (up)
+2208 (down-left)
+1850 (up-left)
+2210 (down-right)
+2212 (up-right)
+
+Sum = 2025 + 2211 + 2209 + 2027 + 2208 + 1850 + 2210 + 2212 = 16952.
+
+The final answer is $\boxed{16952}$.
+----
+Usage(input=62, output=15487, details={'candidatesTokenCount': 2575, 'promptTokensDetails': [{'modality': 'TEXT', 'tokenCount': 62}], 'thoughtsTokenCount': 12912})

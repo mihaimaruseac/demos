@@ -1,0 +1,145 @@
+We will show that the six “hex‐neighbors” of 2026 (the six numbers that touch 2026 in the hex spiral) add up to 12 168. (Below, “neighbor” always means “adjacent cell on the hex grid”.) In what follows we describe one way to “find” the six neighbors and then “read off” their numbers.
+
+For background, the numbers are arranged on a “hex spiral” so that
+ • 1 sits at the center,
+ • its 6 immediate neighbors form “ring 1” (in clockwise order, say, 2, 3, 4, 5, 6, 7),
+ • the next ring “ring 2” has 12 numbers, and in general “ring k” (for k ≥ 1) has 6k cells.
+A standard result is that the total numbers up to ring k is
+  1 + 6 + 12 + … + 6k = 3k(k+1) + 1.
+In particular, the last number in ring k is 3k(k+1) + 1.
+
+Moreover, many authors choose the following axial‐coordinate system (a common way to “coordinate‐ize” a hex grid):
+
+ – Place the center 1 at (0,0).
+ – Its neighbors are (using “axial coordinates” (q, r)):
+  (1,0)  (“east”) → 2,
+  (0,1)  (northeast) → 3,
+  (–1,1) (northwest) → 4,
+  (–1,0) (west)  → 5,
+  (0,–1) (southwest) → 6,
+  (1,–1) (southeast) → 7.
+Then one “builds out” the spiral in rings. In the standard construction the first cell of ring k (for k ≥ 1) is taken to be (k, 0). (You may check that for ring 1 the first cell is (1,0) = 2.) In fact, one may show that the starting number on ring k is
+
+  S(k) = 3k(k – 1) + 2.
+For example, ring 1 starts at 3·1·0 + 2 = 2; ring 2 starts at S(2) = 3·2·1 + 2 = 8; and so on.
+
+Each ring is “traced out” by going counter‐clockwise from the starting point. For ring k the tracing goes in six “straight” segments of length k. (For instance, on ring 1 the six positions in order are (1,0), (0,1), (–1,1), (–1,0), (0,–1), (1,–1) which correspond to 2, 3, 4, 5, 6, 7.)
+
+It turns out that a cell’s position on its ring (its “offset” from the starting point) can be computed as follows. (Here k is the ring number.)
+ 1. Segment 0: positions of the form (k – t, t) with t = 0, 1, …, k.
+ 2. Segment 1: positions (–t, k) for t = 1, …, k.
+ 3. Segment 2: positions (–k, k – t) for t = 1, …, k.
+ 4. Segment 3: positions (–k + t, –t) for t = 1, …, k.
+ 5. Segment 4: positions (t, –k) for t = 1, …, k.
+ 6. Segment 5: positions (k, –k + t) for t = 1, …, k – 1.
+(One may check that the six segments “cover” all 6k cells without repetition and that the starting cell (k,0) appears only once.)
+
+Now, here is how we find the neighbors of 2026.
+
+Step 1. Locate 2026 on the spiral.
+  Find k so that 2026 lies on ring k. Since the last number on ring k is
+  3k(k + 1) + 1,
+we need k with
+  3k(k + 1) + 1 ≥ 2026.
+A short check shows that ring 25 ends at 3·25·26 + 1 = 1951 while ring 26 ends at 3·26·27 + 1 = 2107. Thus 2026 is on ring 26.
+Its “offset” on ring 26 is 2026 – S(26) where S(26) = 3·26·25 + 2 = 1952. That is, 2026 is the 74th number on ring 26 (if we count offset 0 at the starting cell (26,0)).
+
+One may “parameterize” the ring as six segments each of length 26. In our numbering the segments cover offsets as follows:
+ Segment 0: 0 ≤ offset ≤ 25 
+ Segment 1: 26 ≤ offset ≤ 51 
+ Segment 2: 52 ≤ offset ≤ 77 
+ Segment 3: 78 ≤ offset ≤ 103 
+ Segment 4: 104 ≤ offset ≤ 129 
+ Segment 5: 130 ≤ offset ≤ 155.
+Since 74 lies between 52 and 77, 2026 is on segment 2. In segment 2 the positions have the form
+ (–26, 26 – t)
+with t = 1, …, 26. Writing
+ offset = 2·26 + t,
+we find t = 74 – 52 = 22. Thus the axial coordinate for 2026 is
+ (–26, 26 – 22) = (–26, 4).
+
+Step 2. Find the neighbors of (–26, 4) in axial coordinates.
+A hexagon has six neighbors given by adding
+ (1, 0), (1, –1), (0, –1), (–1, 0), (–1, 1), (0, 1),
+to the given coordinate. Thus the neighbors of (–26, 4) are:
+ Neighbor 1: (–26,4) + (1, 0)  = (–25, 4)
+ Neighbor 2: (–26,4) + (1, –1) = (–25, 3)
+ Neighbor 3: (–26,4) + (0, –1) = (–26, 3)
+ Neighbor 4: (–26,4) + (–1, 0) = (–27, 4)
+ Neighbor 5: (–26,4) + (–1, 1) = (–27, 5)
+ Neighbor 6: (–26,4) + (0, 1)  = (–26, 5)
+
+Step 3. “Read off” the number in each neighbor cell.
+A cell’s spiral number is determined by its “ring” and then by its offset along the ring. (The center 1 is handled separately.) The ring number k is the “hex distance” computed by
+  k = max(|q|, |r|, |–q – r|).
+Once k is known the number of the cell is
+  N = S(k) + (offset)
+with S(k) = 3k(k – 1) + 2.
+
+We now examine each neighbor.
+
+----------------------------------------------------------------
+Neighbor 1: (–25, 4)
+  – Compute k:
+  |–25| = 25, |4| = 4, and |–(–25 + 4)| = |21| = 21.
+  So k = 25.
+  – To “place” (–25,4) on ring 25 we check our segments.
+  Segment 2 has points (–25, 25 – t) (since here k = 25).
+  Setting 25 – t = 4 gives t = 21.
+  Offset in segment 2 = 2k + t = 50 + 21 = 71.
+  – S(25) = 3·25·24 + 2 = 1800 + 2 = 1802.
+  – Number = 1802 + 71 = 1873.
+----------------------------------------------------------------
+Neighbor 2: (–25, 3)
+  – |–25| = 25, |3| = 3, |–(–25+3)| = |22| = 22, so k = 25.
+  – In segment 2 (points (–25, 25 – t)):
+  25 – t = 3  ⟹ t = 22.
+  – Offset = 50 + 22 = 72.
+  – Number = 1802 + 72 = 1874.
+----------------------------------------------------------------
+Neighbor 3: (–26, 3)
+  – |–26| = 26, |3| = 3, |–(–26+3)| = |23| = 23, so k = 26.
+  – Use segment 2 on ring 26 (points (–26, 26 – t)):
+  26 – t = 3  ⟹ t = 23.
+  – Offset = 2·26 + 23 = 52 + 23 = 75.
+  – S(26) = 3·26·25 + 2 = 1950 + 2 = 1952.
+  – Number = 1952 + 75 = 2027.
+----------------------------------------------------------------
+Neighbor 4: (–27, 4)
+  – |–27| = 27, |4| = 4, |–(–27 + 4)| = |23| = 23, so k = 27.
+  – On ring 27, segment 2 gives points (–27, 27 – t).
+  27 – t = 4  ⟹ t = 23.
+  – Offset = 2·27 + 23 = 54 + 23 = 77.
+  – S(27) = 3·27·26 + 2 = 2106 + 2 = 2108.
+  – Number = 2108 + 77 = 2185.
+----------------------------------------------------------------
+Neighbor 5: (–27, 5)
+  – |–27| = 27, |5| = 5, and |–(–27+5)| = |22| = 22, so k = 27.
+  – In segment 2 on ring 27:
+  27 – t = 5  ⟹ t = 22.
+  – Offset = 54 + 22 = 76.
+  – Number = 2108 + 76 = 2184.
+----------------------------------------------------------------
+Neighbor 6: (–26, 5)
+  – |–26| = 26, |5| = 5, |–(–26+5)| = |21| = 21, so k = 26.
+  – In segment 2 on ring 26, we require:
+  26 – t = 5  ⟹ t = 21.
+  – Offset = 52 + 21 = 73.
+  – Number = 1952 + 73 = 2025.
+----------------------------------------------------------------
+
+Thus the six neighbors of 2026 are the numbers:
+ 1873, 1874, 2027, 2185, 2184, and 2025.
+
+Step 4. Sum the six numbers:
+ 1873 + 1874 = 3747
+ 2027 + 2025 = 4052
+ 2185 + 2184 = 4369
+Then, 3747 + 4052 = 7799 and 7799 + 4369 = 12,168.
+
+So the answer is 12,168.
+
+***************************************************************************
+Answer: The sum of the 6 neighbors of 2026 is 12,168.
+----
+Usage(input=70, output=10175, details={'completion_tokens_details': {'reasoning_tokens': 7488}})

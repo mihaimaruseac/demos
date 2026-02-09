@@ -1,0 +1,274 @@
+Let's break down the problem step by step.
+
+**Step 1: Understanding the Hexagonal Spiral**
+
+On a hexagonal grid, every cell (except the center) has 6 neighbors. The numbers spiral out from the center (which is 1). From the example:
+
+```
+... 14  4  3 10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+So numbers spiral outwards.
+
+**Step 2: Sequence in the Spiral**
+
+From the pattern, we can see:
+
+- The first ring (center) is: 1
+- The second ring goes: 2 3 4 5 6 7 (so second "layer" has 6 numbers, starts at 2)
+- The third ring: 8-19 (should be 12 numbers since each ring increases by 6 more than previous, i.e., 6, 12, ...)
+
+Let’s generalize:
+- k-th hex ring contains \(6(k-1)\) numbers
+- First number in k-th ring: \(1 + 6 \cdot (0 + 1 + ... + (k-2)) + 1\)
+- The sum \(0 + 1 + ... + (k-2) = \frac{(k-2)(k-1)}{2}\)
+- So first number in k-th ring:
+  \[
+  1 + 6 \cdot \frac{(k-2)(k-1)}{2} + 1 = 2 + 3(k-2)(k-1)
+  \]
+
+But let's be more precise by working out the starting number for each ring.
+
+**Step 3: Find which ring 2026 is in**
+
+Tally up the number of cells in each ring up to k:
+
+- Ring 1: 1 cell (1)
+- Ring 2: 6 cells (2-7)
+- Ring 3: 12 (8-19)
+- Ring 4: 18 (20-37)
+- Ring 5: 24 (38-61)
+- Ring k: \(6(k-1)\)
+
+Cumulative total up to ring \(k\): \(1 + 6 \cdot (1 + 2 + ... + (k-1)) = 1 + 6 \cdot \frac{(k-1)k}{2}\)
+
+So,
+\[
+N_k = 1 + 3(k-1)k
+\]
+where \(N_k\) is **the greatest value in the k-th ring**.
+
+Set \(N_k \geq 2026\):
+
+\[
+1 + 3(k-1)k \geq 2026 \\
+3(k-1)k \geq 2025 \\
+(k-1)k \geq 675 \\
+\]
+Now \(k^2 - k - 675 \geq 0\),
+
+Solve quadratic:
+\[
+k = \frac{1 + \sqrt{1 + 4 \cdot 675}}{2}
+= \frac{1 + \sqrt{1 + 2700}}{2}
+= \frac{1 + \sqrt{2701}}{2}
+\]
+\(\sqrt{2701} \approx 52\)
+
+So \(k \approx (1+52)/2 = 26.5\), so ring **k=27**.
+
+Now, check:
+
+- \(k=26: (26-1)*26 = 25*26=650\), \(N_{26} = 1 + 3*25*26 = 1 + 3*650 = 1 + 1950 = 1951\)
+- \(k=27: (27-1)*27 = 26*27=702\), \(N_{27} = 1 + 3*26*27 = 1 + 3*702 = 1 + 2106 = 2107\)
+
+So ring 27 contains numbers from \(N_{26}+1 = 1952\) up to \(N_{27}=2107\).
+
+**Step 4: Position of 2026 in ring 27**
+
+First number: 1952, total numbers: \(6*(27-1) = 156\)
+
+**Which side and position?**
+
+Walk around the ring: sides are six, each leg is length 26.
+
+Positions on sides:
+- 1952 (start of ring 27, first after 1951)
+- Next 26 numbers: first side (1952–1977)
+- Next 26: second side (1978–2003)
+- Next 26: third side (2004–2029)
+- Next 26: fourth side (2030–2055)
+- Next 26: fifth side (2056–2081)
+- Next 26: sixth side (2082-2107)
+
+So:
+
+- 1952–1977: side 1
+- 1978–2003: side 2
+- 2004–2029: side 3
+- 2030–2055: side 4
+- 2056–2081: side 5
+- 2082–2107: side 6
+
+2026 is on **side 3: 2004–2029**.
+
+What is its offset on that side?
+
+2004 (first of side 3)
+So, 2026 - 2004 = 22
+So 2026 is the 23rd entry on side 3 (since we start at 0: 0-based index: 22, 1-based: 23rd).
+
+**Step 5: Finding Neighbors’ Numbers**
+
+On this spiral, each number has 6 neighbors:
+
+- Two on the same ring (previous and next on ring)
+- Two on the outer ring (adjacent positions)
+- Two on the inner ring (adjacent positions), unless you're next to start/end of a side
+
+Let's call the **current ring** as R (ring 27), **outer ring** (R+1, which is 28), **inner ring** (R-1, 26).
+
+Within ring R, the numbers run from 1952 to 2107.
+
+Let’s define:
+- \(n\): position along side (from 0 to 25, as there are 26 per side)
+- Each ring starts as above.
+
+For ring R (27):
+
+- Side 1: 1952–1977
+- Side 2: 1978–2003
+- Side 3: 2004–2029
+- Side 4: 2030–2055
+- Side 5: 2056–2081
+- Side 6: 2082–2107
+
+2026 is at side 3, position 2026–2004=22 (zero-based index).
+
+So, in ring R:
+- Previous: 2025
+- Next: 2027
+
+**Mapping to inner and outer rings**
+
+In the hex spiral, for a given number not at a corner, the correspondence is:
+- Each number in ring R between corners is adjacent to:
+    - The same index in the inner ring (R-1)
+    - The previous index in the inner ring (potentially the corner before)
+    - The same index in the outer ring (R+1)
+    - The next index in the outer ring
+
+But corners need special handling.
+
+Our position is not at a corner.
+
+- Let's index from 0 to 25 on side 3 (0-based), 2026 is at index 22.
+
+Side 3's starting value in ring 27: 2004
+
+Now, let's list the starting values for ring 26:
+
+- Ring 26: starts at 1952 (end at 1951), but we have:
+
+196: Ring 26 runs from 1796 to 1951 (ring 25: 1651 to 1795).
+
+We need to find the corresponding starting value for side 3 in ring 26.
+
+Total numbers in ring 26: \(6 \times 25 = 150\)
+Per side: 25 numbers.
+
+Ring 26 runs: 1952–1951, but that's technical confusion; actually, ring 26: numbers between 1796 ((1951–150 + 1) = 1951–149 = 1802) and 1951 (since ring 25 ends at 1795). Let's double-check.
+
+For ring k, 
+\[
+\text{First in ring k:} 1+3(k-2)(k-1)+1 = 2+3(k-2)(k-1)
+\]
+\[
+\text{or use cumulative:} N_{k-1}+1
+N_k = 1 + 3(k-1)k
+N_{k-1} = 1 + 3(k-2)(k-1)
+N_{k-1}+1 = 3(k-2)(k-1)+2
+\]
+
+So for k=27:
+\(N_{26} = 1 + 3*25*26 = 1 + 1950 = 1951\)
+So ring 27: 1952–2107
+
+Ring 26: 1796–1951
+
+Ring 25: 1651–1795
+
+Ring 28: (N27+1): 2108–2295
+
+So ring 27 side 3: starts at
+- Side 1: 1952
+- Side 2: 1978
+- Side 3: 2004
+
+Each side length is 26.
+
+In ring 26: sides of 25.
+
+Sides:
+- Side 1: 1796–1820 (25 numbers)
+- Side 2: 1821–1845
+- Side 3: 1846–1870
+- Side 4: 1871–1895
+- Side 5: 1896–1920
+- Side 6: 1921–1951
+
+Similarly, mapping **index 22 of side 3 in ring 27** to ring 26: For side 3, index 22 (so 22 positions from start), corresponding inner ring would (on side 3) be index 21 or 22 for the two inner neighbors.
+
+Let's be more precise.
+- In side 3, ring 27, position 22: 2004 + 22 = 2026
+- To find the corresponding spot in the inner ring, ring 26:
+
+Each position on side 3 of ring 27 maps to:
+- 1 inner neighbor on side 3 of ring 26, same index (i = 22), value: 1846 + 22 = 1868
+- 1 inner neighbor on side 3 of ring 26, previous index (i = 21), value: 1846 + 21 = 1867
+
+- 1 outer neighbor on side 3 of ring 28, same index (i = 22), ring 28 side 3 starts at 2152 (since ring 28: starts at 2108, sides are length 27; so side 1: 2108; side 2: 2108+27=2135; side 3: 2135+27=2162; wait, that's 2162. Let's formalize:
+
+Ring 28: 2108–2295, 6 sides of 27 numbers each.
+- Side 1: 2108–2134 (27 numbers)
+- Side 2: 2135–2161
+- Side 3: 2162–2188
+
+So, side 3 starts at 2162
+
+Therefore:
+
+- In ring 27, side 3, index 22: 2004+22=2026
+- Outer neighbor on side 3, ring 28, index 22: 2162+22=2184
+- Outer neighbor, index 23: 2162+23=2185
+
+Next, the "next" neighbor in ring 27 is 2027, previous is 2025.
+
+Thus, the 6 neighbors are:
+
+1. 2025 (ring 27, same side, previous index)
+2. 2027 (ring 27, same side, next index)
+3. 1867 (ring 26, same side, previous index)
+4. 1868 (ring 26, same side, same index)
+5. 2184 (ring 28, same side, same index)
+6. 2185 (ring 28, same side, next index)
+
+**Step 6: Sum**
+
+\[
+2025 + 2027 + 1867 + 1868 + 2184 + 2185
+\]
+Let’s add:
+
+2025 + 2027 = 4052
+
+1867 + 1868 = 3735
+
+2184 + 2185 = 4369
+
+Now sum:
+
+4052 + 3735 = 7787
+
+7787 + 4369 = 12156
+
+**Final Answer:**
+
+\[
+\boxed{12156}
+\]
+
+**The sum of all 6 neighbors of the number 2026 in the hexagonal spiral is \(\boxed{12156}\).**
+----
+Usage(input=71, output=2823, details={})

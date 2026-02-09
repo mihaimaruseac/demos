@@ -1,0 +1,575 @@
+We are given a spiral of natural numbers on a **hexagonal grid**, and we are to find the **sum of all six neighbors of the number 2026**.
+
+The spiral layout is shown as:
+
+```
+... 14  4  3 10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+
+Let’s understand the structure.
+
+---
+
+### Step 1: Understand the hexagonal spiral layout
+
+In a **hexagonal grid**, each cell has **6 neighbors**. The spiral starts at 1 and winds outward in layers (rings).
+
+Looking at the given snippet:
+
+```
+Row 1:      ... 14  4  3 10 ...
+Row 2:    .. 15  5  1  2  9 ...
+Row 3:      ... 16  6  7  8 ...
+```
+
+We can reconstruct the positions. Let’s assume the center is 1.
+
+Let’s place the numbers in a coordinate system for a hex grid. There are several coordinate systems for hex grids (axial, offset, cube), but we can reason geometrically.
+
+In many hexagonal spirals (like the one in Project Euler or similar problems), the numbers are arranged in concentric **hexagonal rings** around the center.
+
+Let’s list the numbers in rings:
+
+- **Ring 0**: center → 1 (1 number)
+- **Ring 1**: around 1 → 6 numbers: 2 to 7
+- **Ring 2**: next layer → 12 numbers: 8 to 19
+- **Ring 3**: next → 18 numbers: 20 to 37
+- ...
+- **Ring k**: 6k numbers (for k ≥ 1)
+
+Wait — let's check with the given numbers.
+
+Given:
+- 1 is center.
+- 2, 3, 4, 5, 6, 7 are around it → that’s 6 numbers → Ring 1.
+- Then 8 to 19? Let’s see:
+
+From the diagram:
+
+```
+... 14  4  3 10 ...
+.. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+
+Let’s reconstruct the positions relative to 1.
+
+Assume 1 is at the center.
+
+Let’s assign directions in a hex grid. Common directions in hex grid (using axial coordinates) are:
+
+- NE, E, SE, SW, W, NW
+
+But we can also just look at the spiral order.
+
+From the diagram:
+
+- 1 is center.
+- 2 is to the right of 1.
+- 3 is above-right of 1? But 3 is next to 2 and 4.
+- 4 is above 1?
+- 5 is above-left of 1?
+- 6 is below-left of 1?
+- 7 is below 1?
+- 8 is below-right of 1?
+
+Wait — let's list the numbers in order of the spiral.
+
+The spiral likely goes: 1, then 2, 3, 4, 5, 6, 7 around 1, then 8,9,10,11,12,13,14,15,16,17,18,19 around that.
+
+Let’s try to reconstruct the ring 1 (numbers 2-7):
+
+From the diagram:
+
+Row 2: ... 15 5 1 2 9 ...
+
+So from left to right: 15, 5, 1, 2, 9
+
+So 1 is center.
+
+Left of 1 is 5.
+
+Right of 1 is 2.
+
+Above 1? In row 1: ... 14 4 3 10 ...
+
+So above 1: 4 and 3? So 4 is above-left of 1, 3 is above-right of 1?
+
+Wait, perhaps it's better to think of the spiral going clockwise or counter-clockwise.
+
+Let me try to list the numbers in order as they appear in the spiral, starting from 1.
+
+Start at 1.
+
+Then the next number, 2, is placed to the right.
+
+Then 3 is placed up-right? Then 4 up? Then 5 up-left? Then 6 down-left? Then 7 down? Then 8 down-right? Then 9, 10, etc.
+
+Actually, from the diagram:
+
+The numbers around 1 are:
+
+- 2: right of 1
+
+- 3: above-right of 1? But 3 is next to 2 and 4.
+
+In row 1: 14 4 3 10 → so 4 is left of 3, and 3 is right of 4.
+
+So relative to 1:
+
+- 5 is left of 1
+
+- 6 is below-left of 1
+
+- 7 is below 1
+
+- 8 is below-right of 1
+
+- 9 is right of 2? Or above-right of 2?
+
+Wait — let’s try to reconstruct the ring 1 (6 neighbors of 1):
+
+From the diagram:
+
+- Above-left: 4
+
+- Above-right: 3
+
+- Right: 2
+
+- Below-right: 9? But 9 is on the same row as 2 and 1? No.
+
+Wait, row 2: .. 15 5 1 2 9 ..
+
+So 5 is directly left of 1.
+
+2 is directly right of 1.
+
+9 is directly right of 2? So 9 is two steps right of 1?
+
+But then 3 is above 2? In row 1: 14 4 3 10 — so 4 is above-left of 1, 3 is above-right of 1, and 10 is above-right of 2?
+
+This is messy.
+
+Alternative approach: **Look up the known hexagonal spiral**.
+
+Actually, this is a **known problem** — the hexagonal spiral where numbers are placed in a spiral around a hex grid, starting at 1, and each ring has 6n numbers for ring n (n≥1).
+
+This is similar to **OEIS A003215** — the centered hexagonal numbers.
+
+The number of cells in ring k (k≥1) is **6k**.
+
+Total numbers up to and including ring k is:
+
+1 + 6(1 + 2 + ... + k) = 1 + 6*(k(k+1)/2) = 1 + 3k(k+1)
+
+So total numbers up to ring k: **3k² + 3k + 1**
+
+Let’s verify:
+
+- k=0: 1 → 1
+
+- k=1: 3(1) + 3(1) +1 = 7 → numbers 1 to 7 → correct (1 center, 6 around)
+
+- k=2: 3*4 + 3*2 +1 = 12 + 6 +1 = 19 → numbers 1 to 19 → so ring 2 has 12 numbers: 8 to 19 → matches diagram (we see 8,9,10,14,15,16)
+
+Yes! So the formula for the last number in ring k is: **3k² + 3k + 1**
+
+We need to find which ring 2026 is in.
+
+So solve: 3k² + 3k + 1 ≥ 2026
+
+Let’s solve 3k² + 3k + 1 = 2026
+
+→ 3k² + 3k = 2025
+
+→ k² + k = 675
+
+→ k² + k - 675 = 0
+
+Discriminant: 1 + 4*675 = 1 + 2700 = 2701
+
+√2701 ≈ 51.97 → so k ≈ (-1 + 51.97)/2 ≈ 25.48
+
+So k = 25: 3*(25)^2 + 3*25 + 1 = 3*625 + 75 + 1 = 1875 + 75 + 1 = **1951**
+
+k=26: 3*676 + 78 + 1 = 2028 + 78 + 1 = 2107? Wait:
+
+Wait: 3*(26)^2 = 3*676 = 2028
+
+3*26 = 78
+
+So total: 2028 + 78 + 1 = **2107**
+
+So:
+
+- Ring 25 ends at 1951
+
+- Ring 26 has numbers from **1952 to 2107**
+
+So **2026 is in ring 26**
+
+Number of numbers in ring 26: 6*26 = 156 numbers (from 1952 to 2107)
+
+We now need to find the **position** of 2026 within ring 26.
+
+Position in ring: 2026 - 1951 = 75th number in ring 26 (since 1952 is the first, so 2026 is 2026 - 1951 = 75th)
+
+Wait: 1952 is the 1st, 1953 is 2nd, ..., so 2026 is the (2026 - 1951) = 75th number in ring 26.
+
+Yes.
+
+So 2026 is the **75th number** in ring 26.
+
+Now, in a hexagonal ring, the 6k numbers are arranged in 6 **sides**, each side having **k** numbers.
+
+For ring k, each side has k numbers.
+
+So for ring 26, each side has 26 numbers.
+
+So 6 sides × 26 = 156 numbers → correct.
+
+The ring is divided into 6 sides, each with 26 numbers.
+
+We need to know **on which side** 2026 lies.
+
+Each side has 26 numbers.
+
+So:
+
+- Side 1: positions 1 to 26 → numbers 1952 to 1977
+
+- Side 2: 27 to 52 → 1978 to 2003
+
+- Side 3: 53 to 78 → 2004 to 2029
+
+Ah! 75 is in side 3.
+
+Side 3: 53 to 78 → 2004 to 2029
+
+So 2026 is the (75 - 52) = 23rd number on side 3.
+
+Side 3 starts at 2004 (which is 53rd in ring → 1951 + 53 = 2004)
+
+So:
+
+- 2004 → position 53
+
+- 2005 → 54
+
+...
+
+- 2026 → 75 → 75 - 52 = 23rd number on side 3.
+
+So 2026 is the **23rd number on side 3** of ring 26.
+
+Now, we need to find its **six neighbors**.
+
+In a hexagonal spiral, each number has 6 neighbors:
+
+- Two neighbors on the **same ring** (previous and next number in the ring)
+
+- One neighbor on the **inner ring** (ring k-1)
+
+- One neighbor on the **outer ring** (ring k+1)
+
+- Two neighbors on the **same "radial" line**? Actually, in hex grid, each cell has 6 neighbors, and the spiral structure ensures that:
+
+For a number on ring k (k ≥ 2), its neighbors are:
+
+1. The previous number in the ring (if not the first on the side)
+
+2. The next number in the ring (if not the last on the side)
+
+3. One neighbor in the **inner ring** (ring k-1)
+
+4. One neighbor in the **outer ring** (ring k+1)
+
+5. Two more neighbors: one is "corner" adjacent? Actually, the structure is such that each number on a side has:
+
+- One neighbor on the inner ring (radially inward)
+
+- One neighbor on the outer ring (radially outward)
+
+- One neighbor on the same side (adjacent along the side)
+
+- One neighbor on the next side (at the corner)
+
+Wait — perhaps a better way is to use known properties of hexagonal spirals.
+
+There is a known pattern: for a number on ring k, on side s, at position p (1 to k), its neighbors are:
+
+Let me recall: in hexagonal spiral, the neighbors of a number on ring k, side s, position p are:
+
+- Previous number in ring: if p > 1 → number = current - 1
+
+- Next number in ring: if p < k → number = current + 1
+
+- Inner ring neighbor: located on ring k-1, side s, position p
+
+- Outer ring neighbor: located on ring k+1, side s, position p
+
+- The two "corner" neighbors: one on side s-1, last position (k) of inner ring? and one on side s+1, first position (1) of outer ring? Not exactly.
+
+Actually, the neighbors are:
+
+For a number N on ring k, side s, position p (1 ≤ p ≤ k):
+
+Its six neighbors are:
+
+1. **N - 1**: previous number in ring (if p > 1)
+
+2. **N + 1**: next number in ring (if p < k)
+
+3. **Inner ring neighbor**: the number on ring k-1, side s, position p → call it I
+
+4. **Outer ring neighbor**: the number on ring k+1, side s, position p → call it O
+
+5. **"Left" corner neighbor**: on ring k-1, side s-1, position p-1 (if p > 1) OR if p=1, then it's the last position of side s-1 of ring k-1
+
+6. **"Right" corner neighbor**: on ring k+1, side s+1, position p (if p < k) OR if p=k, then it's the first position of side s+1 of ring k+1
+
+This is getting complex.
+
+Alternatively, we can use a **known formula or pattern** from similar problems.
+
+In fact, this is **exactly the same as Project Euler Problem 28**, but on a hex grid instead of square.
+
+Actually, I recall a similar problem: **Hexagonal spiral neighbor sum**.
+
+There is a known result: **For any number N > 1 on ring k, the six neighbors are:**
+
+- N-1
+
+- N+1
+
+- The number directly inward (on ring k-1, same side, same position)
+
+- The number directly outward (on ring k+1, same side, same position)
+
+- The number on the previous side, last position of ring k-1
+
+- The number on the next side, first position of ring k+1
+
+Wait — perhaps we can compute the **inner neighbor** and **outer neighbor** using formulas.
+
+Let’s denote:
+
+Let N = 2026
+
+Ring k = 26
+
+Position in ring: 75th → side 3, position 23 (since side 3: 53 to 78 → 26 numbers, so 75 - 52 = 23)
+
+Side 3: positions 53 to 78 → 26 numbers → 2004 to 2029
+
+So 2026 is the 23rd number on side 3.
+
+Now, the **inner neighbor** is on ring 25, side 3, position 23.
+
+Ring 25 ends at 1951.
+
+Ring 25 has 6*25 = 150 numbers → from 1802 to 1951? Wait:
+
+Wait, ring k has numbers from [3(k-1)^2 + 3(k-1) + 2] to [3k^2 + 3k + 1]
+
+Actually, ring k starts at: 3(k-1)^2 + 3(k-1) + 2
+
+For k=26: starts at 3*25^2 + 3*25 + 2 = 3*625 + 75 + 2 = 1875 + 75 + 2 = 1952 → correct.
+
+Ring k ends at 3k² + 3k + 1
+
+So ring 25 ends at 3*25² + 3*25 + 1 = 1875 + 75 + 1 = 1951
+
+Ring 25 starts at: 3*24² + 3*24 + 2 = 3*576 + 72 + 2 = 1728 + 72 + 2 = 1802
+
+So ring 25: numbers 1802 to 1951
+
+Each side has 25 numbers.
+
+Side 3 of ring 25: positions 53 to 77? Wait:
+
+Side 1: 1-25 → 1802 to 1826
+
+Side 2: 26-50 → 1827 to 1851
+
+Side 3: 51-75 → 1852 to 1876
+
+Wait, let's compute:
+
+Side 1: positions 1 to 25 → numbers 1802 to 1826
+
+Side 2: 26 to 50 → 1827 to 1851
+
+Side 3: 51 to 75 → 1852 to 1876
+
+But we need position 23 on side 3 → that's the 23rd number in side 3 → 1852 + 22 = 1874
+
+So inner neighbor = 1874
+
+Similarly, outer neighbor is on ring 27, side 3, position 23
+
+Ring 27: k=27
+
+Starts at: 3*26² + 3*26 + 2 = 3*676 + 78 + 2 = 2028 + 78 + 2 = 2108
+
+Ends at: 3*27² + 3*27 + 1 = 3*729 + 81 + 1 = 2187 + 81 + 1 = 2269
+
+Each side has 27 numbers.
+
+Side 3: positions 53 to 79? Wait:
+
+Side 1: 1-27 → 2108 to 2134
+
+Side 2: 28-54 → 2135 to 2161
+
+Side 3: 55-81 → 2162 to 2188
+
+So position 23 on side 3 → 2162 + 22 = 2184
+
+So outer neighbor = 2184
+
+Now, the two **side neighbors**:
+
+- Previous number in ring: 2025
+
+- Next number in ring: 2027
+
+But wait — 2026 is on side 3, position 23, and side 3 has 26 numbers (positions 53 to 78), so 2026 is not at the end, so yes, both neighbors exist.
+
+So neighbors so far:
+
+- 2025
+
+- 2027
+
+- inner: 1874
+
+- outer: 2184
+
+Now the two **corner neighbors**.
+
+In hexagonal spiral, the two remaining neighbors are:
+
+- One on the **previous side** of the **inner ring** (ring k-1), at the **last position** of side s-1
+
+- One on the **next side** of the **outer ring** (ring k+1), at the **first position** of side s+1
+
+Why?
+
+Because in hex grid, each number has two neighbors that are "diagonal" — one from the inner ring on the previous side, and one from the outer ring on the next side.
+
+Let’s see:
+
+For number at side s, position p, the two corner neighbors are:
+
+- **Corner 1**: on ring k-1, side s-1, last position (position k-1)
+
+- **Corner 2**: on ring k+1, side s+1, first position (position 1)
+
+In our case:
+
+s = 3, k = 26
+
+So:
+
+- Corner 1: ring 25, side 2, last position (25)
+
+Side 2 of ring 25: positions 26 to 50 → numbers 1827 to 1851
+
+Last position: 1851
+
+- Corner 2: ring 27, side 4, first position (1)
+
+Ring 27, side 4: starts at 2189 (since side 3 ends at 2188, side 4 starts at 2189)
+
+So first number on side 4: 2189
+
+So the six neighbors of 2026 are:
+
+1. 2025 (previous in ring)
+
+2. 2027 (next in ring)
+
+3. 1874 (inner ring, same side, same position)
+
+4. 2184 (outer ring, same side, same position)
+
+5. 1851 (inner ring, previous side, last position)
+
+6. 2189 (outer ring, next side, first position)
+
+Now, let’s sum them up:
+
+List:
+
+- 2025
+
+- 2027
+
+- 1874
+
+- 2184
+
+- 1851
+
+- 2189
+
+Let’s add step by step.
+
+First, 2025 + 2027 = 4052
+
+1874 + 2184 = 4058
+
+1851 + 2189 = 4040
+
+Now sum: 4052 + 4058 + 4040
+
+= (4052 + 4040) = 8092
+
+8092 + 4058 = 12150
+
+Wait: 4052 + 4058 = 8110
+
+8110 + 4040 = 12150
+
+So total sum = **12150**
+
+Let me double-check the numbers:
+
+1. 2025 → yes, 2026 - 1
+
+2. 2027 → yes, 2026 + 1
+
+3. inner: ring 25, side 3, position 23 → side 3: 1852 to 1876 → 1852 + 22 = 1874 → correct
+
+4. outer: ring 27, side 3, position 23 → side 3: 2162 to 2188 → 2162 + 22 = 2184 → correct
+
+5. inner corner: ring 25, side 2, last position → side 2 ends at 1851 → correct
+
+6. outer corner: ring 27, side 4, first position → side 3 ends at 2188, so side 4 starts at 2189 → correct
+
+All numbers are correct.
+
+Sum:
+
+2025 + 2027 = 4052
+
+1874 + 2184 = 4058
+
+1851 + 2189 = 4040
+
+Now 4052 + 4058 = 8110
+
+8110 + 4040 = 12150
+
+✅
+
+### ✅ Final Answer: **12150**
+
+---  
+**Answer: \boxed{12150}**
+----
+Usage(input=78, output=5483, details={'estimated_cost': 0.006038320000000001})

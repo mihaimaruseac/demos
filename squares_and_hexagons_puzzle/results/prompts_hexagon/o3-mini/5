@@ -1,0 +1,164 @@
+We will show that if the numbers are “spiraled‐out” on a hexagonal lattice in the usual way (with 1 in the centre and then the “ring‐1” numbers 2,3,…,7, etc.), then a somewhat surprising answer is obtained for the six “neighbors” of 2026. In what follows we will describe one way to “reverse‐engineer” the answer.
+
+Let us begin by “visualizing” the picture. In the sample
+
+     … 14 4 3 10 …
+    .. 15 5 1 2 9 …
+     … 16 6 7 8 …
+
+the number 1 lies at the centre. Think of arranging the natural numbers on a “hex spiral” so that 1 is at (0,0) and the six immediate neighbours of 1 (in the six hex directions) are 2,3,…,7. One standard way to “coordinate–ize” a hex grid is by using “axial coordinates.” (Many excellent articles explain these; see, for example, Amit Patel’s pages on hexagonal grids.) One common choice is to assign
+
+  Neighbor directions: 
+   d₀ = (1, 0), d₁ = (0, 1), d₂ = (–1, 1),
+   d₃ = (–1, 0), d₄ = (0, –1), d₅ = (1, –1).
+
+Then we may take 1 at (0,0) and
+  2 = (1,0), 3 = (1,–1), 4 = (0,–1), 5 = (–1,0), 6 = (–1,1), 7 = (0,1).
+
+To “lay out” the spiral it is natural to “build rings.” In the usual scheme the (noncentral) numbers appear in successive “rings” or “layers” around the centre. In fact, one may show that the numbers in ring r (with r ≥ 1) have exactly 6r entries and that the total number of entries in rings 0 through r is 
+  1 + 6 + 12 + ⋯ + 6r = 1 + 3r(r+1). 
+Thus the first number in ring r is 
+  first(r) = 1 + 3(r–1)r + 1 = 3r(r–1) + 2.
+For example, ring 1 runs from 2 through 7. (There are many ways to “trace out” a ring; one standard method is as follows.)
+
+For any r ≥ 1 define the starting vertex for ring r as
+  S = (0, –r).
+Then go clockwise around the ring in six segments by adding the “step–vectors” d₀, d₁, …, d₅. In other words, an element of ring r is determined by a pair (s,t) with s = side (0,1,…,5) and t = 0,1,…,r–1. Its coordinate is then
+
+  Position = S + [for i = 0 to s–1 add r·dᵢ] + t·dₛ.
+
+In this “parameterization” the spiral numbers on ring r run from
+  first(r) = 3r(r–1) + 2  to  1 + 3r(r+1).
+
+Now let’s see where 2026 lies. We first note that the total numbers up to ring r is 1 + 3r(r+1). To have
+  1 + 3r(r+1) ≥ 2026
+one quickly finds that r = 26 works (since 1 + 3·26·27 = 2107) while r = 25 gives only 1 + 3·25·26 = 1 + 1950 = 1951. Thus 2026 is in ring 26. Its “offset” within ring 26 is
+  offset = 2026 – [first(26)]
+but first(26) = 3·26·25 + 2 = 1950 + 2 = 1952,
+so
+  offset = 2026 – 1952 = 74.
+
+Since ring 26 has 6·26 = 156 numbers, each “side” has 26 numbers. Write the offset in the form
+  74 = (side number)·26 + (position within that side).
+A short calculation shows that side = floor(74/26) = 2 and the remainder is 22. In other words, 2026 is the (22nd step on side 2) of ring 26. (Recall: on side 2 the “base point” is the vertex reached after completing sides 0 and 1.) One may compute that with our coordinate system
+  S = (0,–26)
+the vertices of ring 26 are:
+  V₀ = (0,–26),
+  V₁ = (26,–26),
+  V₂ = (26,0),
+  V₃ = (0,26),
+  V₄ = (–26,26),
+  V₅ = (–26,0).
+Thus the starting point for side 2 (its “base”) is V₂ = (26,0) and the step in side 2 is d₂ = (–1, 1). So
+  2026 lies at (26,0) + 22·(–1,1) = (26 – 22, 0 + 22) = (4,22).
+
+Now, the six “immediate neighbors” of a hexagon at (q,r) in axial coordinates are given by simply adding the six vectors d₀,…, d₅. So the neighbors of (4,22) are:
+
+  N₀ = (4+1, 22+0) = (5,22)
+  N₁ = (4+0, 22+1) = (4,23)
+  N₂ = (4–1, 22+1) = (3,23)
+  N₃ = (4–1, 22+0) = (3,22)
+  N₄ = (4+0, 22–1) = (4,21)
+  N₅ = (4+1, 22–1) = (5,21)
+
+Each of these “neighbors” lies in one of the three “rings” (namely, ring 27, ring 26, or ring 25). To recover its spiral number we must “invert” the coordinate–to–spiral–number mapping. (This inversion may seem “miraculous,” but it comes out neatly by noticing that every cell in a ring r (with r ≥ 1) is uniquely represented as
+  Vₛ + t·dₛ  with 0 ≤ t ≤ r–1
+for a unique side s ∈ {0,…,5} and then the spiral number is
+
+  first(r) + [s·r + t].
+
+We now do this for each neighbor.
+
+───────────────────────────── 
+Step 1. For a point with axial coordinates (q,r) one may compute its “ring number” via conversion to “cube‐coordinates”: set
+  x = q, z = r, y = –q – r.
+Then the “hex distance” from (0,0,0) is d = max(|x|, |y|, |z|). (One then knows that the point lies in ring d if d > 0.) 
+
+Let’s process our six neighbors:
+
+───────────────────────────── 
+Neighbor N₀ = (5,22).
+
+• Cube: (x,z) = (5,22) gives y = –5–22 = –27. So the ring is r₀ = max(5, 22, 27) = 27.
+• For ring 27, the vertices are:
+  V₀ = (0,–27), V₁ = (27,–27), V₂ = (27,0), V₃ = (0,27), etc.
+A little thought shows that (5,22) lies on side 2. (On side 2 the points are of the form (27 – t, t) for 0 ≤ t ≤ 27.) In fact, 27 – t = 5 forces t = 22. So for N₀: side = 2 and position = 22. Its “index” on ring 27 is
+  k = 2·27 + 22 = 54 + 22 = 76.
+The first number in ring 27 is
+  first(27) = 3·27·26 + 2 = 2106 + 2 = 2108.
+Thus the spiral number for N₀ is 2108 + 76 = 2184.
+
+───────────────────────────── 
+Neighbor N₁ = (4,23).
+
+• Cube: (4,23) gives y = –4–23 = –27, so ring = 27.
+• Again on side 2 (since (27 – t, t) = (4,23) requires t = 23). So side = 2, position = 23.
+Then k = 2·27 + 23 = 54 + 23 = 77.
+Spiral number = 2108 + 77 = 2185.
+
+───────────────────────────── 
+Neighbor N₂ = (3,23).
+
+• Cube: (3,23) gives y = –3–23 = –26, so ring = 26.
+• For ring 26 the vertices are:
+  V₀ = (0,–26), V₁ = (26,–26), V₂ = (26,0), V₃ = (0,26), …
+On side 2, points are (26 – t, t). For (3,23), we require 26 – t = 3 so t = 23. Thus side = 2, position = 23.
+Then the offset k = 2·26 + 23 = 52 + 23 = 75.
+The first number for ring 26 is first(26) = 3·26·25 + 2 = 1950 + 2 = 1952.
+Thus the spiral number for N₂ is 1952 + 75 = 2027.
+
+───────────────────────────── 
+Neighbor N₃ = (3,22).
+
+• Cube: (3,22) gives y = –3–22 = –25, so ring = 25.
+• For ring 25 the vertices are:
+  V₀ = (0,–25), V₁ = (25,–25), V₂ = (25,0), V₃ = (0,25), etc.
+On side 2, points are (25 – t, t) (with 0 ≤ t ≤ 25). For (3,22), 25 – t = 3 gives t = 22. So side = 2, position = 22.
+Then the offset k = 2·25 + 22 = 50 + 22 = 72.
+The first number for ring 25 is first(25) = 3·25·24 + 2 = 1800 + 2 = 1802.
+Thus the spiral number for N₃ is 1802 + 72 = 1874.
+
+───────────────────────────── 
+Neighbor N₄ = (4,21).
+
+• Cube: (4,21) gives y = –4–21 = –25, so ring = 25.
+• Again in ring 25 on side 2 we need (25 – t, t) = (4,21). Here 25 – t = 4 gives t = 21, so side = 2 and position = 21.
+Then k = 2·25 + 21 = 50 + 21 = 71.
+Thus spiral number for N₄ = 1802 + 71 = 1873.
+
+───────────────────────────── 
+Neighbor N₅ = (5,21).
+
+• Cube: (5,21) gives y = –5–21 = –26, so ring = 26.
+• In ring 26 on side 2, we have (26 – t, t) = (5,21). Then 26 – t = 5 forces t = 21, so side = 2, position = 21.
+Then k = 2·26 + 21 = 52 + 21 = 73.
+Thus spiral number for N₅ = 1952 + 73 = 2025.
+
+───────────────────────────── 
+Step 2. Summing the six neighbors
+
+We now found:
+  N₀: 2184
+  N₁: 2185
+  N₂: 2027
+  N₃: 1874
+  N₄: 1873
+  N₅: 2025
+
+Their sum is computed as:
+  2184 + 2185 = 4369,
+  2027 + 2025 = 4052,
+  1874 + 1873 = 3747.
+Then
+  4369 + 4052 = 8421  and 8421 + 3747 = 12168.
+
+Thus, the sum of the 6 neighbors of 2026 is 12168.
+
+───────────────────────────── 
+Answer: 12168
+
+Though the “coordinate–inversion” steps may seem a bit involved the idea is that by choosing axial coordinates and a definite spiral–tracing the numbers on each ring (with first number 3r(r–1)+2 in ring r) you can “translate” the cell’s neighbors into their spiral numbers. In our problem 2026 is in ring 26 (at axial coordinate (4,22)) and its six neighbors come out with spiral‐numbers 2184, 2185, 2027, 1874, 1873, and 2025 whose sum is 12168.
+
+Thus, the answer is 12168.
+----
+Usage(input=70, output=10463, details={'completion_tokens_details': {'reasoning_tokens': 7360}})

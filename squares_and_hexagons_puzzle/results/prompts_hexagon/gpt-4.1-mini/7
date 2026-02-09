@@ -1,0 +1,818 @@
+We have a hexagonal spiral of natural numbers arranged on a hexagonal grid. The task: **find the sum of all 6 neighbors of the number 2026** in this spiral.
+
+---
+
+### Understanding the Spiral
+
+The spiral layout is:
+
+```
+... 14  4  3 10 ...
+ .. 15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+
+- The central cell is **1**.
+- The numbering spirals outward, with each ring surrounding the previous ring.
+- Each number has up to 6 neighbors, like in a hex grid.
+
+---
+
+### Step 1: Structure of the Hexagonal Spiral
+
+We recognize this as the standard hexagonal spiral.
+
+- The **center number** is 1.
+- The next ring forms a hexagon around it with 6 elements (numbers 2 to 7).
+- The nth ring (ring 0 = center) has \( 6n \) numbers.
+- Summing up, all numbers up to ring n:
+
+\[
+1 + \sum_{k=1}^n 6k = 1 + 3n(n+1)
+\]
+
+Mapping:
+
+- Ring 0 (center): number 1 only.
+- Ring 1: numbers 2...7
+- Ring 2: numbers 8...19
+- Ring 3: numbers 20...37
+- Ring n: numbers from \(3n(n-1)+2\) to \(3n(n+1)+1\).
+
+---
+
+### Step 2: Find the ring containing 2026
+
+We want to find \(n\) where ring n contains number 2026:
+
+\[
+3n(n-1) + 2 \le 2026 \le 3n(n+1) + 1
+\]
+
+Check the right part first:
+
+\[
+2026 \le 3n(n+1) + 1 \implies 2025 \le 3n(n+1) \implies 675 \le n(n+1)
+\]
+
+Estimate \(n\):
+
+- \(n^2 + n - 675 \ge 0\)
+
+Solve quadratic:
+
+\[
+n = \frac{-1 + \sqrt{1 + 4 \cdot 675}}{2} = \frac{-1 + \sqrt{2701}}{2}
+\]
+
+\(\sqrt{2701} \approx 51.96\)
+
+So:
+
+\[
+n \approx \frac{-1 + 51.96}{2} = 25.48
+\]
+
+So smallest integer \(n\) with \(2026 \le 3n(n+1)+1\) is 26.
+
+Check left inequality for \(n=25\):
+
+\[
+3 \times 25 \times 24 + 2 = 3 \times 600 + 2 = 1802
+\]
+
+Is \(1802 \le 2026\)? Yes. So ring 25 contains numbers up to 1802, ring 26 contains numbers starting at:
+
+\[
+3 \times 26 \times 25 + 2 = 3 \times 650 + 2 = 1952
+\]
+
+And ends at:
+
+\[
+3 \times 26 \times 27 + 1 = 3 \times 702 + 1 = 2107
+\]
+
+So:
+
+- Ring 25: 1802...1951
+- Ring 26: 1952...2107
+
+Therefore, **2026 is in ring 26**.
+
+---
+
+### Step 3: Location of 2026 in ring 26
+
+Ring 26 has \(6 \times 26 = 156\) numbers.
+
+Start of ring 26 is 1952.
+
+The offset of 2026 in ring 26 is:
+
+\[
+2026 - 1952 = 74
+\]
+
+Number 1952 corresponds to offset 0 in ring 26.
+
+---
+
+### Step 4: Coordinates on Hex Grid
+
+For hexagonal spirals, there's a known coordinate system (cube or axial) to locate points.
+
+- Center (1) is at coordinates (0,0).
+- Each ring forms a hexagonal ring around the center.
+
+Positions in ring \(n\) are given by starting at the "north-east" corner and moving around the hex in 6 sides of length \(n\).
+
+**Ring indexing scheme:**
+
+- Ring 0: number 1 at (0,0).
+- For ring \(n\), the first cell (offset 0) is at coordinate:
+  
+  From the center, the first cell of ring \(n\) is at \((n,0)\) in axial coordinates.
+
+- Then we move around the ring in 6 segments, each of length \(n\).
+
+---
+
+### Step 5: Moving Around the Ring in Axial Coordinates
+
+Hex axial coordinates use two axes: \( (q, r) \).
+
+Directions (hex grid has 6 neighbors):
+
+- \(dir_0 = (0, -1)\)
+- \(dir_1 = (1, -1)\)
+- \(dir_2 = (1, 0)\)
+- \(dir_3 = (0, 1)\)
+- \(dir_4 = (-1, 1)\)
+- \(dir_5 = (-1, 0)\)
+
+Or some variant depending on orientation.
+
+But standard directions for a hex grid (pointy topped) can be:
+
+\[
+\text{E: } (+1, 0) \\
+\text{NE: } (0, -1) \\
+\text{NW: } (-1, -1) \\
+\text{W: } (-1, 0) \\
+\text{SW: } (0, +1) \\
+\text{SE: } (+1, +1)
+\]
+
+The standard spiral starts at \((n,0)\), then moves in these 6 directions in order:
+
+For the spiral considered here (from references on hex spiral numbering):
+
+- Start at (n, 0)
+- Move direction 0: (-1, +1)
+- direction 1: (-1, 0)
+- direction 2: (0, -1)
+- direction 3: (+1, -1)
+- direction 4: (+1, 0)
+- direction 5: (0, +1)
+
+So the 6 directions going around the ring in order can be:
+
+\[
+\text{Sides:} \quad
+[(-1,+1), (-1,0), (0,-1), (1,-1), (1,0), (0,1)]
+\]
+
+Each side has length n.
+
+---
+
+### Step 6: Compute coordinate of 2026
+
+We want the coordinate of number with offset 74 in ring 26.
+
+- Ring 26 start coordinate: \((26, 0)\)
+- Offset in ring: 74 (from 0 to 155)
+
+Each side has length 26.
+
+Calculate which side and step on the side:
+
+\[
+\text{side} = \lfloor \frac{74}{26} \rfloor = 2
+\]
+\[
+\text{step} = 74 \mod 26 = 22
+\]
+
+So 2026 is on side 2, step 22.
+
+Sides indexed 0..5 are:
+
+- side 0 vector: (-1, +1)
+- side 1 vector: (-1, 0)
+- side 2 vector: (0, -1)
+- side 3 vector: (1, -1)
+- side 4 vector: (1, 0)
+- side 5 vector: (0, 1)
+
+---
+
+### Step 7: Calculate coordinates of 2026
+
+Start at \((26,0)\)
+
+Apply movements on previous sides:
+
+\[
+\text{position} = (26,0) + \sum_{i=0}^{side-1} n \times \text{dir}_i + \text{step} \times \text{dir}_{side}
+\]
+
+Let's calculate:
+
+Sum of previous sides (0 and 1):
+
+- side 0: 26 * (-1, +1) = (-26, +26)
+- side 1: 26 * (-1, 0) = (-26, 0)
+
+Sum sides 0 and 1:
+
+\[
+(-26, 26) + (-26, 0) = (-52, 26)
+\]
+
+Now add the step on side 2:
+
+- side 2 dir: (0, -1)
+- step = 22
+
+\[
+22 \times (0, -1) = (0, -22)
+\]
+
+Total coordinate:
+
+\[
+(26, 0) + (-52, 26) + (0, -22) = (26 - 52 + 0, 0 + 26 -22) = (-26, 4)
+\]
+
+So 2026 is at axial coordinates:
+
+\[
+(q, r) = (-26, 4)
+\]
+
+---
+
+### Step 8: Find neighbors of (q, r)
+
+Neighbors offset vectors in axial coordinates:
+
+\[
+(1, 0), (0, 1), (-1, 1), (-1, 0), (0, -1), (1, -1)
+\]
+
+Neighbors of \((-26,4)\):
+
+1. \((-26 + 1, 4 + 0) = (-25, 4)\)
+2. \((-26 + 0, 4 + 1) = (-26, 5)\)
+3. \((-26 - 1, 4 + 1) = (-27, 5)\)
+4. \((-26 - 1, 4 + 0) = (-27, 4)\)
+5. \((-26 + 0, 4 - 1) = (-26, 3)\)
+6. \((-26 + 1, 4 - 1) = (-25, 3)\)
+
+---
+
+### Step 9: Map neighbors coordinates back to numbers
+
+We need to find number \(N(q,r)\) for any axial coordinate \((q,r)\).
+
+---
+
+### Step 10: Number from coordinates formula
+
+How to find the number at coordinate \((q,r)\)?
+
+The ring number \(n\) is:
+
+\[
+n = \max(|q|, |r|, | -q - r|)
+\]
+
+Check for 2026:
+
+\[
+-q - r = -(-26) -4 = 26 - 4 = 22
+\]
+
+\[
+|q|=26, |r|=4, |s|=22
+\]
+
+Maximum is 26, agrees with ring 26.
+
+---
+
+### Step 11: For ring \(n\), find offset for coordinate \((q,r)\)
+
+For ring \(n\), coordinates at ring \(n\) satisfy:
+
+\[
+|q| \le n, |r| \le n, |s| \le n
+\]
+
+with \(s = -q-r\).
+
+---
+
+### Step 12: The sides in each ring are laid out similarly.
+
+The hex ring's corners (start of sides) in axial coordinates are:
+
+- Side 0 start: \((n, 0)\)
+- Side 1 start: \((0, n)\)
+- Side 2 start: \((-n, n)\)
+- Side 3 start: \((-n, 0)\)
+- Side 4 start: \((0, -n)\)
+- Side 5 start: \((n, -n)\)
+
+---
+
+### Step 13: Determine which side coordinate \((q,r)\) sits on
+
+We want to find on which side coordinate \((q,r)\) lies:
+
+The sides are along vectors from corner to corner:
+
+- Side 0: from (n,0) toward (0,n)
+  
+  The vector: \((-1, 1)\)
+
+- Side 1: from (0,n) toward (-n,n)
+  
+  Vector: \((-1, 0)\)
+
+- Side 2: from (-n,n) toward (-n,0)
+
+  Vector: \((0, -1)\)
+
+- Side 3: from (-n,0) toward (0,-n)
+  
+  Vector: \((1, -1)\)
+
+- Side 4: from (0,-n) toward (n,-n)
+  
+  Vector: \((1, 0)\)
+
+- Side 5: from (n,-n) toward (n,0)
+  
+  Vector: \((0, 1)\)
+
+---
+
+### Step 14: Find side and step for each neighbor coordinate
+
+Calculate \(n= ring number\), already known is \(n=26\) for 2026.
+
+For neighbors, ring number can be:
+
+- If max coordinate is 26: ring 26
+- If less max: ring 25 or 27.
+
+Check each neighbor coordinate's ring number (using \(\max(|q|, |r|, |s|)\), where \(s = -q - r\)):
+
+---
+
+**Neighbor 1:** \((-25, 4)\)
+
+\[
+s = -(-25) - 4 = 25 - 4 = 21
+\]
+
+max = max(25,4,21) = 25
+
+So ring 25.
+
+**Neighbor 2:** \((-26,5)\)
+
+\[
+s = 26 - 5 = 21
+\]
+
+max = 26, ring 26
+
+**Neighbor 3:** \((-27,5)\)
+
+\[
+s = 27 - 5 = 22
+\]
+
+max = max(27,5,22) = 27, ring 27
+
+**Neighbor 4:** \((-27,4)\)
+
+\[
+s = 27 -4 = 23
+\]
+
+max = 27, ring 27
+
+**Neighbor 5:** \((-26,3)\)
+
+\[
+s = 26 - 3 = 23
+\]
+
+max = 26, ring 26
+
+**Neighbor 6:** \((-25,3)\)
+
+\[
+s = 25 - 3 = 22
+\]
+
+max = 25, ring 25
+
+---
+
+### Step 15: Get number for neighbors (cases 2 and 5 in ring 26, others ring 25 or 27):
+
+---
+
+### Step 16: Calculate offset for coordinates relative to ring start corner
+
+To calculate offset for coordinates \((q,r)\) on ring \(n\):
+
+For ring \(n\), the sides and their starts:
+
+- Side 0 start: \((n,0)\) offset 0
+- Side 1 start: \((0,n)\) offset \(n\)
+- Side 2 start: \((-n,n)\) offset \(2n\)
+- Side 3 start: \((-n,0)\) offset \(3n\)
+- Side 4 start: \((0,-n)\) offset \(4n\)
+- Side 5 start: \((n,-n)\) offset \(5n\)
+
+Each side length = n.
+
+To find side and step:
+
+Check which side vector matches \((q,r) - \text{corner}\):
+
+- For each side, test:
+
+\[
+(q,r) - \text{side_start} = \alpha \times \text{side_dir}
+\]
+
+where \(\alpha\) integer in [0, n].
+
+The side_dir are the vectors between corners:
+
+- side 0 dir: \((-1,1)\)
+
+- side 1 dir: \((-1,0)\)
+
+- side 2 dir: \((0,-1)\)
+
+- side 3 dir: \((1,-1)\)
+
+- side 4 dir: \((1,0)\)
+
+- side 5 dir: \((0,1)\)
+
+---
+
+### Step 17: Example for neighbor 1: \((-25,4)\), ring 25
+
+Ring 25 start corners:
+
+- Corner 0: (25, 0)
+
+- Corner 1: (0, 25)
+
+- Corner 2: (-25, 25)
+
+- Corner 3: (-25, 0)
+
+- Corner 4: (0, -25)
+
+- Corner 5: (25, -25)
+
+Try each side:
+
+\[
+\delta = (q,r) - \text{corner}
+\]
+
+Side 0:
+
+\[
+\delta = (-25,4) - (25,0) = (-50, 4)
+\]
+
+Check if \(\delta\) is multiple of \((-1,1)\).
+
+Try dividing:
+
+-50 / -1 = 50  
+4 / 1 = 4
+
+Not equal → no.
+
+Side 1:
+
+\[
+\delta = (-25,4) - (0,25) = (-25, -21)
+\]
+
+Check if \(\delta\) multiple of (-1,0):
+
+-25 / -1 = 25  
+-21 / 0 = undefined
+
+No.
+
+Side 2:
+
+\[
+\delta = (-25,4) - (-25,25) = (0, -21)
+\]
+
+Check if multiple of (0, -1):
+
+0/0 indeterminate,  -21/-1=21
+
+Okay, this fits side 2, step should be 21.
+
+Is step in 0..25? Yes.
+
+So neighbor 1 is at side 2, step 21 on ring 25.
+
+---
+
+### Step 18: Calculate offset in ring:
+
+\[
+\text{offset} = \text{side} \times n + \text{step} = 2 \times 25 + 21 = 50 + 21 = 71
+\]
+
+Total number in ring 25 starts at:
+
+\[
+3 \times 25 \times 24 + 2 = 3 \times 600 + 2 = 1802
+\]
+
+Therefore,
+
+\[
+\text{number} = 1802 + 71 = 1873
+\]
+
+---
+
+### Step 19: Repeat for each neighbor
+
+----
+
+**Neighbor 2:** \((-26,5)\), ring 26
+
+Corners ring 26:
+
+- 0: (26,0)
+- 1: (0,26)
+- 2: (-26,26)
+- 3: (-26,0)
+- 4: (0,-26)
+- 5: (26,-26)
+
+Try sides:
+
+Side 0:
+
+\[
+(-26,5) - (26,0) = (-52, 5)
+\]
+
+Is this multiple of (-1,1)? -52/-1=52, 5/1=5 No.
+
+Side 1:
+
+\[
+(-26,5) - (0,26) = (-26, -21)
+\]
+
+multiple of (-1,0)? -26/-1=26, -21/0 undef No.
+
+Side 2:
+
+\[
+(-26,5) - (-26,26) = (0, -21)
+\]
+
+multiple of (0,-1)? Yes, step = 21.
+
+Offset:
+
+\[
+2 \times 26 + 21 = 52 + 21 = 73
+\]
+
+Ring 26 starts at \(3 \times 26 \times 25 + 2 = 1952\).
+
+Number:
+
+\[
+1952 + 73 = 2025
+\]
+
+---
+
+**Neighbor 3:** \((-27,5)\), ring 27
+
+Ring 27 corners:
+
+- 0: (27,0)
+- 1: (0,27)
+- 2: (-27,27)
+- 3: (-27,0)
+- 4: (0,-27)
+- 5: (27,-27)
+
+Try sides:
+
+Side 0:
+
+(-27,5) - (27,0) = (-54,5)
+
+Multiple of (-1,1)? -54/-1=54, 5/1=5 no
+
+Side 1:
+
+(-27,5) - (0,27) = (-27, -22)
+
+Multiple of (-1,0)? -27/-1 =27, -22/0 no
+
+Side 2:
+
+(-27,5)-(-27,27) = (0,-22)
+
+Multiple of (0,-1)? yes step=22
+
+Offset = \(2 \times 27 + 22 = 54 + 22 = 76\)
+
+Ring 27 start:
+
+\[
+3 \times 27 \times 26 + 2 = 3 \times 702 + 2 = 2108
+\]
+
+Number:
+
+\[
+2108 + 76 = 2184
+\]
+
+---
+
+**Neighbor 4:** \((-27,4)\), ring 27
+
+Calculate delta for sides:
+
+Side 0:
+
+(-27,4) - (27,0) = (-54,4)
+
+Multiple (-1,1)? -54/-1=54, 4/1=4 No
+
+Side 1:
+
+(-27,4) - (0,27) = (-27,-23)
+
+Multiple (-1,0)? -27/-1=27, -23/0 no
+
+Side 2:
+
+(-27,4)-(-27,27) = (0,-23)
+
+Multiple (0,-1)? yes step=23
+
+Offset:
+
+\[
+2 \times 27 + 23 = 54 + 23 = 77
+\]
+
+Number:
+
+\[
+2108 + 77 = 2185
+\]
+
+---
+
+**Neighbor 5:** \((-26,3)\), ring 26
+
+Try sides:
+
+Side 0:
+
+(-26,3)-(26,0)=(-52,3)
+
+mult (-1,1)? -52/-1=52,3/1=3 no
+
+Side 1:
+
+(-26,3)-(0,26)=(-26,-23)
+
+mult (-1,0)? no
+
+Side 2:
+
+(-26,3)-(-26,26)=(0,-23)
+
+mult (0,-1)? yes step=23
+
+Offset:
+
+\(2 \times 26 + 23 = 52 + 23 = 75\)
+
+Number:
+
+\(1952 + 75 = 2027\)
+
+---
+
+**Neighbor 6:** \((-25,3)\), ring 25
+
+Try sides:
+
+Side 0:
+
+(-25,3)-(25,0)=(-50,3)
+
+mult (-1,1)? no
+
+Side 1:
+
+(-25,3)-(0,25)=(-25,-22)
+
+mult (-1,0)? no
+
+Side 2:
+
+(-25,3)-(-25,25)=(0,-22)
+
+mult (0,-1)? yes step=22
+
+Offset:
+
+\(2 \times 25 + 22 = 50 + 22 = 72\)
+
+Number:
+
+\(1802 + 72 = 1874\)
+
+---
+
+### Step 20: Summary neighbors and their numbers
+
+| Neighbor # | Coordinate | Ring | Side | Step | Offset in ring | Start of ring | Number |
+|------------|------------|------|------|------|----------------|---------------|--------|
+| 1          | (-25,4)    | 25   | 2    | 21   | 71             | 1802          | 1873   |
+| 2          | (-26,5)    | 26   | 2    | 21   | 73             | 1952          | 2025   |
+| 3          | (-27,5)    | 27   | 2    | 22   | 76             | 2108          | 2184   |
+| 4          | (-27,4)    | 27   | 2    | 23   | 77             | 2108          | 2185   |
+| 5          | (-26,3)    | 26   | 2    | 23   | 75             | 1952          | 2027   |
+| 6          | (-25,3)    | 25   | 2    | 22   | 72             | 1802          | 1874   |
+
+---
+
+### Step 21: Sum neighbors
+
+Sum:
+
+\[
+1873 + 2025 + 2184 + 2185 + 2027 + 1874 = ?
+\]
+
+Calculate in steps:
+
+- 1873 + 2025 = 3898
+- 3898 + 2184 = 6082
+- 6082 + 2185 = 8267
+- 8267 + 2027 = 10294
+- 10294 + 1874 = 12168
+
+---
+
+### **Final answer:**
+
+\[
+\boxed{12168}
+\]
+
+---
+
+**The sum of all neighbors of the number 2026 in the hexagonal spiral is 12,168.**
+----
+Usage(input=71, output=5281, details={})

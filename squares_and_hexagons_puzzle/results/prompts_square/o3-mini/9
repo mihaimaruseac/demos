@@ -1,0 +1,195 @@
+We are given numbers written in a spiral “around 1” on a square grid. For example, the first few numbers are arranged so that
+
+  5 4 3  
+  6 1 2  
+  7 8 9  
+
+(with the top row corresponding to y = 1, the middle row to y = 0, and the bottom row to y = –1). In our coordinate system we choose:
+ • x increases to the right,
+ • y increases upward,
+ • 1 is at (0,0).
+
+A quick look shows that
+
+ • 1 is at (0, 0),
+ • 2 is at (1, 0),
+ • 3 is at (1, 1),
+ • 4 is at (0, 1),
+ • 5 is at (–1, 1),
+ • 6 is at (–1, 0),
+ • 7 is at (–1, –1),
+ • 8 is at (0, –1),
+ • 9 is at (1, –1).
+
+After 9, the spiral continues outward. (For example, 10 is at (2, –1), 11 at (2, 0), 12 at (2, 1), and so on.) This is the standard “Ulam spiral” and it is known that in this spiral the numbers in each “ring” (the concentric square of cells) are bounded by perfect odd squares. In fact, if a number lies in the ring with radius r (which means that the cell has max(|x|,|y|) = r) its largest number is
+
+  M = (2r + 1)²
+
+and one finds that M is positioned at (r, –r). (You can check that for r = 1, M = 3² = 9 is at (1, –1).)
+
+Step 1. Locate 2026 in the spiral
+
+We want the neighbors of 2026, so we first need to determine its coordinates. A good strategy is to find its “ring.” Since the maximum number in ring r is (2r+1)², we seek the smallest r with
+
+  (2r + 1)² ≥ 2026.
+
+Try r = 22:
+  (2·22 + 1)² = 45² = 2025, which is less than 2026.
+Then r = 23:
+  (2·23 + 1)² = 47² = 2209, which is at least 2026.
+
+Thus 2026 lies in ring 23. In ring 23 the maximum is M = 2209 at (23, –23).
+
+Now, numbers on a ring decrease as one travels counterclockwise around the ring. In our spiral the movement is as follows (when “unwinding” the spiral from the maximum):
+ 1. Along the bottom edge from (23, –23) leftward.
+ 2. Up the left edge.
+ 3. Along the top edge from left to right.
+ 4. Down the right edge.
+
+Each side (edge) of the ring has length 2r, which for r = 23 gives 46 numbers on each edge. (More precisely, aside from the corner “starting” points, each edge covers 46 cells; the corners themselves are shared between successive segments.)
+
+Define d = M – 2026. We have
+
+  d = 2209 – 2026 = 183.
+
+Now note that:
+ • d between 0 and 45 (inclusive) would be on the bottom edge.
+ • d between 46 and 91 on the left edge.
+ • d between 92 and 137 on the top edge.
+ • d between 138 and 183 on the right edge.
+
+Since 183 falls in the fourth “segment” (138 ≤ d ≤ 183), we set
+  offset = d – 138 = 183 – 138 = 45.
+On the right edge the path begins at the corner at the top‐right. This corner is reached when d = 138. At that point the coordinates are (23, 23). Then as we move downward (increasing d) the x–coordinate stays fixed at 23 while the y–coordinate decreases. In particular, after an offset of 45 the coordinates are
+
+  (23, 23 – 45) = (23, –22).
+
+So 2026 is located at (23, –22).
+
+Step 2. Find the eight neighbours’ coordinates
+
+In a square grid a cell’s eight neighbors are the cells adjacent horizontally, vertically, and diagonally. Since 2026 is at (23, –22), its eight neighbors (which we label A through H) have coordinates:
+
+ A: (22, –23)
+ B: (23, –23)
+ C: (24, –23)
+ D: (22, –22)
+ E: (24, –22)
+ F: (22, –21)
+ G: (23, –21)
+ H: (24, –21)
+
+Step 3. Recover the number at each neighbor
+
+A general method for finding the number n at any coordinate (x, y) in the Ulam spiral is as follows. Let
+  r = max(|x|, |y|).
+Then the maximum number in that ring is
+  M = (2r + 1)².
+The position of M is at (r, –r). Depending on which edge (x, y) lies, one uses one of the following formulas:
+
+1. If y = –r (the bottom edge), then
+  n = M – (r – x).
+
+2. If x = –r (the left edge), then
+  n = M – 2r – (r + y).
+
+3. If y = r (the top edge), then
+  n = M – 4r – (r + x).
+
+4. If x = r (the right edge), then
+  n = M – 6r – (r – y).
+
+It is important to use the appropriate formula for the ring corresponding to each neighbor.
+
+Now, we compute each neighbor in turn.
+
+Neighbor B: (23, –23)
+ Here r = max(|23|, |–23|) = 23 and y = –23 (bottom edge). So
+  n = (47)² – (23 – 23) = 2209 – 0 = 2209.
+Thus, B = 2209.
+
+Neighbor A: (22, –23)
+ Still in ring 23 (since max(|22|,23) = 23) with y = –23. Use
+  n = 2209 – (23 – 22) = 2209 – 1 = 2208.
+So, A = 2208.
+
+Neighbor C: (24, –23)
+ Here, max(|24|, |–23|) = 24, so we are in ring r = 24. For ring 24 the maximum is
+  M = (2·24+1)² = 49² = 2401.
+ Since for (24, –23) y ≠ –24 (it is not on the bottom edge) but x = 24 (the “right edge”), we use the formula for x = r:
+  n = M – 6r – [r – y]
+Plug in the numbers:
+  n = 2401 – 6·24 – (24 – (–23))
+    = 2401 – 144 – (24 + 23)
+    = 2401 – 144 – 47 
+    = 2401 – 191 = 2210.
+Thus, C = 2210.
+
+Neighbor D: (22, –22)
+ Now, max(|22|, |–22|) = 22 so r = 22 with M = (45)² = 2025.
+ Here, y = –22, which equals –r. So we use the bottom edge formula:
+  n = M – (22 – 22) = 2025 – 0 = 2025.
+Thus, D = 2025.
+
+Neighbor E: (24, –22)
+ Here max(|24|, |–22|) = 24 so r = 24 and M = 2401.
+ Coordinate (24, –22) has x = 24 (so right edge). Use the right edge formula:
+  n = 2401 – 6·24 – (24 – (–22))
+    = 2401 – 144 – (24 + 22)
+    = 2401 – 144 – 46
+    = 2401 – 190 = 2211.
+Thus, E = 2211.
+
+Neighbor F: (22, –21)
+ Here max(|22|, |–21|) = 22 so r = 22 and M = 2025.
+ Notice that x = 22 equals r, so the cell is on the right edge of ring 22. Use the right edge formula:
+  n = M – 6r – (r – y)
+    = 2025 – 6·22 – (22 – (–21))
+    = 2025 – 132 – (22 + 21)
+    = 2025 – 132 – 43 = 2025 – 175 = 1850.
+Thus, F = 1850.
+
+Neighbor G: (23, –21)
+ Here max(|23|, |–21|) = 23 so r = 23 and M = 2209.
+ Again, x = 23 equals r so (23, –21) lies on the right edge of ring 23. Using the right edge formula:
+  n = 2209 – 6·23 – (23 – (–21))
+    = 2209 – 138 – (23 + 21)
+    = 2209 – 138 – 44 
+    = 2209 – 182 = 2027.
+Thus, G = 2027.
+
+Neighbor H: (24, –21)
+ Here max(|24|, |–21|) = 24 so r = 24 with M = 2401.
+ Again x = 24 (right edge), so:
+  n = 2401 – 6·24 – (24 – (–21))
+    = 2401 – 144 – (24 + 21)
+    = 2401 – 144 – 45
+    = 2401 – 189 = 2212.
+Thus, H = 2212.
+
+Step 4. Sum the eight neighbors
+
+Now we have:
+ A = 2208  
+ B = 2209  
+ C = 2210  
+ D = 2025  
+ E = 2211  
+ F = 1850  
+ G = 2027  
+ H = 2212  
+
+Add them up:
+ 2208 + 2209 = 4417  
+ 4417 + 2210 = 6627  
+ 6627 + 2025 = 8652  
+ 8652 + 2211 = 10863  
+ 10863 + 1850 = 12713  
+ 12713 + 2027 = 14740  
+ 14740 + 2212 = 16952  
+
+So, the sum of the eight neighbors of the number 2026 is 16,952.
+
+Answer: 16952.
+----
+Usage(input=61, output=7201, details={'completion_tokens_details': {'reasoning_tokens': 4672}})

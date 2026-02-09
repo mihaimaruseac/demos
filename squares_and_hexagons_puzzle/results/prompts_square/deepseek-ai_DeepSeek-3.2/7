@@ -1,0 +1,339 @@
+Alright, let’s go step-by-step.
+
+---
+
+## **Step 1: Understanding the spiral layout**
+
+The spiral is arranged as  
+```
+...  5  4  3  ...
+...  6  1  2  ...
+...  7  8  9  ...
+...           ...
+```
+with 1 at position (0,0) in some coordinate system.
+
+From known problems about the Ulam spiral (square spiral), the layout can be constructed by:
+
+Numbering the coordinates:  
+Take right as +x, up as +y, or something similar. I'll assume (0,0) = 1, (1,0) = 2, (1,1) = 3, (0,1) = 4, (-1,1) = 5, (-1,0) = 6, (-1,-1) = 7, (0,-1) = 8, (1,-1) = 9, etc.
+
+But more systematic approach:  
+In a standard square spiral:  
+1 is at (0,0),  
+2 at (1,0),  
+3 at (1,1),  
+4 at (0,1),  
+5 at (-1,1),  
+6 at (-1,0),  
+7 at (-1,-1),  
+8 at (0,-1),  
+9 at (1,-1),  
+10 at (2,-1), etc.
+
+We can deduce coordinates by formula or reasoning.
+
+---
+
+## **Step 2: Determine coordinates of 2026**
+
+We can find coordinates by noticing square numbers \( (2n+1)^2 \) are at \((-n, n)\) (for odd squares starting 1 at n=0).
+
+\( 45^2 = 2025 \) is odd.  
+
+Let’s check: \( 45^2 = 2025 \) at \((-22, 22)\) in the pattern? Let's check smaller known spiral pattern:
+
+Known property: Largest odd squares \( (2k+1)^2 \) are at \((-k, k)\) for k≥0.
+
+For \( k=22 \), \( (2*22+1)=45\), so \(45^2 = 2025\) is at \((-22, 22)\).
+
+Indeed:
+
+Right lower corner numbers: number 2025 is in top-left corner relative to its square layer? Let's check sequence:  
+1 at (0,0), layer 0.  
+9 at (1,-1) ? Let’s not guess but compute:
+
+---
+
+Better: Layer \( l \) = \(\lceil \frac{\sqrt{n} - 1}{2} \rceil\)? Not necessary.
+
+I recall direct algorithm:  
+Let \( m = \lfloor \sqrt{n-1} \rfloor \) ? hmm messy.
+
+Better:  
+Largest odd square \( \le n\) is \(45^2 = 2025\). Coordinates of 2025 are at (-22, 22) in the rule “Odd squares \( (2k+1)^2 \) at (-k, k)”.
+
+Thus \(2025\) at (-22, 22):
+
+Coordinates:
+Layer k=22 is from \( (2k-1)^2 +1 \) to \( (2k+1)^2 \).
+
+Start of layer k: \( (2k-1)^2+1 = (43)^2+1 = 1849+1 = 1850\).
+
+Layer k side length: \( 2k = 44\).
+
+Position of \(n\) within layer \(m\) = \(n - (2m-1)^2 - 1\) where m=k=22.
+
+So position p = 2026 - 1849 - 1 = 176.
+
+Layer: layer index k=22, side length = \(2k=44\).
+
+Movement rules on layer k: From \(2025\) at (-22,22), 2026 is: next number after 2025 is rightward by 1 step (since after reaching the odd square at (-k,k), you go right one to start next layer), but that lands at (-21,22)? Let's check:
+
+Known algorithm (square spiral, right-up-left-down start):  
+Number 2025 is at (-22,22).
+
+In the step: after reaching \(2025\), next step is to the right for k+1=23rd layer? Actually layer k=22 ends at \(2025\). Then next number \(2026\) moves right once to (-21,22).
+
+Wait but coordinates shift: Let’s test small:  
+9 at (1,-1), 10 at (2,-1) — yes (after 9=middle of bottom row? Actually 3^2=9 at (1,1) no!)
+But I recall: 9 is at (1,-1) is wrong? Let’s do real small list:
+
+1 (0,0)  
+2 (1,0) E  
+3 (1,1) N  
+4 (0,1) W  
+5 (-1,1) W  
+6 (-1,0) S  
+7 (-1,-1) S  
+8 (0,-1) E  
+9 (1,-1) E  
+10 (2,-1) N start next layer
+
+So 9 is at (1,-1). 3^2=9 is at corner? yes (1,-1).
+
+So 45^2=2025 at corner (-22, -22)? No, earlier I said (-22,22)—contradiction.
+
+Testing: 5^2=25? k=2, odd square 25 at (-2,2)? yes: from pattern:  
+1 at (0,0), 9 at (1,-1)? Actually known: odd squares 1, 9, 25 positions:
+
+List:  
+1 (0,0)  
+9 (1,-1) — hey it’s not (-1,1)! So my earlier guess wrong.
+
+Let me backtrack:
+
+Take n=13: sqrt~3.6, k=2? possibly not.
+
+I'll brute force reasoning logically:
+
+Known spiral form: Right, Up, Left, Down, Right…
+
+Coordinates:  
+Step 0: 1 (0,0)  
+Right: 2 (1,0)  
+Up: 3 (1,1)  
+Left: 4 (0,1), 5 (-1,1)  
+Down: 6 (-1,0), 7 (-1,-1)  
+Right: 8 (0,-1), 9 (1,-1), 10 (2,-1)  
+Up: 11 (2,0), 12 (2,1), 13 (2,2)  
+Left: 14 (1,2), 15 (0,2), 16 (-1,2), 17 (-2,2)  
+Down: 18 (-2,1), 19 (-2,0), 20 (-2,-1), 21 (-2,-2)  
+Right: 22 (-1,-2), 23 (0,-2), 24 (1,-2), 25 (2,-2), 26 (3,-2) etc.
+
+Now 9 is at (1,-1) not (-1,1). So odd square formula: \( (2k+1)^2\) at \( (k, -k)\) possibly.
+
+Check 25: from list: 25 at (2,-2) indeed. k=2: \( (2*2+1)^2 =25\), at (2,-2). Yes! So odd square \( (2k+1)^2\) is at \( (k, -k)\).
+
+So 45^2=2025 at (22, -22).
+
+---
+
+So top-right corners: (k,-k).
+
+Now layer k=22:  
+2025 at (22,-22).
+
+Then next number 2026: you go right from (22,-22), so (23,-22).
+
+We can confirm: sequence says after reaching SE corner (k,-k), next step is one right to start new layer.
+
+So 2026 at (23,-22).
+
+---
+
+## **Step 3: Find 8 neighbors of (23,-22)**
+
+It’s on grid, connected orthogonally and diagonally:
+
+Neighbor coordinates:
+
+(22,-22) – left  
+(24,-22) – right  
+(23,-21) – up  
+(23,-23) – down  
+(22,-21) – up-left  
+(24,-21) – up-right  
+(22,-23) – down-left  
+(24,-23) – down-right  
+
+---
+
+## **Step 4: Find numbers at those positions**
+
+We can use the formula relating coordinates to numbers, but easier to note relative positions in layer: For a given coordinate (x,y), number can be found by noting layer.
+
+Alternative: Use symmetry: coordinates of 2026 are (23,-22). Within its layer k=23? Wait layer index: if (k,-k) is odd square \( (2k+1)^2\), so k=22 for 2025. Then 2026 is in layer k+1=23.
+
+Let’s check: layer L = max(|x|, |y|). For (23,-22), max=23. So indeed layer L=23.
+
+---
+
+Layer L starts at number \( (2L-3)^2 + 1 \) for L>1? Check L=2: start at 2? Actually wrong.
+
+Better: spiral numbering: Start layer L at coordinates (L, -(L-1)). Actually: Start of layer L: from (L, 1-L) coordinate upward? Let’s test L=1 starts 2 at (1,0). L=2 starts 10 at (2,-1). Yes.
+
+Instead of deriving, let’s compute offsets manually for (23,-22):
+
+We can reconstruct: The number at (x,y) in layer L=max(|x|,|y|):
+
+If y=-L (bottom side), number increases from right to left along bottom? Wait: Let’s check: At L=2, bottom side: coordinates (-2,-2),( -1,-2),(0,-2),(1,-2),(2,-2) correspond to numbers 21,20,19,18,17? Actually from earlier step:  
+21 at (-2,-2), 22 at (-1,-2), 23 at (0,-2), 24 at (1,-2), 25 at (2,-2). Yes bottom side **right to left**??? Wait 25 at (2,-2) is larger than 21 at (-2,-2). So bottom side goes leftwards? Yes: start at (L, -L) is largest then decreases to (-L,-L).
+
+We need a direct coordinate→number mapping.
+
+Common formula: Let L = max(|x|,|y|).
+
+Case 1: y = -L: bottom edge: number at (x,-L) = (2L+1)^2 - (L-x), x from -L to L? But 25 at (2,-2): (2*2+1)^2 =25. L=2: (2,-2): 25-(2-2)=25. Works.
+
+Case 2: x = -L: left edge: number = (2L-1)^2+(L+y), y from -L to L? Check (-2,-2): L=2: (3)^2=9, plus (2+(-2))=9+0=9 not 21. Fails. So careful.
+
+Better to find explicit by example with L=23, our point (23,-22):
+
+We notice y=-22, L=23: since y=-22≠ -L (which is -23), so point (23,-22) is on **right edge** because x=23=L.
+
+Right edge: x=L, y from -(L-1) up to L.
+
+For L=23: right edge runs from (23,-22) upwards? Actually start from (23,1-L)=(23,-22) upward to (23,23) as top-right corner.
+
+So numbers along right edge increase upward.
+
+We need offset along right edge: y = -22 means offset from bottom: h = y - (-(L-1)) = y - (-L+1) = y + L - 1 = -22 + 23 - 1 = 0.
+
+Means: (23,-22) is the **first** number on right edge (bottom of right edge).
+
+So right edge numbering: start number = ? from above:
+
+General: start layer L: number at bottom-right(L, -(L-1)) is (2L-3)^2+4L-2? Let’s test small L=2: bottom-right (2,-1): should be 10. Compute: (1)^2+8-2=1+6=7 not right. So scrap.
+
+Better to brute: Known: L=1: start=2. L=2: start=10. L=3: start=26.
+
+Sequence: start(L)=4L^2 - 6L + 4? Let’s check L=2: 16-12+4=8 no. Wrong.
+
+Let’s use known formula: side length=2L-1.
+
+Actually: maximum layer L: last number in previous layer L-1 = (2L-3)^2? No.
+
+Instead: Start of layer L: 4(L-1)^2+4(L-1)+2? Test L=1:0+0+2=2 yes. L=2:4+4+2=10 yes. L=3:16+8+2=26 yes.
+
+So formula S(L) = 2+4(L-1)L? =4L^2-4L+2? Check: L=3:36-12+2=26 yes.
+
+So start(L) = 4L^2 - 4L + 2.
+
+For L=23: start(23)=4*529 - 92 + 2 = 2116 - 92 + 2 = 2026.
+
+Wait! That means number at (23,-22) is exactly **the first number** of layer 23, which is 2026.
+
+Nice! So indeed 2026 at (23,-22) is first in layer 23 = start(L)=4L^2-4L+2 fits.
+
+---
+
+So neighbors:
+
+They are in layers 22 or 23.
+
+We can compute their coordinates:
+
+We have 8 neighbors:
+
+(22,-22): bottom edge of layer 22? Layer 22: L=22: bottom edge is at y=-22, x from -22 to 22: bottom edge numbers increase rightward? Actually earlier I thought bottom edge **right to left** but test: L=2: bottom y=-2: numbers 21,22,23,24,25 <- x from -2,-1,0,1,2 ? Increase rightwards? 21 at (-2,-2), 25 at (2,-2), yes increases as x increases!
+
+So bottom edge formula: y=-L: number at (x,-L) = (2L+1)^2 - (L-x) ??? Test L=2: (x,-2): formula: (5)^2 - (2-x)=25-2+x=23+x. For x=-2: 21 yes, for x=2: 25 yes.
+
+So (22,-22) with L=22: y=-L exactly, x=22: formula: (45)^2 - (22-22)=2025-0=2025. Indeed earlier 2025 at (22,-22). Correct.
+
+(Look at note: earlier we had 2025 at (22,-22) matching our odd square formula.)
+
+So (22,-22)=2025.
+
+---
+
+(24,-22): L=24? max(|24|,|-22|)=24, y=-22≠-L (-24), x=24=L so right edge. Right edge: first right edge number of layer L=24 is S(24)=4*576-96+2=2304-96+2=2210 at (24,-23).  
+
+We want (24,-22): diff y from bottom: y=-22, bottom of right edge y=-(L-1)=-23. So offset h= y-(-(L-1))= -22+23=1. So shift upward by 1 from start of right edge: number = S(24)+h=2210+1=2211.  
+
+Wait speed up: easier symmetry: neighbor (24,-22) = 4*(24)^2 -4*24+2 + [(-22)-(-23)] = 2210+1=2211.
+
+Check plausible.
+
+---
+
+(22,-21): L=22 because max(22,21)=22, y=-21≠-22 so not bottom, x=22=L so right edge? Wait x=22=L=22, y=-21: top from bottom of right edge: right edge at x=22: bottom at (22,-21) or (22,-21)? For L=22: right edge bottom at (22,-(L-1)) = (22,-21) actually! So (22,-21) is first right edge of layer 22 = start(22)=4*484 - 88 + 2 = 1936-88+2=1850.
+
+Check: 1850 at (22,-21) must be correct.
+
+So (22,-21)=1850.
+
+---
+
+(24,-21): L=24, (24,-21): x=24=L, y=-21: y from bottom y=-(L-1)=-23 offset=2, so number=S(24)+2=2210+2=2212.
+
+---
+
+(23,-21): max(23,21)=23, y=-21, x=23=L right edge? No x=23=L right edge yes, bottom of right edge y=-22 offset 1=> start S(23)+1=2026+1=2027.
+
+So (23,-21)=2027.
+
+---
+
+(23,-23): max(23,23)=23, y=-23=-L, so bottom edge of layer L=23: formula (47)^2-(23-23)=2209-0=2209. Wait L=23: 47^2=2209 yes.
+
+So (23,-23)=2209.
+
+---
+
+(22,-23): L=23 (max=23), y=-23=-L, so bottom edge, x=22: ((47)^2)-(23-22)=2209-1=2208.
+
+So (22,-23)=2208.
+
+---
+
+(24,-23): L=24 bottom? x=24, y=-23: L=24: but y=-23≠-24 so not bottom for L=24. Wait max(|24|,|-23|)=24, y=-23≠-L, so bottom edge not right edge: here x=24=L bottom? Actually Right edge: Let’s check: For L=24: right edge y∈[-23,24]? -23 is -L+1? Actually bottom of right edge: y=-(L-1)=-23 is start. Top: y=L=24. So y=-23 is start of right edge, x=24, so start(24)=2210.
+
+So (24,-23)=2210.
+
+---
+
+So neighbors and their numbers:
+
+1. (22,-22) = 2025  
+2. (24,-22) = 2211  
+3. (23,-21) = 2027  
+4. (23,-23) = 2209  
+5. (22,-21) = 1850  
+6. (24,-21) = 2212  
+7. (22,-23) = 2208  
+8. (24,-23) = 2210  
+
+---
+
+## **Step 5: Sum them**
+
+Sum =  
+2025 + 2211 = 4236  
+4236 + 2027 = 6263  
+6263 + 2209 = 8472  
+8472 + 1850 = 10322  
+10322 + 2212 = 12534  
+12534 + 2208 = 14742  
+14742 + 2210 = 16952.
+
+---
+
+**Final answer:**
+
+\[
+\boxed{16952}
+\]
+----
+Usage(input=59, output=4346, details={'prompt_tokens_details': {'cached_tokens': 32}, 'estimated_cost': 0.0017061200000000002})

@@ -1,0 +1,186 @@
+We are given a spiral of natural numbers laid out on a **hexagonal grid**. The problem provides an example with a central number 1 and surrounding numbers increasing as we move outward in a spiral. Our task is to find the **sum of all 6 neighbors** of the number **2026** on this hexagonal spiral.
+
+---
+
+### Step 1: Understand the structure of the hexagonal spiral
+
+A hexagonal grid spirals out starting from 1 in the center. The number of elements on each "ring" increases in a specific way. Specifically:
+
+- Ring 0: 1 number → the center: 1
+- Ring 1: 6 numbers (surrounding 1)
+- Ring 2: 12 numbers
+- Ring 3: 18 numbers
+- Ring k: 6k numbers
+
+So total numbers in all rings up to k:
+\[
+1 + 6(1 + 2 + 3 + ... + k) = 1 + 6 \cdot \frac{k(k+1)}{2}
+= 1 + 3k(k+1)
+\]
+
+We can use this to determine which ring 2026 is in.
+
+---
+
+### Step 2: Determine the ring of 2026
+
+Let’s solve for k such that:
+
+\[
+1 + 3k(k+1) \geq 2026
+\]
+
+Let’s try values:
+
+- k = 25: 1 + 3×25×26 = 1 + 1950 + 1 = **1951**
+- k = 26: 1 + 3×26×27 = 1 + 2106 = **2107**
+
+So number 2026 is in **ring 26** (since 2026 ≤ 2107).
+
+The numbers that are in ring 25 and inner lie below 1951.
+
+So 2026 is the \((2026 - 1951) = 75\)-th number in ring 26.
+
+Note: Each ring has 6 sides. Ring 26 has 6×26 = 156 numbers around its perimeter. So we number those from 1 to 156.
+
+So 2026 is the 75th number in ring 26.
+
+---
+
+### Step 3: Determine 6 neighbors of a number in ring n
+
+In a hex grid, each cell has 6 neighbors. The surroundings of a number in any ring are:
+- Two neighbors in the same ring (previous and next on the same ring)
+- Two neighbors in the inner ring (shared with two edges)
+- Two neighbors in the outer ring (shared with two edges)
+
+So if we can find the six neighbors of a number in ring **k** and position **p**, we can find their positions and compute their exact values.
+
+Let’s define:
+- Ring k has 6k elements
+- The numbering of elements in ring k starts at index 0 and proceeds counterclockwise
+- The first number in ring k is index 0 and equals:
+  \[
+  1 + 3(k-1)k
+  \]
+  (as derived earlier from total numbers before ring k)
+
+Let’s compute:
+
+- Value at start of ring 26 (k = 26):  
+  \[
+  \text{Start} = 1 + 3×25×26 = 1 + 1950 = **1951**
+  \]
+
+Ring 26 has 6×26 = 156 elements. So number 2026 is:
+\[
+2026 - 1951 = 75
+\]
+So it is at position 75 in ring 26.
+
+---
+
+### Step 4: Compute values of neighbors
+
+Let’s try to compute the 6 neighbors of number 2026.
+
+Position in ring 26: 75
+
+**Neighbor 1 (same ring, previous)**
+
+Previous position = (75 - 1) = 74  
+Value = start of ring 26 + 74 = 1951 + 74 = **2025**
+
+**Neighbor 2 (same ring, next)**
+
+Next position = 76  
+Value = 1951 + 76 = **2027**
+
+Now we need to compute neighbors on inner ring (ring 25) and outer ring (ring 27). Let's first compute where ring 25 starts:
+
+Start of ring 25:
+\[
+1 + 3×24×25 = 1 + 1800 = **1801**
+\]
+Ring 25 has 6×25 = 150 elements
+
+How do we map position 75 in ring 26 to neighbors in ring 25?
+
+Here's the useful trick: each ring has 6 equal-length sides. For ring 26 with 156 elements: 156 / 6 = 26 elements per side.
+
+The 75th element lies on side:
+
+\[
+\text{Side} = \left\lfloor \frac{75}{26} \right\rfloor = 2 → third side (0-based indexing)
+\]
+
+Position on side = 75 % 26 = 75 mod 26 = **23**
+
+So 2026 is the 24th element of the third side of ring 26
+
+Similarly, we can get the corresponding positions in inner and outer ring.
+
+**Ring 25 has 150 elements ⇒ 25 per side**
+On same side (side 2), the 24th element is position 23 (0-based). So in ring 25, the matching positions would be:
+
+- position_in_ring25 = side × 25 + 23 = 2×25 + 23 = 50 + 23 = **73**
+- position +1 = 74
+
+Ring 25 starts at **1801**
+
+So two inner ring neighbors are:
+
+- Inner neighbor 1 = 1801 + 73 = **1874**
+- Inner neighbor 2 = 1801 + 74 = **1875**
+
+Similarly, outer ring 27:
+- Start of ring 27:  
+  \[
+  1 + 3×26×27 = 1 + 2106 = **2107**
+  \]
+
+- Ring 27 has 6×27 = 162 numbers ⇒ 27 per side
+
+We find on side 2, element 23 maps to:
+
+- position_in_ring27 = 2×27 + 23 = 54 + 23 = **77**
+- position +1 = 78
+
+So outer neighbors:
+
+- Outer neighbor 1 = 2107 + 77 = **2184**
+- Outer neighbor 2 = 2107 + 78 = **2185**
+
+Now list of all 6 neighbors of 2026:
+
+- Same ring: 2025, 2027  
+- Inner ring: 1874, 1875  
+- Outer ring: 2184, 2185
+
+So the **sum** is:
+
+\[
+2025 + 2027 + 1874 + 1875 + 2184 + 2185
+\]
+
+Let's compute step-by-step:
+
+- 2025 + 2027 = 4052  
+- 1874 + 1875 = 3749  
+- 2184 + 2185 = 4369
+
+Now total sum:
+
+\[
+4052 + 3749 = 7801  
+7801 + 4369 = \boxed{12170}
+\]
+
+---
+
+### ✅ Final Answer:
+\[
+\boxed{12170}
+\]
+----
+Usage(input=71, output=1547, details={})

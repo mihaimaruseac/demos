@@ -1,0 +1,206 @@
+Let's analyze the problem step by step.
+
+### **Understanding the Layout**
+
+A **hexagonal spiral** means:
+
+- The numbers spiral outward from the center (1).
+- Each cell (after the center) has 6 neighbors except at the "end" of each ring.
+
+From the description, the initial numbers are placed like this:
+
+```
+   14  4  3 10
+  15  5  1  2  9
+   16  6  7  8
+```
+The spiral proceeds outwards in "rings".
+
+### **Hexagonal Rings Formulas**
+
+On a hexagonal grid:
+
+- The center/starting point ("ring 0") = 1.
+- The first ring ("ring 1") = the 6 numbers surrounding the center: that is, numbers 2–7.
+- The second ring ("ring 2") = next 12 numbers, 8–19.
+- The third ring ("ring 3") = next 18 numbers, 20–37.
+- In general:
+    - The **n-th ring** contains \( 6n \) numbers.
+    - The total number of numbers up to ring \( n \) is \( 1 + 6(1 + 2 + \cdots + n) = 1 + 3n(n+1) \).
+
+So, for **ring \( n \)**:
+- Maximum number (last in the ring): \( 1 + 3n(n+1) \).
+- Minimum number (first in the ring): \( 1 + 3(n-1)n + 1 = 3n^2 - 3n + 2 \).
+  - (Since the previous ring ended at \( 1 + 3(n-1)n \), so the next starts at \( +1 \).)
+
+### **Find Out in Which Ring 2026 Lies**
+
+Let \( 1 + 3n(n+1) \geq 2026 \).
+
+Set \( N = 1 + 3n(n+1) \).
+
+Solve for \( n \):
+
+1. \( 3n(n+1) \geq 2025 \)
+2. \( n(n+1) \geq 675 \)
+
+Try \( n = 26 \):
+
+- \( 26 \times 27 = 702 \), which is **greater than 675**.
+
+The maximum number in ring 26 is:
+- \( 1 + 3 \times 26 \times 27 = 1 + 3 \times 702 = 1 + 2106 = 2107 \).
+
+The maximum in ring 25 is:
+- \( 1 + 3 \times 25 \times 26 = 1 + 3 \times 650 = 1 + 1950 = 1951 \).
+
+So the numbers in ring 26 range from **1952** to **2107** (inclusive).
+
+Thus, **2026 lies in ring 26**.
+
+- To find where in the ring: \( 2026 - 1952 = 74 \): it's the 75th number in the ring.
+
+### **Neighbors in the Hex Spiral**
+
+For a cell in "ring n", its 6 neighbors are:
+
+- the cells directly adjacent in all 6 lattice directions.
+- For non-corner cells in a ring, the 6 neighbors are:
+    - The previous number in the same ring.
+    - The next number in the same ring.
+    - 2 numbers in the **previous ring (n-1)**.
+    - 2 numbers in the **next ring (n+1)**.
+
+Let's recall the structure:
+- Each ring is a hexagon built with \( 6n \) cells, broken into 6 sides of \( n \) numbers each.
+- The walk around the ring starts at a "corner," proceeds \( n \) numbers to the next corner, etc.
+
+Every ring has 6 corners, each separated by \( n \) steps.
+
+75th position in a ring of 156 (\( 6 \times 26 = 156 \)) means it's not a corner.
+
+Specifically:
+- Position in ring: 75. So, the positions around the ring are labeled 0, 1, ..., 155.
+- Position 75 is Side \( \left\lfloor 75 / 26 \right\rfloor = 2 \), position within side = \( 75 \bmod 26 = 23 \).
+
+So:
+- Side 0: positions 0–25
+- Side 1: positions 26–51
+- Side 2: positions 52–77
+- Side 3: 78–103
+- Side 4: 104–129
+- Side 5: 130–155
+
+So position **75**: **Side 2, position 23 on the side**.
+
+### **Finding Neighbor Numbers**
+
+For a "general" (not-corner) cell, its 6 neighbors are:
+
+#### 1. Previous and next cell in the same ring
+- \( 2026 - 1 = 2025 \)
+- \( 2026 + 1 = 2027 \)
+
+#### 2. Two cells in the previous ring (ring 25)
+Key insight: In the _spiral_, from a given cell on ring \( n \), moving inward in one of two directions brings you to a cell in ring \( n-1 \).
+
+For each cell in ring \( n \), its position around the hexagon (say numbered 0 to \( 6n-1 \)). For position \( k \) on ring \( n \):
+
+- The corresponding cells in ring \( n-1 \) are positions \( \left\lfloor \frac{k}{n} \times (n-1) \right\rfloor + (k \bmod n) \) and \( \left\lfloor \frac{k}{n} \times (n-1) \right\rfloor + (k \bmod n) + 1 \), but let's make it explicit.
+
+**A shortcut:**
+According to OEIS [A056105](https://oeis.org/A056105), the hex spiral numbering, the 6 neighbors of number at \((n, k)\) are:
+- \((n, k + 1)\), \((n, k - 1)\) (adjacent on the same ring)
+- \((n-1, k')\) and \((n-1, k'+1)\)
+- \((n+1, k'')\) and \((n+1, k''+1)\)
+
+Where:
+- \( n \) is the ring index (starting from 1 for numbers >=2; center is \( n=0 \))
+- \( k \) is the index within the ring: \( 0 \leq k < 6n \)
+- The connections between \( (n, k) \) and \( (n-1, \cdot) \) are as follows:
+
+For ring \( n \), position \( k \):
+- The corresponding position in ring \( n-1 \) is:
+    \[
+    k' = k - \left\lfloor \frac{k}{n} \right\rfloor
+    \]
+- Similarly for ring \( n+1 \), the corresponding position is:
+    \[
+    k'' = k + \left\lfloor \frac{k}{n} \right\rfloor
+    \]
+
+#### **Let's calculate \( k \) for 2026:**
+
+- Ring 26, \( k = 74 \) (since the first in ring is 1952, so \( 2026-1952 = 74 \))
+- So position 74 in ring 26.
+
+Now,
+- \( n = 26 \)
+- \( k = 74 \)
+- \( \left\lfloor 74/26 \right\rfloor = 2 \)
+- \( k - \left\lfloor k/n \right\rfloor = 74 - 2 = 72 \)
+- The **two neighbors in previous ring** (\( n-1 = 25 \)) are at positions 72 and 73 in ring 25.
+
+Each ring \( n \) starts at:
+\[
+S(n) = 1 + 3(n-1)n
+\]
+
+So for ring 25:
+- Starts at \( 1 + 3 \times 24 \times 25 = 1 + 1800 = 1801 \)
+  
+So numbers at positions 72 and 73:
+- \( 1801 + 72 = 1873 \)
+- \( 1801 + 73 = 1874 \)
+
+#### **Two neighbors in next ring (\( n+1 = 27 \))**
+
+- \( k'' = 74 + 2 = 76 \)
+- So positions 76 and 77 in ring 27.
+
+Ring 27 starts at:
+\[
+1 + 3 \times 26 \times 27 = 1 + 3 \times 702 = 1 + 2106 = 2107
+\]
+
+So numbers are:
+- \( 2107 + 76 = 2183 \)
+- \( 2107 + 77 = 2184 \)
+
+### **Full List of Neighbors**
+
+- Previous/next in same ring:  
+    \( 2025, 2027 \)
+- 2 in previous ring:  
+    \( 1873, 1874 \)
+- 2 in next ring:  
+    \( 2183, 2184 \)
+
+### **Sum**
+
+Add these up:
+\[
+2025 + 2027 + 1873 + 1874 + 2183 + 2184 = ?
+\]
+
+Let's do it step by step:
+
+- \( 2025 + 2027 = 4052 \)
+- \( 1873 + 1874 = 3747 \)
+- \( 2183 + 2184 = 4367 \)
+
+Now sum:
+\[
+4052 + 3747 = 7799 \\
+7799 + 4367 = 12166
+\]
+
+### **Final Answer**
+
+\[
+\boxed{12166}
+\]
+
+**The sum of the six neighbors of 2026 is \(\boxed{12166}\).**
+----
+Usage(input=71, output=2179, details={})

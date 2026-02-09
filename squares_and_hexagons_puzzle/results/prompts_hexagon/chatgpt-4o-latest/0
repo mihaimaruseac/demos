@@ -1,0 +1,185 @@
+We are given a number spiral laid out on a **hexagonal grid**, and asked to find the **sum of the 6 neighbors of the number 2026**.
+
+Let’s first analyze the pattern of the hexagonal spiral.
+
+---
+
+### Step 1: Understanding the Hexagonal Spiral
+
+From the diagram, the spiral starts at 1 in the center and proceeds in a counter-clockwise direction, wrapping in hexagonal rings.
+
+We can write out the pattern:
+
+#### Ring 0 (center):
+- 1
+
+#### Ring 1:
+- 2 to 7 (6 numbers)
+
+#### Ring 2:
+- 8 to 19 (12 numbers)
+
+So, the total number of elements in ring *n* is:
+\[
+\text{Total in ring } n = 6n
+\]
+And the total number of elements from all previous rings up to ring *n* is:
+\[
+T(n) = 1 + \sum_{k=1}^{n} 6k = 1 + 6(1 + 2 + ... + n) = 1 + 6 \cdot \frac{n(n+1)}{2} = 1 + 3n(n+1)
+\]
+
+Hence:
+- Ring 0 ends at 1
+- Ring 1 ends at \(1 + 6 = 7\)
+- Ring 2 ends at \(7 + 12 = 19\)
+- Ring 3 ends at \(19 + 18 = 37\)
+- Ring 4 ends at \(37 + 24 = 61\)
+- Ring 5 ends at \(61 + 30 = 91\)
+- Ring 6 ends at \(91 + 36 = 127\)
+- And so on
+
+We can use the total number through ring \(n\), \(T(n) = 1 + 3n(n+1)\)
+
+We want to find in which ring the number **2026** is located.
+
+---
+
+### Step 2: Determine Which Ring 2026 Is In
+
+We solve:
+\[
+1 + 3n(n+1) \geq 2026
+\Rightarrow 3n(n+1) \geq 2025
+\Rightarrow n(n+1) \geq 675
+\]
+
+Try \(n = 25\):
+\[
+25 \cdot 26 = 650
+\]
+
+Try \(n = 26\):
+\[
+26 \cdot 27 = 702 > 675
+\]
+
+So **2026 is in ring 26**
+
+And total numbers up to ring 25:
+\[
+T(25) = 1 + 3\cdot 25 \cdot 26 = 1 + 1950 = 1951
+\]
+
+So the first number in ring 26 is **1952**, and ring 26 has:
+\[
+6 \cdot 26 = 156 \text{ numbers}
+\]
+
+So in ring 26:
+- 1952 (first), up to \(1952 + 155 = 2107\)
+
+So **2026** is the \((2026 - 1952 + 1) = 75\)-th number in ring 26.
+
+---
+
+### Step 3: Understanding the Neighbor Structure
+
+Each number has up to 6 neighbors. For numbers that lie in the middle of the spiral (i.e., not on the corners), it usually has 6 neighbors unless on an outer edge.
+
+Each number in the spiral has neighbors located:
+- Either in the same ring,
+- Inner ring,
+- Outer ring.
+
+Let’s denote the k-th number in ring \(n\) as \(R(n,k)\), where \(1 \leq k \leq 6n\)
+
+Adjacent neighbors will include:
+- Possibly two in the same ring (k ± 1 modulo 6n)
+- Possibly two in the inner ring (mapping to nearby positions)
+- Possibly two in the outer ring (mapping to nearby positions)
+
+We need to find all 6 neighbors of number 2026 \(= R(26, 75)\)
+
+---
+
+### Step 4: Find the 6 Neighbors of 2026 = R(26, 75)
+
+- First, recall from earlier:
+  - Inner ring = 25 (has 150 numbers) → numbers from 1802 to 1951
+  - Outer ring = 27 (has 162 numbers) → numbers from 2108 to 2269
+
+We compute:
+
+#### Neighbor 1: Same ring, previous (k–1)
+- k = 75 → k–1 = 74
+- Number = 1952 + (74 – 1) = **2025**
+
+#### Neighbor 2: Same ring, next (k+1)
+- k+1 = 76
+- Number = 1952 + (76 – 1) = **2026** (already given), so neighbor is:
+- 1952 + (76 – 1) = **2027**
+
+#### Neighbors 3 & 4: Inner ring
+
+We map position k = 75 in ring 26 to the inner ring (ring 25 of size 150).
+
+We can estimate:
+
+\[
+\text{Position in ring 25} = \left\lfloor \frac{75}{156} \cdot 150 \right\rfloor = \left\lfloor 0.4808 \cdot 150 \right\rfloor = 72
+\]
+
+So neighbor:
+- Inner ring neighbor 1: position 72 → number = 1802 + (72 – 1) = **1873**
+- Inner ring neighbor 2: position 73 → number = 1802 + 72 = **1874**
+
+#### Neighbors 5 & 6: Outer ring
+
+Outer ring (ring 27) has 162 numbers, starting at 2108
+
+Map position:
+\[
+\left\lfloor \frac{75}{156} \cdot 162 \right\rfloor = \left\lfloor 0.4808 \cdot 162 \right\rfloor = \lfloor 77.5 \rfloor = 77
+\]
+
+Outer ring neighbor 1 = number at position 77 → 2108 + 76 = **2184**
+
+Outer ring neighbor 2 = position 78 → number = 2108 + 77 = **2185**
+
+---
+
+**List of the 6 neighbors of 2026**:
+- 2025
+- 2027
+- 1873
+- 1874
+- 2184
+- 2185
+
+### Step 5: Sum Them
+\[
+2025 + 2027 = 4052  
+\]
+\[
+1873 + 1874 = 3747
+\]
+\[
+2184 + 2185 = 4369
+\]
+
+Total:
+\[
+4052 + 3747 = 7799  
+\]
+\[
+7799 + 4369 = \boxed{12168}
+\]
+
+---
+
+### ✅ Final Answer:
+\[
+\boxed{12168}
+\]
+----
+Usage(input=71, output=1492, details={})

@@ -1,0 +1,80 @@
+I need to find the position of 2026 on a hexagonal spiral and then find the sum of its 6 neighbors.
+
+First, let me understand the spiral pattern. Looking at the given portion:
+```
+... 14  4  3 10 ...
+... 15  5  1  2  9 ...
+... 16  6  7  8 ...
+```
+
+The spiral starts at 1 and moves clockwise. From 1:
+- 1 → 2 (right)
+- 2 → 3 (up-right) 
+- 3 → 4 (up-left)
+- 4 → 5 (left)
+- 5 → 6 (down-left)
+- 6 → 7 (down-right)
+- 7 → 8 (right)
+- 8 → 9 (right)
+- 9 → 10 (up-right)
+
+This is a hexagonal spiral where we complete hexagonal "rings" around the center.
+
+Let me analyze the ring structure:
+- Ring 0: just {1}
+- Ring 1: {2, 3, 4, 5, 6, 7} (6 numbers)
+- Ring 2: {8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19} (12 numbers)
+- Ring 3: {20, 21, ..., 37} (18 numbers)
+
+In general, ring n (for n ≥ 1) contains 6n numbers.
+
+The total numbers up to and including ring n is:
+1 + 6(1) + 6(2) + ... + 6(n) = 1 + 6(1 + 2 + ... + n) = 1 + 6 · n(n+1)/2 = 1 + 3n(n+1) = 3n² + 3n + 1
+
+To find which ring contains 2026:
+3n² + 3n + 1 ≥ 2026
+3n² + 3n - 2025 ≥ 0
+
+Using the quadratic formula: n = (-3 ± √(9 + 4·3·2025))/6 = (-3 ± √24309)/6
+
+√24309 ≈ 155.9, so n ≈ (-3 + 155.9)/6 ≈ 25.48
+
+So n = 25. Let me check:
+- Ring 25 ends at: 3(25)² + 3(25) + 1 = 1875 + 75 + 1 = 1951
+- Ring 26 ends at: 3(26)² + 3(26) + 1 = 2028 + 78 + 1 = 2107
+
+Since 1951 < 2026 ≤ 2107, number 2026 is in ring 26.
+
+Ring 26 starts at number 1952 and ends at 2107.
+So 2026 is the (2026 - 1951) = 75th number in ring 26.
+
+In a hexagonal ring, there are 6 sides each of length n. For ring 26, each side has 26 numbers.
+- Side 1: positions 1-26 (numbers 1952-1977)
+- Side 2: positions 27-52 (numbers 1978-2003) 
+- Side 3: positions 53-78 (numbers 2004-2029)
+
+So 2026 is at position 75 in ring 26, which puts it on side 3 at position 75-52 = 23 within that side.
+
+For any number in the middle of a side (not at corners), its 6 neighbors are:
+- 2 neighbors in the same ring (adjacent positions in the spiral)
+- 2 neighbors in the inner ring (ring 25)
+- 2 neighbors in the outer ring (ring 27)
+
+The adjacent numbers in ring 26 are 2025 and 2027.
+
+For the inner ring neighbors: Ring 25 has 6×25 = 150 numbers (from 1802 to 1951).
+For the outer ring neighbors: Ring 27 starts at 2108.
+
+In hexagonal grids, if a number N is at position p in ring r, its inner neighbors are approximately at positions around p×(r-1)/r in ring r-1, and outer neighbors at positions around p×(r+1)/r in ring r+1.
+
+For 2026 at position 75 in ring 26:
+- Inner ring positions ≈ 75×25/26 ≈ 72.1, so around positions 72-73 in ring 25
+- Ring 25 starts at 1802, so neighbors are around 1802+71=1873 and 1802+72=1874
+- Outer ring positions ≈ 75×27/26 ≈ 77.9, so around positions 77-78 in ring 27  
+- Ring 27 starts at 2108, so neighbors are around 2108+76=2184 and 2108+77=2185
+
+Therefore, the 6 neighbors of 2026 are: 2025, 2027, 1873, 1874, 2184, 2185.
+
+Sum = 2025 + 2027 + 1873 + 1874 + 2184 + 2185 = 12168
+----
+Usage(input=79, output=1346, details=None)

@@ -1,0 +1,128 @@
+First, let us pin down how the spiral is laid out.  From the snippet
+
+  …  5   4   3  …
+  …  6   1   2  …
+  …  7   8   9  …
+
+we see that  
+• 1 is at (0,0),  
+• 2 is at (1,0),  
+• 3 is at (1,1),  
+• 4 is at (0,1),  
+• 5 is at (−1,1),  
+and so on, with coordinates increasing “counterclockwise.”
+
+-------------------------------------------------------------------------------
+1) Locating 2026
+-------------------------------------------------------------------------------
+
+A standard fact (read off small cases) is that odd squares n² lie at the bottom‐right “corner” in this spiral at the coordinates
+
+  ( (n−1)/2,  −(n−1)/2 ).
+
+For example:  
+• 3² = 9 is at (1, −1),  
+• 5² = 25 is at (2, −2),  
+• 7² = 49 is at (3, −3), etc.
+
+Since 45² = 2025, that places 2025 at
+
+  ( (45−1)/2,  −(45−1)/2 ) = (22, −22).
+
+Hence 2025 is the end of the “ring” whose side is 45×45.  The very next integer, 2026, must begin the next ring (whose side is 47×47).  In this counterclockwise layout, after an odd square (an outer corner), we move one step “to the right” to start the next layer.  Consequently,
+
+  2026 is at (23, −22).
+
+-------------------------------------------------------------------------------
+2) The eight neighbors around 2026
+-------------------------------------------------------------------------------
+
+The eight neighbors of the grid‐cell (x,y) are the coordinates
+
+  (x−1, y−1),  (x, y−1),  (x+1, y−1),
+  (x+1, y    ),            (x+1, y+1),
+  (x,   y+1),  (x−1, y+1), (x−1, y   ).
+
+So for (23, −22), the neighbors are
+
+  1. (22, −23)
+  2. (23, −23)
+  3. (24, −23)
+  4. (24, −22)
+  5. (24, −21)
+  6. (23, −21)
+  7. (22, −21)
+  8. (22, −22).
+
+We must find which numbers the spiral assigns to these coordinates.
+
+-------------------------------------------------------------------------------
+3) Computing each neighbor’s value
+-------------------------------------------------------------------------------
+
+The spiral can be broken into “rings,” where ring r is all points whose maximum coordinate‐magnitude is r.  In particular,  
+• ring r has outer side‐length 2r+1,  
+• it runs from (2r−1)²+1 up to (2r+1)².
+
+Below is a concise lookup for each of the eight neighbors.
+
+────────────────────────────────────────────────────────────────────────
+(A)  (22, −23).  Here  r = max(|22|, |−23|) = 23,  so it lies in ring 23.  
+    Ring 23 runs from 2026 up to 47² = 2209.  
+    One finds (22, −23) very near the bottom edge of that ring.  
+    A careful step‐count around that ring shows (22, −23) = 2208.
+
+(B)  (23, −23).  Same ring 23, but actually the bottom‐right corner of it,  
+    i.e.  (23, −23) = (2×23+1)² = 47² = 2209.
+
+(C)  (24, −23).  Now r = 24;  that is ring 24, which begins at 47²+1=2210.  
+    In fact the “first coordinate” in ring‐24 is  (24, −23).  
+    Hence (24, −23) = 2210.
+
+(D)  (24, −22).  Still ring 24.  Moving one step “up” from the start of ring 24    
+    increases the label by 1, so (24, −22) = 2211.
+
+(E)  (24, −21).  Ring 24 again, two steps up from its start ⇒ 2212.
+
+(F)  (23, −21).  Here r = 23, so back to ring 23.  
+    Counting upward from (23, −22) = 2026 gives (23, −21) = 2027.
+
+(G)  (22, −21).  Now r = max(|22|, |−21|) = 22, so ring 22.  
+    Ring 22 starts at 43²+1 = 1849+1 = 1850,  
+    and its “first coordinate” is (22, −21), so that cell = 1850.
+
+(H)  (22, −22).  Also in ring 22.  
+    In fact for ring 22 the bottom‐right corner is (22, −22) = 45² = 2025.
+
+Putting these together:
+
+  (22, −23) → 2208
+  (23, −23) → 2209
+  (24, −23) → 2210
+  (24, −22) → 2211
+  (24, −21) → 2212
+  (23, −21) → 2027
+  (22, −21) → 1850
+  (22, −22) → 2025
+
+-------------------------------------------------------------------------------
+4) Summing them up
+-------------------------------------------------------------------------------
+
+Sum = 2208 + 2209 + 2210 + 2211 + 2212 + 2027 + 1850 + 2025.
+
+A convenient grouping is:
+
+• 2208 + 2212 = 4420  
+• 2209 + 2211 = 4420  
+• 4420 + 4420 = 8840  
+• Add 2210 ⇒ 11050  
+• Add 2027 ⇒ 13077  
+• Add 1850 ⇒ 14927  
+• Add 2025 ⇒ 16952  
+
+Hence the total is 16,952.
+
+Answer: 16952.
+----
+Usage(input=61, output=11592, details={'completion_tokens_details': {'reasoning_tokens': 10176}})

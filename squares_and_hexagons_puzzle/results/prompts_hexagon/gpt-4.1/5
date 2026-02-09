@@ -1,0 +1,263 @@
+Let's analyze the problem step by step. The key is to understand the layout of the **hexagonal spiral** and how numbers are assigned to positions, especially how to determine the neighbors of a given number.
+
+---
+
+## 1. **Understanding the layout**
+
+Let's write out the given part for clarity, aligning as a hex grid:
+
+```
+Row -2:     ... 14  4  3 10 ...
+Row -1:    .. 15  5  1  2  9 ...
+Row  0:     ... 16  6  7  8 ...
+```
+
+Notice:  
+- **1** is at the center.
+- The numbers spiral outward in a hexagonal pattern.
+
+In a **hexagonal spiral**, each "shell" around the center adds 6 more numbers than the previous shell did.
+- Shell 0 (center): \(1\)
+- Shell 1: \(2\) to \(7\) (6 numbers)
+- Shell 2: \(8\) to \(19\) (12 numbers)
+- Shell 3: \(20\) to \(37\) (18 numbers)
+- and so on.
+
+The total number of numbers up to and including shell \(k\) is:
+\[
+1 + 6 (1 + 2 + \cdots + k)
+= 1 + 6 \left(\frac{k(k+1)}{2}\right)
+= 1 + 3k(k+1)
+\]
+
+---
+
+## 2. **Shell placement**
+
+Given \(2026\), find which shell it is in:
+
+Set:
+\[
+n = 1 + 3k(k+1)
+\]
+We want: \( n < 2026 \leq n' \), where \( n \) is for shell \( (k-1) \) and \( n' \) is for shell \( k \).
+
+Let's solve for \( k \):
+
+\[
+1 + 3k(k+1) \geq 2026 \implies 3k^2 + 3k + 1 - 2026 \geq 0
+\]
+\[
+3k^2 + 3k - 2025 \geq 0
+\]
+
+Solve quadratic:
+\[
+k^2 + k - 675 \geq 0
+\]
+Quadratic formula:
+\[
+k = \frac{-1 \pm \sqrt{1 + 2700}}{2} = \frac{-1 \pm \sqrt{2701}}{2}
+\]
+\[
+\sqrt{2701} \approx 51.96
+\]
+So,
+\[
+k \approx \frac{-1 + 51.96}{2} \approx 25.48
+\]
+
+So, shell \(k = 25\) contains:
+
+Last number in shell 24:
+\[
+1 + 3 \times 24 \times 25 = 1 + 3 \times 600 = 1 + 1800 = 1801
+\]
+Thus, shell 25 starts at 1802 and ends at:
+\[
+1 + 3 \times 25 \times 26 = 1 + 3 \times 650 = 1 + 1950 = 1951
+\]
+WAIT: \(3 \times 25 \times 26 = 3 \times 650 = 1950\) so last is \(1 + 1950 = 1951\)
+
+But that would mean shell 25 only goes up to **1951**; but **2026** is larger. Let's check.
+
+Calculate until we pass 2026:
+
+- Shell \(k\) ends at \(1 + 3k(k+1)\).
+
+So,
+- For \(k=25\): \(1 + 3 \times 25 \times 26 = 1951\)
+- For \(k=26\): \(1 + 3 \times 26 \times 27 = 1 + 3 \times 702 = 1 + 2106 = 2107\)
+
+So:
+- Shell 25: 1802 to 1951
+- Shell 26: 1952 to 2107
+
+**2026 is in shell 26!**
+
+Start of shell 26: **1952**
+End of shell 26: **2107**
+Number of cells in shell 26: \(6 \times 26 = 156\)
+
+---
+
+## 3. **Position of 2026 in shell 26**
+
+\(2026 - 1952 + 1 = 75\): It is the 75th cell in shell 26.
+
+In the hex spiral, each shell is made of 6 edges, each with \(k\) cells.
+
+- Each side: 26 numbers (since \(k=26\)), but the first cell on each side is the *corner*, shared with last cell of previous side.
+
+To **map neighbors**, let's enumerate where \(2026\) is:
+
+- \#1: Starting corner (at \(1952\))
+- \#2–26: First edge
+- \#27: first corner
+- \#28–52: second edge, etc.
+
+**To which edge and position does 75 correspond?**
+- First cell of shell (corner): 1952
+- Edge 1: 1952–1977 (\(1952, 1953, \ldots, 1977\)) (\(1\) corner + \(25\) more = 26 total)
+- Corner at \(1977\) (\#26 in shell), next edge starts at 1978 (\#27)
+- Edge 2: 1978–2003 (\(1978, ..., 2003\)) (\(1978\) is corner, then edge to \(2003\), 1978–2003 inclusive = 26)
+- Next corner at \(2003\) (\#52 in shell), next edge at 2004 (\#53)
+- Edge 3: 2004–2029 (\(2004, ..., 2029\)), corner at \(2029\) (\#78 in shell)
+
+So **2026** is on the **third edge (third side), seven places before the corner (\#78)**.
+
+Counting:  
+- 1st edge: \#1–26 (\(1952–1977\))
+- 2nd edge: \#27–52 (\(1978–2003\))
+- 3rd edge: \#53–78 (\(2004–2029\))
+
+**2026 is the \((2026 - 2003) = 23\)rd step along the third edge (from its starting corner).**
+
+---
+
+## 4. **Finding its six neighbors**
+
+Each cell in the hex grid has 6 neighbors:
+
+- One _inwards_ (to shell 25)
+- One _forwards_ ("next" in shell 26)
+- One _backwards_ ("previous" in shell 26)
+- Two in the _inner shell_ (corners to inward neighbor)
+- Two in the _outer shell_ (in corners with outward neighbor)
+
+Because this spiral is regular, for non-corner cells (not at a vertex), the pattern is:
+
+For cell \( C \) at position \(n\) steps along an edge of shell \(k\),  
+- The number on inner shell:  
+   - shell \((k-1)\), on same edge, position \(n\)
+- The next and previous cells in shell \(k\): adjacent in the spiral sequence (2025 and 2027)
+- The two inner-shell diagonal neighbors: shell \(k-1\), positions \(n-1\) and \(n\) on that edge
+- The two outer-shell diagonal neighbors: shell \(k+1\), positions \(n\) and \(n-1\) on that edge
+
+Let's formalize the neighbor-finding.
+
+For cell at shell \(k\), edge \(e\) (0 to 5), offset \(n\) (from 0 to \(k-1\)):  
+- Its index in shell: \(i = e \cdot k + n + 1\) (1-based in shell, as discussed above)
+- Its absolute number:  
+\[
+N = 1 + 3k(k-1) + i
+\]
+Where \(i = e \cdot k + n + 1\).
+
+But let's just use our previously found positions for ease.
+
+**2026 is at:**
+- \(k=26\)
+- 3rd edge (\(e=2\))
+- On that edge, position \(n = 2026 - 2003 - 1 = 22\) (so 0-based)
+
+So its **6 neighbors** are:
+
+1. **Inner shell, same edge, same offset:**  
+   - Shell 25, edge 2, offset 22  
+   - Its number: the starting number for shell 25, edge 2, offset 22
+
+2. **Inner shell, same edge, offset 21** (previous along edge)  
+3. **Same shell, previous:** \(2025\)
+4. **Same shell, next:** \(2027\)
+5. **Outer shell, same edge, offset 22**
+6. **Outer shell, same edge, offset 23**
+
+---
+
+### Let's find starting numbers for shells
+
+**Shell 25:**
+- Starts at 1802
+- Each edge has 25 numbers (offset 0 to 24)
+- Edges: 0 to 5
+- For edge 2, offset 22:  
+\[
+\text{Start of shell} = 1802 \\
+\text{Start of edge 0: } 1802 \\
+\text{Start of edge 1: } 1802 + 25 = 1827 \\
+\text{Start of edge 2: } 1802 + 2 \times 25 = 1852 \\
+\]
+
+So, shell 25, edge 2, offset 22:  
+\(1852 + 22 = 1874\)
+
+**Shell 25, edge 2, offset 21:**  
+\(1852 + 21 = 1873\)
+
+**Same shell (26):**
+- Previous: \(2025\)
+- Next: \(2027\)
+
+**Outer shell (27):**
+- Shell 27 starts at: \(1 + 3 \times 27 \times 28 = 1 + 3 \times 756 = 1 + 2268 = 2269\)
+- Each edge: 27 numbers (\(k=27\)), offsets 0 to 26
+
+- **Start of edge 0:** 2269
+- **Edge 2:** \(2269 + 2 \times 27 = 2269 + 54 = 2323\)
+- Offset 22: \(2323 + 22 = 2345\)
+- Offset 23: \(2323 + 23 = 2346\)
+
+---
+
+## 5. **Neighbors of 2026**
+
+Summarize:
+1. **Inner shell (25), edge 2, offset 22:** **1874**
+2. **Inner shell (25), edge 2, offset 21:** **1873**
+3. **2025**
+4. **2027**
+5. **Outer shell (27), edge 2, offset 22:** **2345**
+6. **Outer shell (27), edge 2, offset 23:** **2346**
+
+---
+
+### **Sum of the six neighbors:**
+
+\[
+1873 + 1874 + 2025 + 2027 + 2345 + 2346
+\]
+
+Let’s compute:
+
+- \(1873 + 1874 = 3747\)
+- \(2025 + 2027 = 4052\)
+- \(2345 + 2346 = 4691\)
+
+Sum:
+\[
+3747 + 4052 = 7799 \\
+7799 + 4691 = 12490 \\
+\]
+
+**Final answer:**
+
+\[
+\boxed{12490}
+\]
+
+---
+
+### **The sum of all 6 neighbors of 2026 is \(\boxed{12490}\).**
+----
+Usage(input=71, output=2597, details={})

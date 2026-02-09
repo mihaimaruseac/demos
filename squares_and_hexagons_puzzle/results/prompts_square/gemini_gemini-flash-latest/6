@@ -1,0 +1,411 @@
+Here is a step-by-step solution to find the sum of the 8 neighbors of 2026 in the given spiral layout.
+
+## 1. Analyze the Spiral Structure and Locate the Centers
+
+The spiral is laid out on a square grid, and the numbers generally increase as we move outward in layers (or 'rings').
+
+We need to understand how the numbers fall onto specific locations, particularly the locations of the perfect squares, as these often mark the corners or centers of the sides of the square rings.
+
+### Identifying the $n$-th Ring and Perfect Squares
+
+Let $K$ be the number at the center of the grid, $K=1$.
+The $n$-th ring refers to the layer formed by numbers greater than $(2n-3)^2$ up to $(2n-1)^2$.
+
+The numbers located at the corners are always perfect odd squares: $1, 9, 25, 49, \dots, (2n-1)^2$.
+The numbers located along the axes (e.g., directly above, below, left, right of 1) are related to perfect even squares.
+
+Let's look at the location of the corners of the square rings:
+* **Ring 1:** $1$ (Center)
+* **Ring 2 (Side length 3):**
+    * Top-Right (TR): $9 = 3^2$
+    * Top-Left (TL): $7$
+    * Bottom-Left (BL): $5$
+    * Bottom-Right (BR): $3$
+* **Ring 3 (Side length 5):**
+    * TR: $25 = 5^2$
+    * TL: $21$
+    * BL: $17$
+    * BR: $13$
+* **Ring $n$ (Side length $2n-1$):**
+    * TR corner: $(2n-1)^2$
+    * TL corner: $(2n-1)^2 - (2n-2)$
+    * BL corner: $(2n-1)^2 - 2(2n-2)$
+    * BR corner: $(2n-1)^2 - 3(2n-2)$
+
+### Locating the Number 2026
+
+We need to find which ring 2026 belongs to. We look for the surrounding odd perfect squares.
+
+$$ \sqrt{2026} \approx 45.01 $$
+
+The odd squares near 2026 are:
+* $43^2 = 1849$
+* $45^2 = 2025$
+* $47^2 = 2209$
+
+The number $M = 2025$ is a perfect odd square. This is a very special number in the spiral.
+
+Since $M = 2025 = 45^2$, and $45 = 2(23) - 1$, this number corresponds to the **Top-Right (TR) corner** of the 23rd ring ($n=23$).
+
+## 2. Locate 2026 and its Neighbors
+
+We set the coordinates such that the center (1) is at $(0, 0)$.
+The $45^2$ number, 2025, is at the TR corner.
+Since $45 = 2N-1$, the coordinates of the corners of this ring are $(\pm N, \pm N)$, where $N=(45+1)/2 = 23$.
+So, $\mathbf{2025}$ is located at $(\mathbf{22, 22})$. (We use $N-1$ since 1 is at (0,0)).
+
+Wait, let's re-establish coordinates based on $2N-1$ square structure.
+$N=1$: $1$ at $(0, 0)$.
+$N=3$: $9$ at $(1, 1)$.
+$N=5$: $25$ at $(2, 2)$.
+$N=45$: $2025$ is at $(22, 22)$.
+
+The spiral moves counter-clockwise starting from the Bottom-Right (BR) corner.
+
+**Location of 2025:** $(22, 22)$ (TR Corner).
+
+**Location of 2026:**
+Since 2025 is the top-right corner, the next number, 2026, must be the number immediately to the left of 2025.
+$$ 2026 \text{ is located at } (22-1, 22) = \mathbf{(21, 22)} $$
+
+This means 2026 is on the **Top Edge** of the 23rd square ring.
+
+## 3. Determine the Neighbors of 2026
+
+Let $P = 2026$. $P$ is at $(x, y) = (21, 22)$.
+We are looking for the 8 neighbors surrounding $P$:
+
+| Position | Coordinates $(x', y')$ | Neighbor $N(x', y')$ |
+| :---: | :---: | :---: |
+| Above (N) | (21, 23) | $A$ |
+| Below (S) | (21, 21) | $B$ |
+| Left (W) | (20, 22) | $C$ |
+| Right (E) | (22, 22) | $D$ |
+| NW | (20, 23) | $E$ |
+| NE | (22, 23) | $F$ |
+| SW | (20, 21) | $G$ |
+| SE | (22, 21) | $H$ |
+
+We already know one neighbor: $D = 2025$.
+
+### A Key Property: Sum of Neighbors
+
+Let $P$ be a number located in the interior of a ring (not a corner).
+If $P$ is located at $(x, y)$, and the center of the spiral (1) is $C$.
+The sum of the 8 neighbors of $P$ is always $8P + 8(C)$, where $C$ is a constant related to the curvature of the spiral at $P$.
+However, the coordinates method is more robust for points near the edge or near perfect squares.
+
+Let $M = 45^2 = 2025$. The side length of this ring is $S = 45$.
+
+### Calculating the Neighbors
+
+**1. Neighbors on the current ring (Side 45):**
+The top edge goes from the TL corner $(22-43, 22) = (-21, 22)$ to the TR corner $(22, 22)$.
+
+* **D (Right):** $(22, 22)$. This is $M = \mathbf{2025}$.
+* **C (Left):** $(20, 22)$. This is $P+1 = \mathbf{2027}$.
+    (The numbers increase moving left along the top edge).
+
+**2. Neighbors below (Side 45, $y=21$):**
+These neighbors are on the ring *inside* the current one. This ring has a side length of $43$.
+The maximum number on this inner ring is $43^2 = 1849$.
+
+The location $(22, 21)$ is the coordinate directly below 2025. This location must be the number immediately preceding the TL corner of the previous ring, $43^2 + 1 = 1850$. No, that's not right.
+
+Let $M_{in} = 43^2 = 1849$. $M_{in}$ is at $(-21, 21)$.
+The coordinates of this ring go from $(-21, -21)$ to $(21, 21)$.
+
+* **H (SE):** $(22, 21)$.
+This point is one step outside the $43^2$ square. If we look at the path from 1849 (TL corner) down the left side, then along the bottom, then up the right side:
+$1849$ is at $(-21, 21)$.
+The path ends at $1849 + 4 \times 42 = 2017$.
+The number $2017$ is at $(21, 21)$. (BR corner of the inner ring, shifted up by 2).
+Let's check the coordinates of $43^2$:
+$43^2 = 1849$. $N=(43+1)/2 = 22$. $1849$ is at $(-21, 21)$. (TL corner).
+The numbers continue: $1849 \to 1850 \to \dots \to 1890$ (Bottom edge).
+The numbers continue: $1891 \to 1932$ (Left edge).
+The numbers continue: $1933 \to 1974$ (Top edge).
+The numbers continue: $1975 \to 2016$ (Right edge).
+$2016$ is at $(21, -21)$.
+
+Wait, the spiral direction implies $1849$ is the TL corner.
+$1849$ is at $(-(22-1), (22-1)) = (-21, 21)$.
+The path runs $1849 \to 1850 \to \dots$ (moves down the left side).
+
+Let's use the coordinates directly relative to the inner ring ($R_{in}, M_{in}=1849$).
+
+**Finding G (SW):** $(20, 21)$.
+$(20, 21)$ is on the top edge of the inner square ring, $R_{in}$.
+The top edge goes from $(-21, 21)$ (1849) to $(21, 21)$ ($1849 - 42 \times 2 = 1765$? No).
+
+The corners of the inner ring ($M_{in}=1849$ at TL corner) are:
+TL: $1849$ at $(-21, 21)$.
+BL: $1849 + 42 = 1891$ at $(-21, -21)$.
+BR: $1891 + 42 = 1933$ at $(21, -21)$.
+TR: $1933 + 42 = 1975$ at $(21, 21)$.
+The sequence stops at $2016 = 44^2 - 1$.
+
+*   $1849$ (TL) is at $(-21, 21)$.
+*   Numbers move down the Left side.
+*   Numbers move right along the Bottom side.
+*   Numbers move up the Right side.
+*   Numbers move left along the Top side.
+
+The Top side runs from $(21, 21)$ (1975) leftward towards $(-21, 21)$ (1849).
+The length of the top side is $42$.
+
+The point $(21, 21)$ holds 1975.
+The point $(20, 21)$ holds $1975 + 1 = \mathbf{1976}$. This is $G$.
+
+**Finding B (South):** $(21, 21)$.
+This point is the TR corner of the inner square ring.
+$B = \mathbf{1975}$.
+
+**Finding H (SE):** $(22, 21)$.
+This point is slightly trickier. It is outside $R_{in}$ but inside $R_{out}$.
+Let's look at $R_{out}$ (M=2025). The path moves counter-clockwise.
+$2025$ (TR, $(22, 22)$) is followed by $2026, 2027, \dots$ (Top edge).
+The previous number was $2024$, which is located at $(22, 21)$.
+$H = \mathbf{2024}$.
+
+**3. Neighbors above (Side 47, $y=23$):**
+These neighbors are on the ring *outside* the current one. This ring has a side length of $47$.
+The numbers start after $45^2 = 2025$.
+The maximum number on this outer ring is $47^2 = 2209$.
+
+The coordinate system for the outer ring goes from $(-23, -23)$ to $(23, 23)$.
+$2025$ is at $(22, 22)$.
+The path moves along the top edge towards the left.
+
+*   $2026$ is at $(21, 22)$.
+*   The TR corner of the outer ring is $47^2 = 2209$ at $(23, 23)$.
+*   The path starts with $2026$ moving towards the TL corner.
+*   The BR corner of the outer ring is $45^2 + 1 = 2026$? No, it's $2025 + 47+46+46+46$.
+
+Let's analyze the path of the outer ring $R_{out}$. Side length $S_{out}=47$.
+The numbers start at $M_{start} = 2025 + 1 = 2026$.
+
+The path starts immediately after 2025 (TR corner of $R_{in}$).
+$2026$ is at $(21, 22)$.
+The Top Edge runs from $2026$ to $2025 + 45 = 2070$.
+Wait, the corners define the segments.
+
+$47^2 = 2209$.
+TR corner: $2209$ at $(23, 23)$.
+TL corner: $2209 - 46 = 2163$ at $(-23, 23)$.
+BL corner: $2163 - 46 = 2117$ at $(-23, -23)$.
+BR corner: $2117 - 46 = 2071$ at $(23, -23)$.
+
+The segment before the BR corner: $2070$ is at $(23, -22)$.
+$2026$ is the first number in the sequence (at $(21, 22)$). This must be incorrect based on the typical counter-clockwise spiral pattern starting at BR.
+
+Let's re-examine the spiral given:
+1 is center.
+2 is Right (E). (0, 1) or (1, 0)? Let's use (x, y). 1=(0,0).
+2: (1, 0)
+3: (1, 1) (BR corner)
+4: (0, 1)
+5: (-1, 1) (BL corner)
+6: (-1, 0)
+7: (-1, -1) (TL corner)
+8: (0, -1)
+9: (1, -1) (TR corner)
+
+The standard configuration has $3^2=9$ at TR, but the image shows 9 at BR.
+Let's fix the coordinate system based on the image:
+
+| Number | Coordinate (x, y) | Notes |
+| :---: | :---: | :---: |
+| 1 | (0, 0) | Center |
+| 2 | (1, 0) | |
+| 3 | (1, 1) | BR Corner, $3^2 - 6$ |
+| 4 | (0, 1) | |
+| 5 | (-1, 1) | BL Corner, $3^2 - 4$ |
+| 6 | (-1, 0) | |
+| 7 | (-1, -1) | TL Corner, $3^2 - 2$ |
+| 8 | (0, -1) | |
+| 9 | (1, -1) | TR Corner, $3^2$ |
+
+This changes the structure! Perfect squares $(2n-1)^2$ are now at the **TR corner (y negative)**.
+
+$M = 2025 = 45^2$. This is the TR corner.
+$45 = 2(23) - 1$. $N=23$. $x_{max} = 22, y_{min} = -22$.
+$$\mathbf{2025} \text{ is at } (\mathbf{22, -22})$$
+
+**Locating 2026:**
+The spiral moves counter-clockwise.
+From 9 (1, -1), the next numbers 10, 11, ... move up the right side.
+The $45^2$ square (2025) is at $(22, -22)$. The next numbers move up the right side (increasing y).
+$$\mathbf{2026} \text{ is at } (22, -22 + 1) = \mathbf{(22, -21)}$$
+
+2026 is located on the **Right Edge** of the square formed by the numbers up to $47^2$.
+Let $P = 2026$. $P$ is at $(22, -21)$.
+
+## 4. Recalculate Neighbors based on Correct Spiral Orientation
+
+$P = 2026$ is at $(22, -21)$.
+
+**1. Neighbors on the current ring ($45^2$ ring, $R_{in}$):**
+The side length $S_{in} = 44$. The numbers define the square up to $2025$.
+The right side runs from $2025$ (TR, $22, -22$) up to $2025 + 44 = 2069$ (BR, $22, 22$).
+Wait, the corners are defined by odd squares:
+$23^2 = 529$. $N=12$. $529$ at $(11, -11)$.
+The side length is $S = 2N-1 = 23$.
+
+Let $K=23$. $45 = 2K-1$. The square defined by $45^2$ has coordinates $\pm (K-1)$. $K-1=22$.
+
+$M = 2025$ (TR) at $(22, -22)$.
+$M$ runs up the Right side to the BR corner:
+BR Corner: $M + 44 = 2069$ at $(22, 22)$.
+
+*   **B (South):** $(22, -22)$. This is $M = \mathbf{2025}$.
+*   **A (North):** $(22, -20)$. This is $P+1 = \mathbf{2027}$.
+
+**2. Neighbors on the next outer ring ($47^2$ ring, $R_{out}$):**
+$M_{out} = 47^2 = 2209$. $N=24$. $x_{max}=23, y_{max}=23$.
+The numbers start at $2026$ (Wait, $2026$ is on the $45^2$ ring if $45^2$ is the corner. The rings are defined by $(2n+1)^2$).
+
+Let's assume the rings are defined by the square enclosing $N$.
+$R_{23}$ (Max 2025): Coordinates $\pm 22$. $P=2026$ is outside this square.
+
+$R_{24}$ (Max 2209): Coordinates $\pm 23$.
+
+$2025$ is at $(22, -22)$.
+$2026$ is at $(22, -21)$.
+
+The sequence continues counter-clockwise:
+$2027$ is at $(22, -20)$.
+...
+$2069$ (BR) is at $(22, 22)$.
+$2070$ (Moves Left, $y=22$ edge) is at $(21, 22)$.
+
+We need neighbors $(x', y')$ of $P(22, -21)$.
+
+*   **D (East):** $(23, -21)$. This is on $R_{24}$.
+    $2209$ (TR) is at $(23, -23)$.
+    The path runs from $2209$ up the Right side.
+    $2209, 2210, 2211, \dots$
+    The numbers decrease as we move counter-clockwise from the TR corner.
+
+Let's find the location of the preceding square: $M_{prev} = 43^2 = 1849$.
+$1849$ is the TR corner of $R_{22}$, at $(21, -21)$.
+
+*   **C (West):** $(21, -21)$. This is $M_{prev} = \mathbf{1849}$.
+
+Now consider $R_{24}$ (coordinates $\pm 23$).
+The numbers are $2026, 2027, \dots, 2209$.
+
+$2026, 2027, \dots, 2069$ fill the right edge $x=22$.
+$2070, 2071, \dots, 2113$ fill the top edge $y=22$.
+$2114, 2115, \dots, 2157$ fill the left edge $x=-22$.
+$2158, 2159, \dots, 2201$ fill the bottom edge $y=-22$.
+
+We are looking for $(23, -21)$. This point is outside the $45^2$ square. It must be a number larger than 2025.
+
+Let $M_{out} = 47^2 = 2209$. $M_{out}$ is at $(23, -23)$.
+The sequence runs backward from $M_{out}$:
+$2208$ is at $(23, -22)$.
+$2207$ is at $(23, -21)$.
+*   **D (East):** $(23, -21)$. $D = \mathbf{2207}$.
+
+*   **F (NE):** $(23, -20)$. $2207 - 1 = \mathbf{2206}$.
+
+*   **H (SE):** $(23, -22)$. $2207 + 1 = \mathbf{2208}$.
+
+**3. Neighbors involving the corners/boundary:**
+We need the remaining diagonal neighbors relative to $P(22, -21)$.
+
+*   **G (SW):** $(21, -22)$. This is on $R_{23}$.
+    $2025$ is at $(22, -22)$.
+    The numbers decrease moving clockwise along the bottom edge from $2025$.
+    The bottom edge runs from $2025$ towards the BL corner.
+    $2025$ is $M$. $M-1 = 2024$ at $(21, -22)$.
+    $G = \mathbf{2024}$.
+
+*   **E (NW):** $(21, -20)$. This is on $R_{23}$.
+    $2026$ is at $(22, -21)$.
+    $2027$ is at $(22, -20)$.
+    The top edge of $R_{22}$ (numbers ending at 1849) runs along $y=-21$.
+    The number at $(21, -21)$ is 1849.
+
+    $R_{23}$ numbers run clockwise on the inner perimeter of $R_{24}$.
+    $2025$ is at $(22, -22)$.
+    $2026$ is at $(22, -21)$.
+    $2027$ is at $(22, -20)$.
+
+    The number at $(21, -20)$ must be adjacent to the number at $(21, -21) = 1849$.
+    The ring $R_{22}$ (up to 1849) ends at $(21, -21)$.
+    The numbers start moving up the right edge ($x=21$).
+    The numbers run $1849, 1850, \dots, 1891$ (up to BL corner).
+
+    Let's check the right side of $R_{22}$ (y from $-21$ to $21$).
+    The TR corner of $R_{21}$ is $41^2 = 1681$ at $(20, -20)$.
+    The numbers $1682, \dots, 1849$.
+
+    Let's find the numbers around 1849 (at $(21, -21)$, TR of $R_{22}$).
+    1849 is followed by $1850$ at $(21, -20)$.
+    $E = \mathbf{1850}$.
+
+---
+
+## 5. Summary of Neighbors
+
+$P = 2026$.
+
+| Neighbor | Location (x, y) | Value |
+| :---: | :---: | :---: |
+| A (N) | (22, -20) | 2027 |
+| B (S) | (22, -22) | 2025 |
+| C (W) | (21, -21) | 1849 |
+| D (E) | (23, -21) | 2207 |
+| E (NW) | (21, -20) | 1850 |
+| F (NE) | (23, -20) | 2206 |
+| G (SW) | (21, -22) | 2024 |
+| H (SE) | (23, -22) | 2208 |
+
+## 6. Calculate the Sum
+
+Sum $S = A + B + C + D + E + F + G + H$
+$$ S = (2027 + 2025) + (1849 + 2207) + (1850 + 2206) + (2024 + 2208) $$
+
+Group terms to simplify addition:
+1. $2027 + 2025 = 4052$
+2. $1849 + 2207 = (2028 - 179) + (2028 + 179) = 4056$
+3. $1850 + 2206 = (2028 - 178) + (2028 + 178) = 4056$
+4. $2024 + 2208 = (2028 - 4) + (2028 + 180) = 4232$
+
+Let's re-group by pairing numbers related to 2026:
+$$ S = (2026+1) + (2026-1) + 1849 + 2207 + 1850 + 2206 + 2024 + 2208 $$
+$$ S = 4052 + (1849 + 1850) + (2207 + 2206 + 2024 + 2208) $$
+
+Let $P=2026$.
+$$ S = 2P + (P-177) + (P+181) + (P-176) + (P+180) + (P-2) + (P+182) $$
+This calculation is becoming overly complex. Let's use the sums calculated above.
+
+$$ S = 4052 + 4056 + 4056 + 4232 $$
+$$ S = 8108 + 8288 $$
+$$ S = 16396 $$
+
+---
+## Verification Check
+
+A known property for numbers $P$ well inside the spiral is that the sum of the 8 neighbors is $8P + 8$.
+If $P=2026$, $8P = 16208$. $8P+8 = 16216$.
+Since 2026 is close to the corner $2025$ and lies on the outer edge of its ring definition, we expect a deviation from $8P+8$.
+
+Let's check the calculation of the pairs again, relating them to $4052 = 2 \times 2026$:
+
+1. $A+B = 2027 + 2025 = 4052$ (Neighbors on $x=22$ line)
+2. $C+G = 1849 + 2024 = 3873$ (Neighbors on $y=-22$ line, $x=21$)
+3. $D+H = 2207 + 2208 = 4415$ (Neighbors on $x=23$ line, $y=-21, -22$)
+4. $E+F = 1850 + 2206 = 4056$ (Neighbors on $y=-20$ line, $x=21, 23$)
+
+Total Sum $S = 4052 + 3873 + 4415 + 4056$
+$$ S = 7925 + 8471 $$
+$$ S = 16396 $$
+
+The result is consistent through two methods of grouping.
+
+The sum of all 8 neighbors of 2026 is 16396.
+----
+Usage(input=62, output=6984, details={'candidatesTokenCount': 6984, 'promptTokensDetails': [{'modality': 'TEXT', 'tokenCount': 62}]})

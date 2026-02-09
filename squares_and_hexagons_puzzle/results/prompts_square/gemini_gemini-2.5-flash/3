@@ -1,0 +1,117 @@
+The problem asks for the sum of the 8 neighbors of the number 2026 in a specific spiral grid.
+
+First, let's understand the coordinate system and the pattern of the spiral.
+Let (0,0) be the position of the number 1.
+The spiral expands outwards:
+(0,0) = 1
+(1,0) = 2
+(1,1) = 3
+(0,1) = 4
+(-1,1) = 5
+(-1,0) = 6
+(-1,-1) = 7
+(0,-1) = 8
+(1,-1) = 9
+
+Let K be the "layer" of a number, defined as K = max(|x|, |y|).
+- Layer K=0 has 1 number: 1 at (0,0).
+- Layer K=1 has numbers 2 to 9. The square has side length 2K+1 = 3.
+- The largest number in a square of side length (2K+1) is (2K+1)^2. This number is always at (K, -K) (bottom-right corner).
+  For K=1, N(1,-1) = (2*1+1)^2 = 9. This matches the pattern.
+  For K=2, N(2,-2) = (2*2+1)^2 = 25.
+
+The numbers in layer K range from (2K-1)^2 + 1 to (2K+1)^2.
+Let N_K_start = (2K-1)^2 + 1. This is the first number in layer K.
+Let N_K_max = (2K+1)^2. This is the last number in layer K.
+
+Let's find the coordinates of N = 2026.
+We need to find K such that (2K-1)^2 < 2026 <= (2K+1)^2.
+sqrt(2026) approx 45.01.
+So, (2K+1) must be at least 45.01.
+If 2K+1 = 45, then K=22.
+N_22_max = (2*22+1)^2 = 45^2 = 2025.
+Since 2026 > 2025, 2026 belongs to the next layer, K=23.
+
+For K=23:
+N_23_max = (2*23+1)^2 = 47^2 = 2209.
+N_23_start = (2*23-1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026.
+So, 2026 is the very first number in layer K=23.
+
+Now, let's determine the coordinates of N_K_start.
+The number (2(K-1)+1)^2 = (2K-1)^2 is at (K-1, -(K-1)). For K=23, this is 2025 at (22, -22).
+From (22, -22), the spiral moves right to start layer K=23.
+So, N_23_start = 2026 is at (22+1, -22) = (23, -22).
+Let (x_0, y_0) = (23, -22).
+
+Now we need to find the 8 neighbors of (23, -22) and their values.
+The general formulas for a number N(x,y) at coordinates (x,y) within layer K:
+Let N_prev_max = (2K-1)^2.
+1. Starting point for layer K: (K, -(K-1)) has value N_prev_max + 1.
+   Path upwards along x=K (y increasing): N(K, y) = N_prev_max + 1 + (y - (-(K-1))) = N_prev_max + y + K.
+   This path goes from y = -(K-1) to y = K.
+   At (K,K), N(K,K) = N_prev_max + 2K = (2K-1)^2 + 2K = 4K^2-2K+1.
+
+2. Path leftwards along y=K (x decreasing): N(x, K) = N(K, K) + (K-x).
+   This path goes from x = K to x = -K.
+   At (-K,K), N(-K,K) = N(K,K) + 2K = (2K-1)^2 + 4K = 4K^2+1.
+
+3. Path downwards along x=-K (y decreasing): N(-K, y) = N(-K, K) + (K-y).
+   This path goes from y = K to y = -K.
+   At (-K,-K), N(-K,-K) = N(-K,K) + 2K = (2K-1)^2 + 6K = 4K^2+2K+1.
+
+4. Path rightwards along y=-K (x increasing): N(x, -K) = N(-K, -K) + (K+x).
+   This path goes from x = -K to x = K.
+   At (K,-K), N(K,-K) = N(-K,-K) + 2K = (2K-1)^2 + 8K = (2K+1)^2.
+
+Let's find the values of the 8 neighbors of (23, -22).
+K_0 = 23 (layer of 2026). N_0 = 2026.
+
+1. Neighbor (24, -22): max(|24|,|-22|) = 24, so K=24.
+   This is on the upward path (x=K) for K=24. N_prev_max = (2*24-1)^2 = 47^2 = 2209.
+   N(24, -22) = N_prev_max + (-22) + 24 = 2209 + 2 = 2211.
+
+2. Neighbor (22, -22): max(|22|,|-22|) = 22, so K=22.
+   This is the bottom-right corner (K,-K) for K=22.
+   N(22, -22) = (2*22+1)^2 = 45^2 = 2025.
+
+3. Neighbor (23, -21): max(|23|,|-21|) = 23, so K=23.
+   This is on the upward path (x=K) for K=23. N_prev_max = (2*23-1)^2 = 45^2 = 2025.
+   N(23, -21) = N_prev_max + (-21) + 23 = 2025 + 2 = 2027.
+
+4. Neighbor (23, -23): max(|23|,|-23|) = 23, so K=23.
+   This is the bottom-right corner (K,-K) for K=23.
+   N(23, -23) = (2*23+1)^2 = 47^2 = 2209.
+
+5. Neighbor (24, -21): max(|24|,|-21|) = 24, so K=24.
+   This is on the upward path (x=K) for K=24. N_prev_max = (2*24-1)^2 = 47^2 = 2209.
+   N(24, -21) = N_prev_max + (-21) + 24 = 2209 + 3 = 2212.
+
+6. Neighbor (24, -23): max(|24|,|-23|) = 24, so K=24.
+   This is the starting point (K, -(K-1)) for K=24.
+   N(24, -23) = (2*24-1)^2 + 1 = 47^2 + 1 = 2209 + 1 = 2210.
+
+7. Neighbor (22, -21): max(|22|,|-21|) = 22, so K=22.
+   This is the starting point (K, -(K-1)) for K=22.
+   N(22, -21) = (2*22-1)^2 + 1 = 43^2 + 1 = 1849 + 1 = 1850.
+
+8. Neighbor (22, -23): max(|22|,|-23|) = 23, so K=23.
+   This is on the rightward path (y=-K) for K=23. N(-K,-K) = (2*23-1)^2 + 6*23 = 45^2 + 138 = 2025 + 138 = 2163.
+   N(22, -23) = N(-K,-K) + (K+x) = 2163 + (23+22) = 2163 + 45 = 2208.
+   Alternatively, using N(x, -K) = (2K-1)^2+7K+x: N(22, -23) = 45^2 + 7*23 + 22 = 2025 + 161 + 22 = 2208.
+
+The 8 neighbor values are:
+1. 2211
+2. 2025
+3. 2027
+4. 2209
+5. 2212
+6. 2210
+7. 1850
+8. 2208
+
+Sum of these values:
+2211 + 2025 + 2027 + 2209 + 2212 + 2210 + 1850 + 2208 = 16952.
+
+The final answer is $\boxed{16952}$.
+----
+Usage(input=62, output=25173, details={'candidatesTokenCount': 2449, 'promptTokensDetails': [{'modality': 'TEXT', 'tokenCount': 62}], 'thoughtsTokenCount': 22724})

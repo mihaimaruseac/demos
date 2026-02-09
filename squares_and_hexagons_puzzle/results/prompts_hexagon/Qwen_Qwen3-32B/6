@@ -1,0 +1,635 @@
+<think>
+Okay, so I need to figure out the sum of all six neighbors of the number 2026 on this hexagonal grid spiral. Let me start by understanding the structure of the spiral. 
+
+First, the numbers are arranged in a spiral on a hexagonal grid. Unlike a square spiral, a hexagonal spiral has six directions, which probably means that each number (after the first few) has six neighbors. The example given shows numbers 1 in the center, then layers around it. Let me try to visualize the layers.
+
+Looking at the example provided:
+
+... 14  4   3  10 ...
+.. 15  5   1   2   9 ...
+... 16  6   7   8 ...
+
+But it's kind of hard to parse the hexagonal layout from text. Let me try to reconstruct the spiral step by step. In a hexagonal grid, each layer adds rings around the center. The first ring (layer 0) is just the center number 1. Then the first layer (layer 1) around it would have 6 numbers, forming a hexagon. The second layer (layer 2) would have another set of numbers, and so on.
+
+In a hexagonal spiral, the number of elements in each ring increases by 6 as you go outward. Each ring n (starting from 0) has 6*n numbers. Wait, let me verify that. For layer 1 (the first ring around center), n=1, so 6*1=6 numbers. The total numbers up to layer 1 is 1 + 6 = 7. For layer 2, adding 6*2=12 numbers, total numbers up to layer 2 is 1 + 6 + 12 = 19, and so on. 
+
+But let me check with the example given. The example shows numbers up to maybe around 16. Let's see:
+
+Starting from 1 at the center.
+
+Layer 1: numbers 2 to 7. But looking at the given example, numbers 2 and 9 are adjacent. Wait, maybe my initial thought is incorrect.
+
+Alternatively, maybe the formula for the total numbers up to ring n is 1 + 6*(1 + 2 + ... +n) = 1 + 6*(n(n+1)/2) = 1 + 3n(n+1). Let me check for n=1, it's 1 + 3(1)(2) = 7, which would mean numbers 1 through 7. The first ring around the center is 6 numbers: 2-7. For n=2, total numbers would be 1 + 3*2*3 = 19, so numbers up to 19. 
+
+Looking at the example given, the numbers go up to 16 in the sample. So maybe each ring adds numbers in a spiral around? Let me try to reconstruct.
+
+Let me think of coordinates. In a hexagonal grid, coordinates can be represented in axial or cube coordinates. However, maybe for simplicity, since the problem is about numbers, I need to find a formula for the neighbors of a given number.
+
+Alternatively, perhaps I need to figure out in which layer the number 2026 resides, then find its position in that layer, and then determine its neighbors.
+
+First step: Determine which layer 2026 is in. Let's denote layer 0 as containing just 1. The total numbers up to layer n is 1 + 3n(n+1). Let me solve for n in 1 + 3n(n+1) ≥ 2026.
+
+So:
+
+3n(n + 1) ≥ 2025
+
+=> n(n + 1) ≥ 675
+
+Find n such that this holds. Let me approximate:
+
+n² ≈ 675 => n ≈ sqrt(675) ≈ 25.98. Try n=25: 25*26=650 < 675.
+
+n=26: 26*27=702 ≥ 675. Therefore, 2026 is in layer 26.
+
+Wait, but layers start at 0. Wait, if total numbers up to layer n is 1 + 3n(n+1). For n=25: total numbers are 1 + 3*25*26 = 1 + 1950 = 1951. For n=26: 1 + 3*26*27 = 1 + 3*702 = 1 + 2106 = 2107. Therefore, the numbers in layer 26 are from 1952 to 2107. Since 2026 is within this range, yes, 2026 is in layer 26.
+
+Now, need to figure out where exactly in layer 26 is 2026 located. The starting number of layer 26 is 1952. Therefore, the position within the layer is 2026 - 1952 + 1 = 2026 - 1952 = 74, so 74th number in layer 26.
+
+But since each layer has 6*n numbers, where n is the layer number. Wait, layer 26 has 6*26=156 numbers. So each side of the hexagon (layer) has 26 numbers? Wait, no. In a hexagonal grid, each ring has six sides, each side having n numbers for layer n. Wait, for example, the first ring (layer 1) has 6 numbers, one on each side. The second ring (layer 2) has 6*2=12 numbers, so each side has 2 numbers. So, in general, each layer has 6n numbers, each side of the hexagon having n numbers.
+
+Therefore, in layer 26, each side has 26 numbers. Therefore, the 74th number in the layer would be on a particular side. Let me see. Since each side has 26 numbers, the 74th number is 74 / 26 = 2.846... So 2 full sides (2*26=52 numbers), with 74 - 52 = 22 numbers into the third side. Therefore, it is on the third side of the hexagon, 22 steps from the beginning of that side.
+
+But to figure out the neighbors, I need to know the positions of the neighbors. However, perhaps there's a formula to find the neighbors based on the number's position in the layer and direction.
+
+Alternatively, let me think about the coordinates. Let me consider the axial coordinate system for hexagons. However, maybe it's easier to think in terms of steps from the center. Alternatively, perhaps I can find the distance from the center (the layer number) and then figure out the coordinates.
+
+Alternatively, perhaps I can look at how numbers are placed in each layer.
+
+Another approach: Let me think of the numbers on the axes.
+
+In a hexagonal spiral, there are six directions. For each ring, the numbers on each "arm" of the hexagon can be calculated. For example, the numbers at the end of each arm of the ring are given by 1 + 3n(n+1). Wait, for layer n, the end of each arm is at 1 + 3n(n + 1). For example, n=1: 1 + 3*1*2=7, which is the last number of layer 1. Similarly, n=2: 1 + 3*2*3=19. Therefore, numbers at the end of each arm in layer n are equal for each arm. However, in between those end numbers, there are the numbers along each side.
+
+Alternatively, maybe the numbers on each side can be calculated. For example, moving from one corner to another on a layer.
+
+Let me consider layer n. Each side has n numbers. The first side starts at 1 + 3n(n-1) + 1? Wait, total numbers up to layer n-1 is 1 + 3(n-1)n. Then layer n starts at that +1. So starting number is 2 + 3(n-1)n.
+
+Wait, total numbers up to layer n is 1 + 3n(n+1). Therefore, numbers in layer n is total(n) - total(n-1) = [1 + 3n(n+1)] - [1 + 3(n-1)n] = 3n(n + 1) - 3(n-1)n = 3n [ (n + 1) - (n -1) ] = 3n*(2) = 6n. Which matches, so each layer n has 6n numbers. Therefore, for layer n, starting number is total(n-1) + 1 = [1 + 3(n-1)n] + 1 = 2 + 3(n-1)n. For example, layer 1: 2 + 3(0)(1) = 2. Correct, layer 1 starts at 2 and has 6 numbers: 2-7. For layer 2, starting at 2 + 3(1)(2) = 2 + 6 = 8. Indeed, numbers 8 to 8 + 11 = 19. Which matches with earlier example.
+
+Therefore, for layer 26, starting number is 2 + 3*(25)*(26) = 2 + 3*650 = 2 + 1950 = 1952. Which matches with earlier calculation.
+
+Now, we have number 2026 is the 75th number in layer 26 (since 2026 - 1952 + 1 = 75). Wait, earlier I thought 2026 - 1952 was 74, so adding 1 makes it 75th? Wait, let me recalculate:
+
+Starting number of layer 26 is 1952. The numbers in the layer go from 1952 to 1952 + 6*26 - 1 = 1952 + 156 - 1 = 1952 + 155 = 2107. Therefore, position of 2026 is 2026 - 1952 + 1? Wait, if the first number is 1952, then 1952 is position 1, so position k in the layer is number = 1952 + k - 1. Therefore, k = 2026 - 1952 + 1 = 75. So 75th position in layer 26.
+
+Each side of the hexagon has 26 numbers. Therefore, each side corresponds to 26 positions. Therefore, 75 divided by 26 is 2 full sides (2*26=52) with remainder 75 - 52 = 23. Therefore, position 75 is on the third side, 23rd position on that side.
+
+So, in terms of the six sides of the hexagon: each side can be labeled from 0 to 5. The first side (side 0) has positions 1-26, side 1: 27-52, side 2: 53-78, side 3: 79-104, side 4: 105-130, side 5: 131-156. Wait, 75 is in side 2, positions 53-78 (since 53 + 22 = 75). Wait, position 53 is the first position on side 2, then 53 + 22 = 75. So that's the 23rd position on side 2.
+
+Now, to figure out the neighbors of 2026. The neighbors in a hexagonal grid are the numbers that are adjacent in the six directions. Depending on the position in the layer (side and position), the neighbors can be calculated.
+
+But perhaps we need to figure out the coordinates of 2026, then get the neighbors based on those coordinates. Alternatively, perhaps there's a formula for neighbors based on the layer and position.
+
+Alternatively, let me think about how the numbers progress in the spiral.
+
+First, let me note that in a hexagonal spiral, moving from one ring to another, each layer is built by moving in six directions. The exact direction might depend on the side of the hexagon. Maybe each side corresponds to a direction. 
+
+Alternatively, think of the movement when constructing the spiral. Starting at 1, moving outwards. Each layer is added by going around the previous layer. 
+
+But maybe it's complicated. Let me think of each side of the hexagon.
+
+For example, consider layer n, side m. Each side goes from a starting number to an end number. For example, in layer 26, side 0 starts at 1952 and ends at 1952 + 26 - 1 = 1977. Side 1 would start at 1978 and end at 1978 + 25 = 2003. Wait, because the first side has 26 numbers, then the next sides? Wait, each side has exactly n numbers. So for layer n, each side has n numbers. But when moving along the sides, when you start a new side, the next side starts at the previous end + 1. Therefore, side 0: positions 1-26, side 1: 27-52, side 2: 53-78, etc. Therefore, the 75th position is on side 2 (since 53-78 is side 2: 26 numbers). Position 75 is 75 - 52 = 23rd position on side 2.
+
+Now, in terms of movement, when you are moving along a side, what is the direction? Let me think about how the spiral is constructed. For example, starting from the center:
+
+Layer 0: [1]
+
+Layer 1: moving around 1 in six directions. Let me imagine starting at 1, moving right (direction 0) to 2, then moving in direction 1 (let's say up-right) to 3, then direction 2 (up-left) to 4, then direction 3 (left) to 5, direction 4 (down-left) to 6, direction 5 (down-right) to 7, then back to 1? Not sure. The exact directions might be complex.
+
+Alternatively, maybe the numbers on each side of the hexagon follow a particular mathematical pattern. For example, the numbers on each side can be described by quadratic functions. 
+
+In square spirals, the numbers on the diagonals are given by formulas. Maybe in hexagonal spirals, similar things happen. 
+
+Alternatively, perhaps the numbers at the end of each side of the hexagon in layer n are given by certain values, and numbers in between can be found by interpolation.
+
+For example, in layer n, each side has numbers from some starting value to some ending value. The starting value of side 0 is S = total(n-1) + 1 = 1 + 3(n-1)n + 1? Wait earlier we had starting number for layer n is 2 + 3(n-1)n. Which for layer n is 1952 when n=26.
+
+But in any case, each side of the hexagon in layer n is moving in a particular direction. So if we can figure out what the numbers adjacent to a number on a side are, we can find the neighbors.
+
+So, for example, take a number on side m of layer n. Its neighbors would be:
+
+- The previous number on the same side (if not at the start of the side)
+- The next number on the same side (if not at the end of the side)
+- Numbers from the previous and next sides?
+
+Wait, in a hexagonal grid, each hexagon has neighbors in six directions. Depending on the position, the neighbors can be adjacent in the same layer or in other layers.
+
+But since we are dealing with a spiral, the neighbors can be:
+
+- Along the same side (previous and next)
+- At the corners (connecting to other sides)
+- From the inner layer or outer layer.
+
+But since 2026 is in layer 26, its neighbors can be in layer 25, 26, or 27.
+
+But perhaps it's easier to find formulas.
+
+Alternatively, here's an idea: For a given number in the spiral, we can find its neighbor in each direction by understanding how the numbers increase in those directions.
+
+However, without knowing the exact orientation of the hexagonal grid, it's challenging. Maybe we can look for patterns in the given example.
+
+Looking at the example:
+
+... 14  4   3  10 ...
+.. 15  5   1   2   9 ...
+... 16  6   7   8 ...
+
+Let me try to reconstruct the coordinates. Let me assume that 1 is at the center.
+
+Then, in the second row (middle row), we have 15, 5, 1, 2, 9. So 1 is between 5 and 2. Looking at the first row: ... 14, 4, 3, 10 ... and the next row: ... 16, 6, 7, 8 ... 
+
+So, going clockwise around 1, the numbers go 2, 9, 8, 7, 6, 15, 14, 4, 3, 10... Wait, maybe not. Let me try to map them.
+
+From 1, if I go right, I get to 2. Going up-right (assuming the hexagonal directions), maybe I get to 3? From 1, up-right is 3, but in the example above, above 1 is ... 14 4 3... So 3 is above 1? Maybe not. It's a bit confusing from text.
+
+Alternatively, let's note the neighbors of 1. In the example, the neighbors of 1 are 2, 5, 4, 6, 7, 3? Looking at the given numbers:
+
+Looking directly to the right of 1 is 2. To the upper right of 1 is 3? To the upper left is 4? To the left is 5? Lower left is 6 and lower right is 7? But need to reconcile with the numbers given.
+
+In the example:
+
+... 14  4   3  10 ...
+.. 15  5   1   2   9 ...
+... 16  6   7   8 ...
+
+So above the middle row (second row) is the first row: ...14 4 3 10... To the upper left of 1 is 4, upper right is 3? Then to the left of 1 is 5, right is 2. Then lower left is 6 and lower right is 9? Wait, in the third row: ...16 6 7 8... So below 1 is 6? Wait, in the third row, it's ... 16 6 7 8 ..., so if the middle row is ...15 5 1 2 9..., then the third row is below that. So below 1 would be 6? So neighbors of 1: 2 (right), 9 (lower right), 6 (lower left), 5 (left), 4 (upper left), 3 (upper right). So yes, six neighbors.
+
+Now, for example, the number 2 is next to 1 (to the right). Its neighbors would be in the directions: left (1), upper right (maybe 9?), lower right (something?), upper left (something?), lower left (something?), and another direction?
+
+But maybe this is too vague. Let me check the example numbers. For instance, number 2 is next to 1 (left), and then what's the rest? In the middle row, next to 2 is 9. In the row above, ... 3 10 ... but next to 2? To the upper right of 2 would be a number. To the lower right of 2 would be in the next row? Let me see:
+
+The middle row is part of ...15 5 1 2 9...
+
+First row above: ...14 4 3 10...
+
+Third row below: ...16 6 7 8...
+
+So upper left of 2 would be part of first row... To the upper left of 2 is 3? Because directly above 1 is 4 and 3? Wait, if 2 is to the right of 1, then upper left of 2 would be above and to the left? Maybe 3? Then upper right of 2 would be... Maybe 10? To the right of 3 is 10. Then lower right of 2 would be in the third row, to the right? The third row has ...6 7 8..., so under 2 would be 8? Wait, but in the third row, it's ... 16 6 7 8 ... So if the middle row is ... 1 2 9 ..., then under 1 is 6, under 2 is 7, under 9 is 8? Then the neighbors of 2 would be: left=1, upper left=3, upper right=10, right=9, lower right=7, and lower left=... something?
+
+What about the other direction? Maybe to the lower left of 2 is 6? But 6 is directly below 1. Hmm. Maybe not. Alternatively, perhaps the lower left of 2 is adjacent to the lower left of 1, which is 6. But not sure.
+
+Alternatively, perhaps in this grid, moving from 2, the neighbors are 1, 9, 10, and others. The problem is that without a clear visual or coordinate system, it's hard to map. So maybe another approach is needed.
+
+Let me think again about layer numbers and positions. Since I have determined that 2026 is in layer 26, side 2, position 23 along that side. Maybe I can find formulas for neighbors based on the layer and position.
+
+First, let's consider that each number in a hexagonal spiral can be associated with its layer n and a position on the side (s, p), where s is the side (0-5) and p is the position on the side (1 to n). However, since there are six sides, each with n numbers, total 6n per layer.
+
+Each number on the grid has six neighbors. Depending on whether it's at a corner or somewhere in the middle of a side, the neighbors will be different.
+
+Given that 2026 is on side 2, position 23 (n=26), and 23 is less than 26, so it's not at the end of the side. Therefore, it's in the middle of side 2. Therefore, its neighbors would be:
+
+- Previous number on the same side (position 22 on side 2)
+- Next number on the same side (position 23 + 1 = 24 on side 2)
+- Two neighbors from the adjacent sides (side 1 and side 3)
+- And two neighbors from the inner or outer layers? Wait, no, in a hexagonal grid, each hexagon has neighbors in six directions. If we are on side 2 of layer 26, then depending on the direction of the spiral, the neighbors could be:
+
+But since the spiral is constructed by going around, moving from one side to another. For example, when you are on the middle of a side, your neighbors would include:
+
+- The previous and next on the same side
+- One from the previous side (side 1) at the same position? Or maybe at the end?
+- One from the next side (side 3) at the same position?
+Wait, not sure. Maybe it's better to think about how the numbers are laid out.
+
+Alternatively, let me think of numbers on the same ring but adjacent sides. For example, at the end of a side, the next number is the start of the next side. So if you are on position 26 of side 0, the next number is position 1 of side 1. Similarly, for our case, if we are on position 23 on side 2, what are the neighbors not on the same side?
+
+Possibly, there is a neighbor from the inner ring (layer n-1 = 25) and one from the outer ring (layer n+1 = 27). But I need to verify.
+
+Alternatively, perhaps each number on a side has two neighbors from the same side (previous and next), and four other neighbors: one from the previous side on the same ring, one from the next side on the same ring, one from the inner ring, and one from the outer ring? Not sure.
+
+Alternatively, maybe when you are in the middle of a side, your neighbors are:
+
+- Previous and next on the same side
+- The number that is "in the direction" pointing inward from the side
+- The number that is "in the direction" pointing outward from the side
+
+But how do these translate to numbers?
+
+Alternatively, maybe for a given number on side s, position p, the inward neighbor is located at the end of side s on layer n-1, and the outward neighbor is located at the end of side s on layer n+1? Not sure.
+
+Alternatively, let's think about how numbers increase when you move inward or outward. 
+
+For example, take the number 2 (layer 1, side 0, position 1). Its inward neighbor is 1 (the center). Similarly, the number 7 (layer 1, side 0, position 6, the end of the side). Its outward neighbor would be the start of side 0 of layer 2, which is 8. 
+
+Similarly, take a number in the middle of side 2 of layer 26. Its inward neighbor would be a number in layer 25, side 2? Or some other side? Maybe the inward neighbor is the number that was at the start of moving on that side in the previous layer. Similarly, the outward neighbor is the next number in the same direction in the next layer.
+
+But how do we calculate that?
+
+Alternatively, perhaps there is a formula for the neighbors. 
+
+First, let's figure out the previous and next numbers on the same side. Since we are in layer 26, side 2, position 23. The previous number is 2026 - 1 = 2025, and the next number is 2026 + 1 = 2027. But need to verify whether these numbers are in the same layer and side. Since we are on position 23 of side 2 (positions 53-78 on the layer), the previous is 2025, which is position 74 (23-1=22) on side 2, same layer, yes. 2027 is position 75 + 1 = 76, which is also on side 2. Therefore, yes. Therefore, 2025 and 2027 are neighbors.
+
+Now, what about the other neighbors? The four remaining ones. For that, perhaps we need to consider how the spiral is constructed. 
+
+Let me think about how the spiral moves from one side to another. When you are on a side, moving along it, the direction changes. For example, in layer 1, moving along side 0 from position 1 to 6 (number 2 to 7), then the spiral turns to move along side 1. Similarly, if we can figure out what number is adjacent to our number, off the side.
+
+Since I don't have the exact directions, maybe another approach: For any number in the spiral, its neighbors can be determined by their positions relative to the ring.
+
+Another idea: In a hexagonal grid, each ring has numbers that increase by certain steps depending on the direction. For example, moving in a clockwise or counter-clockwise spiral.
+
+Alternatively, think of the neighbors as follows: For a number at position X in layer n, side s, position p, there are two other neighbors on the same ring (from adjacent sides), and four neighbors from adjacent layers.
+
+Wait, in a hexagonal grid, each cell has six neighbors: one in each of the six directions. If we are on the middle of a side in a ring, then two of the neighbors are on the same ring (next and previous), and the other four are in adjacent rings. Wait, no. Actually, depending on direction, some neighbors will be inside or outside. For example, if you are on a side, two of the directions are along the side, one is inward, and three others?
+
+Alternatively, maybe for a cell on a side of a ring, three neighbors are on the same ring, and three are on adjacent rings. Not sure. Without a diagram, this is challenging.
+
+Wait, perhaps I can think about specific examples. Take number 2, which is at layer 1, side 0, position 1. Its neighbors are 1 (inward), 3 (on layer 1, side 1?), and some others?
+
+From the example given earlier, neighbors of 1 are 2, 3, 4, 5, 6, 9. Neighbors of 2 would include 1, 3, ... but looking at the example, neighbors of 2 are 1 (left), 9 (lower right), maybe 10? Or others. It's too vague.
+
+Alternative Idea:
+
+Perhaps we can find coordinates for each number, and then compute the neighbors based on coordinates. For that, I need a coordinate system.
+
+In axial coordinates for hexagons, each hexagon is identified by two coordinates (q, r), with the third coordinate being -q - r. However, converting numbers to axial coordinates requires knowing how the spiral is constructed.
+
+Alternatively, I can find the distance from the center (which is layer number n) and the angle or direction, then compute neighbors based on that.
+
+Alternatively, there is a formula to get the neighbors based on the number's position in the spiral.
+
+Let me think again about the layers. Each layer n has numbers from S = 1 + 3n(n - 1) + 1 to E = 1 + 3n(n + 1). Wait, let me verify:
+
+Total numbers up to layer n-1 is 1 + 3(n - 1)n. Therefore, starting number for layer n is 1 + 3(n - 1)n + 1 = 2 + 3n(n - 1). And the ending number is starting + 6n -1 = 2 + 3n(n - 1) + 6n - 1 = 1 + 3n(n - 1) + 6n = 1 + 3n² - 3n + 6n = 1 + 3n² + 3n = 1 + 3n(n + 1). Which matches our previous result. Therefore, the numbers on layer n are from S = 2 + 3n(n - 1) to E = 1 + 3n(n + 1).
+
+Therefore, given a number X, we can find n such that S ≤ X ≤ E.
+
+Once we know n, we can find where on the layer it is.
+
+Now, each side has n numbers. The first side (side 0) starts at S, side 1 starts at S + n, side 2 at S + 2n, etc., but since there are six sides, and each has n numbers, total 6n numbers.
+
+But since the first side has n numbers, the next side starts at S + n, then side 2 at S + 2n, ..., side 5 at S + 5n. However, since total numbers in layer is 6n, side 5 ends at S + 6n -1, which is E.
+
+Therefore, given a position k in layer n (from 1 to 6n), the side s is floor((k - 1)/n), and position on the side p = (k - 1) mod n + 1. For example, for k = 75, n=26:
+
+s = floor((75 - 1)/26) = floor(74 / 26) = 2 (since 26*2=52, 74-52=22). Therefore, side s=2, p=22 + 1=23. Which matches our earlier calculation.
+
+Now, knowing that the number 2026 is on layer n=26, side s=2, position p=23.
+
+Now, we need to find all six neighbors. For that, let's consider how the numbers are arranged in the spiral.
+
+Assuming that the spiral progresses in a consistent direction, like in square spirals, but in hexagonal form. When moving along a side, after completing the side, the spiral turns 60 degrees and continues along the next side.
+
+Now, to find the neighbors, we need to know the numbers adjacent in each of the six directions. These neighbors could be:
+
+1. Previous number on the same side (if not at start of side)
+2. Next number on the same side (if not at end of side)
+3. Number at the start of the current side (if at end of side)
+4. Number at the end of the previous side (if at start of side)
+5. Number inward from the side (previous layer)
+6. Number outward from the side (next layer)
+
+But without knowing the exact spiral direction, this is speculative. However, perhaps we can derive formulas for these.
+
+First, let's handle the neighbors on the same side. For our case, since p=23, which is not the start (p=1) or end (p=26) of side s=2, we have two neighbors on the same side: previous (k-1=2025) and next (k+1=2027).
+
+Now, we need to find the other four neighbors. 
+
+Assuming that when you are on a side, moving in the direction of the spiral, the inward neighbor is located at a certain position, and the outward neighbor is located at another. Additionally, there are two more neighbors from adjacent sides on the same layer.
+
+Wait, when you are in the middle of a side, there should be two more neighbors on the same ring: one from the previous side and one from the next side? Or is it one from each adjacent direction?
+
+Alternatively, imagine that each hexagon has neighbors in six directions: let's say directions 0 to 5. When moving along a side, your direction is, say, direction 0. Your neighbor in direction 1 would be on the same side? Or on the adjacent side?
+
+This is getting too abstract. Maybe another approach is required.
+
+Let me look for patterns or formulas in existing hexagonal spirals.
+
+Upon a quick search in my mind, I recall that in hexagonal spirals, the numbers at the six "axes" for layer n are given by:
+
+- Starting number of the layer S = 1 + 3n(n - 1) + 1 = 2 + 3n(n - 1)
+- Then, moving along each side, the numbers increase by some increment depending on the direction.
+
+But I need to find for a number on the side, how to find the numbers in other directions.
+
+Alternatively, think about the difference between numbers in adjacent directions.
+
+For instance, consider that when you move from one number to another in some direction, the number increases by a certain amount. For example, moving in the direction along the side, the numbers increase by 1. But moving in other directions?
+
+Alternatively, consider that for a hexagonal spiral, the difference between inward and outward numbers can be calculated based on the layer.
+
+For example, the number inward from a position on layer n would be the number at the same relative position on layer n-1. Similarly, the number outward would be at the same relative position on layer n+1.
+
+If I can figure out what that relative position is.
+
+Let me consider a number on side s, position p on layer n. Its inward neighbor would be a number on layer n-1. But which side and position?
+
+Assuming that as you spiral outward, each layer is built upon the previous one. So for example, if you are on side s of layer n, position p, the inward neighbor is on side s of layer n-1, position p, but only if p ≤ the length of side s in layer n-1. However, for layer n-1, each side has length n-1. Since p=23 and n=26, for layer n-1=25, each side has 25 numbers. Since 23 ≤ 25, yes, position p=23 on side s=2 of layer 25 exists.
+
+Therefore, inward neighbor would be the number at layer n-1 (25), side s=2, position p=23.
+
+Similarly, the outward neighbor would be on layer n+1=27, side s=2, position p=23. But only if p ≤ length of side in layer n+1. For layer 27, each side has length 27; 23 ≤ 27, yes.
+
+Thus, if this assumption is correct, the inward and outward neighbors can be calculated.
+
+Additionally, there are two other neighbors on the same layer from adjacent sides. For example, if our number is on side s, middle of the side, then there is a neighbor from the previous side (s-1) and a neighbor from the next side (s+1). But how to determine which position on those sides?
+
+For example, suppose you are on side s, position p. If you look at the direction perpendicular to the side, going towards the previous side, you might encounter a number from the adjacent side. To find that number, we need to see what is the difference in numbers between the sides.
+
+Alternatively, consider that at the junction between sides s-1 and s, there is a corner number. For example, on layer n, the end of side s-1 is the starting of side s. Therefore, for a number that is not at the corner, but in the middle of side s, there are neighbors on the adjacent sides.
+
+Perhaps the neighbors are the numbers that are at position p-1 on the previous side and p-1 on the next side? Or something similar?
+
+Alternatively, think of the hexagonal grid's geometry. If you are at a position on side s, position p, then moving in a direction that takes you from side s to side s-1 requires going to position p on side s-1? Or maybe p-1?
+
+Alternatively, perhaps we can calculate the numbers at the start and end of each side.
+
+For layer n, side s:
+
+- The starting number of side s is S_s = 2 + 3(n - 1)(n) + s * n? Wait no.
+
+Earlier we said that the starting number of layer n is S = 2 + 3(n - 1)n. Then side 0 starts at S, side 1 starts at S + n, side 2 at S + 2n, etc. So, general formula for starting number of side s is:
+
+start(s) = S + s * n = [2 + 3(n - 1)n] + s * n.
+
+For example, for layer n=26, side s=2, start(2) = 1952 + 2*26 = 1952 + 52 = 2004. Wait, but earlier we said that for layer 26, side 2 starts at position 53, which is 53rd number in layer, which equals 1952 + 53 - 1 = 1952 + 52 = 2004. Correct. Therefore, the starting number of side s is start(s) = 1952 + 52 = 2004 for side 2. 
+
+Therefore, the starting number of any side s on layer n is:
+
+start(s) = [2 + 3(n-1)n] + s*n.
+
+Similarly, the ending number of side s is start(s + 1) - 1. For example, for side s, end(s) = start(s) + n - 1. 
+
+Now, for our number at layer n=26, side s=2, position p=23, its value is:
+
+number = start(s) + p - 1 = 2004 + 23 - 1 = 2004 + 22 = 2026. Correct.
+
+Now, to find the neighbors on adjacent sides. Let's think about what numbers are adjacent to this number from the previous and next sides.
+
+If we imagine moving from side s-1 to side s, there's a corner between them. Similarly between side s and s+1. However, our number is in the middle of side s, not at the corner. Therefore, the adjacent neighbors from other sides would be...?
+
+Perhaps the neighbor from side s-1 would be located at position p on side s-1? If we move left from our position into the previous side. But need to verify.
+
+Alternatively, think about the number just before our number on side s, which is start(s) + p - 2 = number - 1. But how about the number from side s-1?
+
+Let me consider an example. Let's take n=2 (layer 2), side s=0, p=1. This is the first number on side 0 of layer 2, which is start(0) = 2 + 3(n-1)n = 2 + 3(1)(2) = 2 + 6 = 8. Then position p=1 on side 0 is 8. What is its neighbor from side 5 (previous side)?
+
+For layer 2, side s=5 would have start(s) = 8 + 5*2 = 8 + 10 = 18. Wait, but layer 2 has 6n=12 numbers. Starting numbers for sides: side 0: 8, side 1: 8 + 2 = 10, side 2: 12, 14, 16, 18. But side 5 would be start(5) = 8 + 5*2 = 18. Then side 5 has numbers 18 to 18 + 2 - 1 = 19. So numbers 18 and 19 on side 5. The end of side 5 is 19, which is the last number of the layer (which is 19). 
+
+Now, the corner between side 5 and side 0 is the number 18. So, the number at start of side 0 (8) would have a neighbor 18 from side 5. Therefore, in this case, the neighbor from the previous side (s-1=5) is start(5). Which is for p=1 on side s=0.
+
+Similarly, if we have p=2 on side s=0, which is 9, then its neighbor from side 5 would be something else?
+
+But maybe there is a formula here. For a number on side s, position p, the neighbor from the previous side (s-1) would be start(s-1) + p - 1? Or maybe start(s-1) + (p - 1)? Let me see for p=1, neighbor is start(s-1) = start(s-1) + 0. For p=2, maybe start(s-1) + 1? 
+
+In our example, for layer 2, side s=0, p=1: neighbor is 18 = start(5). start(s-1) = start(5) since s=0, s-1=5 (modulo 6). So for p=1, it's start(5) + 0. For p=2, it would be start(5) + 1? Let's check. The number is 9, and what is its neighbor from side s-1=5? If we imagine the grid, the neighbor would be... Well, it's getting too abstract. Maybe another way.
+
+If we think of the numbers arranged in a hexagon, each side has numbers increasing from start to end. If you are on position p on side s, then the neighbor from the previous side (s-1) would be located at position p on side s-1? Or position p - something?
+
+Alternatively, considering that the corner between side s-1 and side s is at position p=1 on side s and position p=n on side s-1. Therefore, for example, in layer n, corner between side s-1 and s is at position 1 of side s and position n of side s-1.
+
+Therefore, for a number not at the corner, say at position p on side s, there is a neighbor from side s-1 at position p on side s-1? But need to check.
+
+Take layer n=2, side s=0, p=2. The corner between side s-1=5 (side 5) and side 0 is at p=1 of side 0 and p=2 of side 5 (since side 5 has length 2). So p=2 on side 5 is the end of side 5. Therefore, if our number is p=2 on side 0, the neighbor from side 5 would be... Maybe p=2-1=1 on side 5? Not sure. 
+
+Alternatively, if I consider that moving from side s-1 to side s, the numbers increase by 1. Therefore, for a number on side s at position p, the number on side s-1 adjacent to it is the number on side s-1 at position p. But this might not be correct because numbers on different sides don't necessarily have sequential numbers.
+
+Another Idea: 
+
+Each side of the hexagon can be thought of as having a "base" direction. For example, side 0 might represent the "east" direction, side 1 "northeast", side 2 "northwest", etc. The exact directions aren't important, but the key idea is that numbers on adjacent sides have a constant difference. 
+
+For example, moving from the end of side s-1 to the start of side s is an increase of 1. However, numbers on adjacent sides have different relationships.
+
+Let me consider the difference between a number on side s and a number on the adjacent side s-1 at the same position p.
+
+For layer n, the start of side s is [2 + 3(n-1)n] + s*n. Similarly, the start of side s-1 is [2 + 3(n-1)n] + (s-1)*n. Therefore, the difference between start(s) and start(s-1) is n. Therefore, the start of side s is n more than start(s-1). 
+
+Similarly, the difference between numbers at the same position p on side s and s-1 is:
+
+number_s = start(s) + p - 1
+
+number_s-1 = start(s-1) + p - 1
+
+Therefore, number_s - number_s-1 = start(s) - start(s-1) = n.
+
+Therefore, if we consider the number on side s-1 at position p, it is number_s - n. 
+
+Similarly, the number on side s+1 at position p is number_s + n.
+
+Therefore, if this is correct, then for our number (number_s) on side s, position p, there are neighbors on the adjacent sides s-1 and s+1 at position p, which are number_s - n and number_s + n.
+
+But does this correspond to actual adjacency on the hexagonal grid?
+
+Let me test with an example. Take layer n=2, side s=0, p=1. number_s = start(0) + 1 - 1 = start(0) = 8. number_s-1 at position p=1 is start(s-1=5) + 1 - 1 = start(s-1=5) = 8 + 5*2 = 18. Then 8 - 2 = 6, but 18 - 8 = 10 ≠ 2. Wait, something is wrong here. Wait, according to the earlier formula, number_s - number_s-1 = n = 2. But in this case, number_s-1 is 18, number_s is 8, and 8 - 18 = -10 ≠ n=2. So this contradicts the formula. Therefore, my assumption is incorrect.
+
+Wait, let's recast:
+
+Start(s) = [2 + 3(n−1)n] + s*n.
+
+For n=2, s=0: start(0) = 2 + 3*1*2 + 0*2 = 2 + 6 + 0 = 8.
+
+start(s-1)=start(5)=2 + 3(1)(2) + 5*2 = 2 + 6 + 10 = 18.
+
+Then, for position p=1 on side s=0: number_s = 8 + 1−1=8.
+
+For position p=1 on side s-1=5: number_s-1 = 18 + 1 - 1 = 18.
+
+Difference: 8 - 18 = -10, which is not n=2. Hence, the formula is wrong.
+
+Therefore, my previous assumption is incorrect. There is no constant difference n between numbers on adjacent sides at the same position.
+
+Alternative Idea: Perhaps there is a different relationship based on the layer.
+
+Maybe for numbers at the same position on adjacent sides, the difference relates to the layer number. For instance, moving from one side to the next, the numbers might change by a certain amount depending on the layer and the side.
+
+Alternatively, let's consider that in the example of layer n=2, the numbers on side s=0 are 8, 9, 10; side s=1: 10 + 1, ..., no, for layer 2, start(0)=8, and each side has n=2 numbers. So side 0: 8, 9; side 1: 10, 11; side 2: 12, 13; side 3: 14, 15; side 4: 16, 17; side 5: 18, 19.
+
+Now, take the number 8 (side 0, p=1). Its neighbors include 9 (next on side 0), and 18 (on side 5). The difference between 8 and 18 is 10. For n=2, 3n(n-1) = 3*2*1 = 6. Not sure. The difference is 10, which is 2*5, but not sure.
+
+Alternatively, maybe it's 6n - something? For n=2, 10 = 6*2 - 2.
+
+Not sure. Let's also look at another example. Take number 9 (side 0, p=2). Its neighbors would include 8 (previous on side 0), 10 (on side 1, p=1)? Or something else? If the spiral goes from side 0 to side 1 by turning, then the next number after side 0 is start of side 1, which is 10. So the corner number is 9 (end of side 0) and 10 (start of side 1). So number 9 is adjacent to 10. Also, number 9 might be adjacent to some other numbers.
+
+But how is 9 connected to other sides? It might be adjacent to a number from side 5 as well.
+
+But this is getting too vague without a diagram. Perhaps I need to think differently.
+
+Let me recall that for a hexagonal grid, each ring has numbers increasing in certain patterns, and the neighbors can be determined by looking at the current number plus/minus certain offsets.
+
+In square spirals, the neighbors can be determined by the layer and position, but here, maybe similar logic applies.
+
+Given that our number is 2026 on layer 26, side 2, position 23. Let's try to find its inward and outward neighbors, and the adjacent side neighbors.
+
+First, inward neighbor: If there is a number one layer in, at the same relative position, which would be layer 25, side 2, position 23. Let's calculate that number.
+
+For layer 25, start of the layer is S_25 = 2 + 3*(25-1)*25 = 2 + 3*24*25 = 2 + 1800 = 1802.
+
+Then, side 2 for layer 25 starts at S_25 + 2*25 = 1802 + 50 = 1852. Therefore, position 23 on side 2 is 1852 + 23 - 1 = 1852 + 22 = 1874. So inward neighbor is 1874.
+
+Similarly, outward neighbor is layer 27, side 2, position 23. Let's calculate it.
+
+Layer 27, start of the layer is S_27 = 2 + 3*(27-1)*27 = 2 + 3*26*27 = 2 + 2106 = 2108. Side 2 starts at S_27 + 2*27 = 2108 + 54 = 2162. Position 23 is 2162 + 23 - 1 = 2162 + 22 = 2184. So outward neighbor is 2184.
+
+So now we have two neighbors: 2025, 2027, 1874, 2184. Need two more neighbors from adjacent sides on the same layer.
+
+Earlier idea that these might be 2026 - 26 and 2026 + 26? Let's see. 2026 - 26 = 2000, 2026 + 26 = 2052.
+
+But need to check if these numbers exist on the same layer and are neighbors.
+
+But let's think: since each side has 26 numbers, and the difference between sides is... For example, moving from side 2 to side 1, what is the difference?
+
+Take the start of side 2: 2004 (for layer 26). The start of side 1 is S + 1*26 = 1952 + 26 = 1978. So start of side 1 is 1978, and start of side 2 is 2004. The difference between them is 2004 - 1978 = 26. Similarly, the start of side 3 is 2004 + 26 = 2030. So the difference between start of side 2 and start of side 3 is 26.
+
+Therefore, if our number is on side 2, position 23: 2026, then the number on side 1, position 23 would be 2026 - 26 = 1990, and on side 3, position 23 would be 2026 + 26 = 2052.
+
+Are these neighbors of 2026? It depends on the spiral's direction. If moving from side 1 to side 2, then the number on side 1 at position 23 would be adjacent to the number on side 2 at position 23? It could be, if the spiral spirals such that sides are adjacent in that manner.
+
+For example, if you are on the middle of side 2, and there is a side 1 and side 3 adjacent to it, then the numbers on those sides at the same position might be directly adjacent.
+
+However, in the example with layer n=2, side 0, position 1 is 8, and side 1, position 1 is 10. Are 8 and 10 neighbors? In the example, 8 is on side 0, and 10 is on side 1. From the earlier example, neighbors of 8 would include 9 (next on side 0), 7 (previous layer?), and... If the grid is such that side 0 and side 1 are adjacent, then 8 and 10 might be neighbors. But in reality, on a hexagonal grid, they would be two units apart? Or one?
+
+This is still unclear, but let's assume for now that numbers at the same position on adjacent sides are neighbors. If that is the case, then for our number 2026, the two neighbors would be 2026 - 26 = 1990 and 2026 + 26 = 2052. Thus, in total, six neighbors: 2025, 2027, 1874, 2184, 1990, 2052. Let's check if this assumption holds with the example.
+
+Take the example of number 8 in layer n=2, side s=0, position p=1. According to this assumption, its neighbors would include: 7 (previous layer?), 9 (next on same side), and numbers at same position on adjacent sides: side 5 (previous side) and side 1 (next side). 
+
+For layer 2, side 0, position 1: number 8.
+
+Adjacent sides are side 5 and side 1. At the same position p=1 on side 5: number is start(5) + 0 = start(5) = 18, as calculated before. And on side 1, position 1: start(1) + 0 = start(1) = 1978? No, for layer n=2, start(1) = S + 1*n, where S is start of layer n=2, which is 8. So start(1) = 8 + 1*2 = 10. So number on side 1, position 1 is 10. So according to this assumption, neighbors would include 10 and 18. Are these neighbors of 8? In the example given earlier, the neighbors of 8 (which is on the third row, let's see):
+
+From the example provided:
+
+... 14  4   3  10 ...
+.. 15  5   1   2   9 ...
+... 16  6   7   8 ...
+
+Wait, in this example, number 8 is at the end of the third row fragment. Its neighbors should include 7 (left), 9 (upper right?), 15 (lower left?), and so on. But according to our calculation, number 8 would have neighbors at 10 (which is shown as next to 9 in the first row fragment: ... 3 10 ...). If 8 is adjacent to 10, that would mean they are next to each other on the grid. Given the text representation, it's hard to say, but if we trust the mathematical relationship, maybe it is correct. 
+
+Therefore, tentatively, let's proceed with the assumption that numbers at the same position on adjacent sides are neighbors, and the difference is ±n (±26 in our case).
+
+Thus, for number 2026, we have neighbors:
+
+- 2025 (previous on same side)
+- 2027 (next on same side)
+- 1874 (inward)
+- 2184 (outward)
+- 1990 (same position on previous side s-1=1)
+- 2052 (same position on next side s+1=3)
+
+Therefore, the six neighbors are 2025, 2027, 1874, 2184, 1990, 2052.
+
+But let me verify the numbers for the adjacent sides.
+
+For layer 26, side s=2, position p=23.
+
+The previous side is s-1=1, same position p=23. The number on side s=1, p=23 is calculated as follows:
+
+start(s=1) = 1952 + 1*26 = 1952 + 26 = 1978. Then, number = 1978 + 23 - 1 = 1978 + 22 = 2000. Wait, earlier I thought it was 1990. Wait, what's going on here? Earlier I thought the difference was 26, but now the calculation shows 2000. Wait, 2026 - 26 = 2000, which matches. Earlier I mistakenly wrote 1990, but it should be 2000.
+
+Similarly, next side s+1=3: start(s=3) = 1952 + 3*26 = 1952 + 78 = 2030. Number at position p=23: 2030 + 23 - 1 = 2030 + 22 = 2052. Correct, which matches 2026 + 26 = 2052. So the two other neighbors are 2000 and 2052.
+
+So correcting my earlier mistake, the neighbors are: 2025, 2027, 1874, 2184, 2000, 2052.
+
+Now, let's verify if these numbers are valid (i.e., within the layer or adjacent layers).
+
+- 2025 and 2027: same layer, valid
+- 1874: layer 25, valid
+- 2184: layer 27, valid
+- 2000: same layer, valid
+- 2052: same layer, valid
+
+But let's confirm 2000 is in the same layer. For layer 26, numbers from 1952 to 2107. 2000 is within that range. And 2000 is on side 1, position 23. Since side 1 starts at 1978 and has 26 numbers, position 23 is 1978 + 22 = 2000, correct.
+
+Similarly, 2052 is on side 3, starts at 2030, position 23 is 2030 + 22 = 2052, yes.
+
+Now, need to check if all these numbers are indeed neighbors of 2026. Let's think about the directions.
+
+If the assumption is correct that numbers on the same position on adjacent sides are neighbors, and inward/outward neighbors, then we have six numbers. Now, sum them up.
+
+Let me compute the sum:
+
+2025 + 2027 + 1874 + 2184 + 2000 + 2052.
+
+Let's add them step by step:
+
+Start with 2025 + 2027 = 4052.
+
+Add 1874: 4052 + 1874 = 5926.
+
+Add 2184: 5926 + 2184 = 8110.
+
+Add 2000: 8110 + 2000 = 10110.
+
+Add 2052: 10110 + 2052 = 12162.
+
+So total sum would be 12162.
+
+But before finalizing, I need to verify if all these numbers are indeed neighbors. The problem is that this relies on the assumption that the numbers at same position on adjacent sides are neighbors. Let me test this assumption with our earlier example.
+
+Take number 8 (layer 2, side 0, position 1). According to our formula, its neighbors would be:
+
+Previous on same side: none (it's at start of side)
+
+Next on same side: 9
+
+Inward: layer 1, side 0, position 1: which is 2.
+
+Outward: layer 3, side 0, position 1: let's calculate. For layer 3, start is 2 + 3*(3-1)*3 = 2 + 18 = 20. start(side 0) = 20. Position 1: 20. So outward neighbor is 20.
+
+Adjacent sides: side 5 and side 1, position 1: numbers are 18 and 10 (from earlier).
+
+So neighbors are: 9, 2, 18, 10, 20. But where is the sixth neighbor? There must be another one. Since it's at the start of the side, there's a neighbor at the end of the previous side (side 5). 
+
+For layer 2, side 5 ends at position p=2 (since n=2, each side has 2 numbers). The end of side 5 is position p=2, which is start(5) + 2 - 1 = 18 + 1 = 19. So number 19 is at the end of side 5. Is 19 a neighbor of 8? In the example, number 8 is at the start of side 0, which is adjacent to the end of side 5 (number 19). Therefore, sixth neighbor is 19. Thus, the neighbors are 9, 10, 18, 19, 2, 20. 
+
+According to our earlier calculation, we missed this sixth neighbor because we only considered same position on adjacent sides. Hence, our assumption is incomplete. 
+
+Therefore, my previous approach is missing some neighbors for numbers at the start or end of a side. Since our number 2026 is in the middle of the side, not at the start or end, maybe our earlier calculation holds. Because if it's in the middle, there are neighbors from the same position on adjacent sides, and the previous/next on the same side, and inward/outward, totaling six. But in the example of the start of the side, there's an extra neighbor from the end of the previous side. However, since our number isn't at a corner, we don't have that extra neighbor. Therefore, for numbers not at the corners of a side, the six neighbors are the four we calculated plus previous and next on the side.
+
+But in the example above, for number 8 (at start of side), we have previous on side does not exist, but we have the end of the previous side as neighbor. Hence, six neighbors. For numbers not at corners, previous and next on the side are two, inward and outward are two, and two from adjacent sides at same position. Total six.
+
+Therefore, if our number is in the middle of a side, this should hold. Hence, let's proceed.
+
+Thus, the neighbors of 2026 would be: 2025, 2027, 1874, 2184, 2000, 2052, sum to 12162. But let me cross-verify this with another example.
+
+Take number 9, which is in layer 2, side 0, position 2. According to our calculation, its neighbors would be:
+
+Previous on same side: 8
+
+Next on same side: none? No, next is position 3, but side has only 2 numbers? Wait, layer 2, side 0 has 2 numbers: positions 1 and 2. So position 2 is the end of side 0. Hence, next on same side does not exist. Hence, we would have to consider another neighbor from the start of the next side.
+
+For number 9 (position 2 on side 0, layer 2):
+
+Neighbors:
+
+Previous: 8
+
+Inward: layer 1, side 0, position 2. But layer 1, side 0 has 1 number (position 1: number 2). Position 2 is invalid, so inward neighbor does not exist? Or is it 0? No. Wait, inward from layer 2 side 0 position 2 would be layer 1, side 0, but since layer 1 side 0 only has 1 number (position 1: number 2), there is no position 2. Hence, no inward neighbor. Wait, but according to our earlier formula, inward neighbor would be layer n-1=1, side s=0, position p=2. Which doesn't exist. Hence, no inward neighbor? But on the hexagonal grid, there should be an inward neighbor. 
+
+Actually, number 9 is on the outer layer, so it might have no inward neighbor? No, every number except the center has an inward neighbor. The inward neighbor of 9 would be a number from layer 1. Let's see: layer 1 has numbers 2-7. What is the number inward from 9? Looking at the example given, neighbors of 9 include 2 (from the example: neighbors of 1 include 9). But the inward neighbor of 9 would be a number closer to the center.
+
+Actually, if number 9 is on layer 2, side 0, end of the side, its inward neighbor is the number at the end of side 0 on layer 1, which is number 2 + 1 - 1 = 2? Wait, layer 1, side 0 has start=2, position p=1: 2. End of side 0 is position 1 (since n=1). Therefore, number 2. Hence, inward neighbor is 2. But according to our earlier formula, it would try to calculate layer 1, side 0, position p=2, which doesn't exist. Hence, formula fails here.
+
+Therefore, our formula for inward/outward neighbors works only when the position p is valid in the corresponding layer. For p=23 in layer 26, since layer 25 has side length 25 ≥ 23, inward neighbor exists. Similarly, outward to layer 27, side length 27 ≥ 23, outward neighbor exists. But for example, if we had p=25 or 26 in layer 26, going inward to layer 25 would have p=25 which is equal to the side length of layer 25 (25), which exists. Hence, in our case, 2026 is safe.
+
+Therefore, returning to our problem, since 2026 is not at the start or end of a side, its six neighbors should be the ones calculated: 2025, 2027, 1874, 2184, 2000, 2052. Their sum 12162.
+
+But let me check with another example for a middle number. Take layer 2, side 0, position 1.5? Not possible, but take position p=1 (start). As discussed, neighbors are 9, 18, 10, 19, 2, 20. Sum is 9+18+10+19+2+20 = 78. Let's see what our formula would give. For p=1 on side 0:
+
+Previous on same side: none (but we have neighbor from end of previous side)
+
+Next on same side: 9
+
+Inward: 2
+
+Outward: layer 3, side 0, p=1: 20
+
+Adjacent sides at same position: side 5 and side 1, p=1: 18 and 10. Plus the neighbor from the end of previous side (19). So total six. Our formula would give for p=1: next=9, inward=2, outward=20, adjacent sides=18 and 10. Missing the sixth neighbor 19. Therefore, our formula fails at the start/end of side. But since our number is not at the start/end, the calculation holds.
+
+Thus, returning, I think our calculation for the neighbors of 2026 is correct, and the sum is 12162. However, to be thorough, let me verify the numbers once again.
+
+Let's recheck the inward neighbor: layer 25, side 2, position 23: 
+
+start of layer 25 is 2 + 3*(25-1)*25 = 2 + 3*24*25 = 2 + 1800 = 1802.
+
+start of side 2 on layer 25 is 1802 + 2*25 = 1802 + 50 = 1852. Position 23: 1852 + 23 - 1 = 1852 + 22 = 1874. Correct.
+
+Outward neighbor: layer 27, side 2, position 23: 
+
+start of layer 27 is 2 + 3*(27-1)*27 = 2 + 3*26*27 = 2 + 2106 = 2108.
+
+start of side 2 on layer 27 is 2108 + 2*27 = 2108 + 54 = 2162. Position 23: 2162 + 22 = 2184. Correct.
+
+Adjacent sides: side s=1 and s=3, same position p=23:
+
+For side s=1 on layer 26: start = 1952 + 1*26 = 1952 + 26 = 1978. Position 23: 1978 + 22 = 2000.
+
+For side s=3 on layer 26: start = 1952
+----
+Usage(input=78, output=16384, details={'estimated_cost': 0.00459376})

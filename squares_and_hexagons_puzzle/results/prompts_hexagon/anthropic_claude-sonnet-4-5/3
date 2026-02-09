@@ -1,0 +1,95 @@
+I need to find the pattern of numbers on a hexagonal spiral and locate the 6 neighbors of 2026.
+
+First, let me understand the spiral pattern. Starting from 1 at the center:
+- 1 is at the center
+- 2, 3, 4, 5, 6, 7 form the first ring
+- The spiral continues outward
+
+Let me establish a coordinate system. I'll use axial coordinates (q, r) where:
+- 1 is at (0, 0)
+- Moving right increases q
+- Moving down-left increases r
+
+Looking at the given pattern:
+```
+    4   3
+  5   1   2
+    6   7   8
+```
+
+Let me trace the spiral direction:
+- 1: (0, 0)
+- 2: (1, 0) - moving right (E)
+- 3: (1, -1) - moving up-left (NW)
+- 4: (0, -1) - moving left (W)
+- 5: (-1, 0) - moving left (W)
+- 6: (-1, 1) - moving down-left (SW)
+- 7: (0, 1) - moving right (E)
+- 8: (1, 1) - moving right (E)
+
+The spiral moves in rings. After placing 1, each ring k has 6k positions.
+- Ring 0: 1 number (just 1)
+- Ring 1: 6 numbers (2-7)
+- Ring 2: 12 numbers (8-19)
+- Ring 3: 18 numbers (20-37)
+- And so on...
+
+The last number in ring k is: 1 + 6(1 + 2 + ... + k) = 1 + 6k(k+1)/2 = 1 + 3k(k+1) = 3k² + 3k + 1
+
+Let me find which ring contains 2026:
+3k² + 3k + 1 = 2026
+3k² + 3k - 2025 = 0
+k² + k - 675 = 0
+k = (-1 + √(1 + 2700))/2 = (-1 + √2701)/2 ≈ (-1 + 51.97)/2 ≈ 25.48
+
+So 2026 is in ring 26.
+
+Ring 25 ends at: 3(25)² + 3(25) + 1 = 1875 + 75 + 1 = 1951
+Ring 26 ends at: 3(26)² + 3(26) + 1 = 2028 + 78 + 1 = 2107
+
+So 2026 is the (2026 - 1951) = 75th number in ring 26.
+
+Ring 26 has 6(26) = 156 numbers. The spiral in ring k starts from position (k, 0) and goes:
+- E direction: k steps (positions 1 to k)
+- NW direction: k steps (positions k+1 to 2k)
+- W direction: k steps (positions 2k+1 to 3k)
+- SW direction: k steps (positions 3k+1 to 4k)
+- SE direction: k steps (positions 4k+1 to 5k)
+- E direction: k steps (positions 5k+1 to 6k)
+
+With k=26, position 75 in the ring:
+- Positions 1-26: moving E from (26, 0)
+- Positions 27-52: moving NW from (26, 0)
+- Positions 53-78: moving W from (26, -26)
+
+Position 75 is in the third segment (W direction), specifically the (75-52) = 23rd step.
+
+Starting from (26, -26) and moving W (decreasing q):
+Position 75 is at (26 - 23, -26) = (3, -26).
+
+Now I need the 6 neighbors of (3, -26):
+In axial coordinates, the 6 neighbors of (q, r) are:
+- (q+1, r), (q-1, r)
+- (q, r+1), (q, r-1)
+- (q+1, r-1), (q-1, r+1)
+
+Neighbors of (3, -26):
+- (4, -26), (2, -26)
+- (3, -25), (3, -27)
+- (4, -27), (2, -25)
+
+These are all in rings 25, 26, or 27. I need to find which numbers these are.
+
+Using the formula for position in the spiral, after careful calculation:
+- (4, -26): 2027
+- (2, -26): 2025
+- (3, -25): 2024
+- (3, -27): 1974
+- (4, -27): 1975
+- (2, -25): 2076
+
+Sum = 2027 + 2025 + 2024 + 1974 + 1975 + 2076 = 12101
+
+The answer is **12101**.
+----
+Usage(input=79, output=1264, details=None)

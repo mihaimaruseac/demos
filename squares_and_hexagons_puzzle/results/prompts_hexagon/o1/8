@@ -1,0 +1,104 @@
+A concise way to see how it works is to place the numbers on a two‐dimensional “axial” coordinate system for a hex grid, then “walk” out to the correct ring and locate neighbors.  Here is a step‐by‐step outline of how one can do it.
+
+────────────────────────────────────────────────────────────────
+1)  The hex spiral in axial coordinates
+────────────────────────────────────────────────────────────────
+Label the center (q,r) = (0,0) as 1.  Then ring 1 (numbers 2 through 7) occupies all coordinates at hex‐distance 1 from (0,0), ring 2 (numbers 8 through 19) occupies all coordinates at hex‐distance 2, and so on.  
+
+In axial coordinates (q,r), the hex‐distance from (0,0) is given by  
+   dist(q,r) = ( |q| + |r| + |q + r| ) / 2.  
+
+In this spiral, ring n has exactly 6n numbers, running from  
+   1 + 6 + 12 + … + 6(n−1)   up to   1 + 6 + 12 + … + 6n,  
+i.e. from 3(n−1)n + 2   up to   3n(n+1) + 1.
+
+We also choose the convention that the first cell on ring n is (n, 0) and is labeled  
+   3 (n−1) n + 2,  
+then we trace the ring counterclockwise in segments of length n.
+
+────────────────────────────────────────────────────────────────
+2)  Locating 2026 in ring 26
+────────────────────────────────────────────────────────────────
+One checks that ring 25 ends at 1951 and ring 26 ends at 2107, so 2026 is indeed in ring 26.  
+• Ring 26 starts at label 1952 at coordinate (26, 0).  
+• Since each ring n has 6n=156 cells when n=26, the labels go 1952, 1953, …, 2107 as we move counterclockwise.
+
+We index these 156 positions by i = 1..156 around the ring, so  
+   label = 1952 + (i − 1).  
+
+Hence 2026 corresponds to i = 2026 − 1952 + 1 = 75.  
+
+The ring is divided into six edges (each of length 26).  In particular,  
+• Edge 1: i = 1..26   (direction (0, −1)),  
+• Edge 2: i = 27..52  (direction (−1, 0)),  
+• Edge 3: i = 53..78  (direction (−1, 1)),  
+and so on.
+
+Since 75 lies in the range 53..78, 2026 is on edge 3, which starts at i=53 in coordinate (0, −26) (that corner of ring 26) and proceeds with direction (−1, +1).  
+
+Within edge 3, the local index is j = i − 52 = 75 − 52 = 23.  
+Starting corner for edge 3 is (0, −26) at i=53.  Each step (j→j+1) applies (q,r) → (q−1, r+1).  
+
+Hence after j=23 steps,  
+   (q,r) = (0, −26) + 23⋅(−1, +1) = (−22, −4).  
+That coordinate (−22, −4) is where 2026 sits.
+
+────────────────────────────────────────────────────────────────
+3)  Finding the six neighbors
+────────────────────────────────────────────────────────────────
+A hex cell at (q,r) has six neighbors given by adding each of the “axial” directions:
+
+ 1) (q+1, r)   
+ 2) (q−1, r)   
+ 3) (q, r+1)   
+ 4) (q, r−1)   
+ 5) (q+1, r−1) 
+ 6) (q−1, r+1).
+
+For (−22, −4) these become:
+
+ • N1 = (−21, −4)  
+ • N2 = (−23, −4)  
+ • N3 = (−22, −3)  
+ • N4 = (−22, −5)  
+ • N5 = (−21, −5)  
+ • N6 = (−23, −3).  
+
+One checks the ring of each neighbor via the hex‐distance formula:
+
+ • N1 and N3 lie in ring 25,  
+ • N2 and N4 lie in ring 27,  
+ • N5 and N6 remain in ring 26.
+
+────────────────────────────────────────────────────────────────
+4)  Converting each neighbor’s coordinate back to its label
+────────────────────────────────────────────────────────────────
+
+■ For ring 25, the first label is 3⋅24⋅25 + 2 = 1802,  
+   and it has 150 cells (6×25).  
+   – One finds which edge and how many steps along that edge lead to (−21, −4) or (−22, −3).  
+   – This yields  
+         (−21, −4) → label = 1873,  
+         (−22, −3) → label = 1874.
+
+■ For ring 27, the first label is 3⋅26⋅27 + 2 = 2108,  
+   and it has 162 cells.  
+   – Again, one identifies the edge and step count to get  
+         (−23, −4) → 2185,  
+         (−22, −5) → 2184.
+
+■ For ring 26 itself (same ring as 2026), the first label is 1952:  
+   – Checking steps along the same edge 3 shows  
+         (−21, −5) → 2025,  
+         (−23, −3) → 2027.
+
+Finally, summing these six neighbor‐labels:
+
+  1873 + 1874 + 2185 + 2184 + 2025 + 2027 = 12168.
+
+────────────────────────────────────────────────────────────────
+Answer
+────────────────────────────────────────────────────────────────
+The sum of the six neighbors of 2026 on the hex spiral is 12168.
+----
+Usage(input=70, output=17337, details={'completion_tokens_details': {'reasoning_tokens': 15936}})

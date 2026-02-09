@@ -1,0 +1,179 @@
+We want to find the sum of the eight numbers (the eight “neighbors”) that are written immediately around the number 2026 in the spiral
+
+  … 5 4 3 …  
+  … 6 1 2 …  
+  … 7 8 9 …
+
+In this spiral the numbers “wind” around the center 1. With a convenient choice of coordinates, we let the center 1 be at (0,0). (x increases to the right and y increases upward.) Then one finds
+
+  1 is at (0,0)  
+  2 at (1,0)  
+  3 at (1,1)  
+  4 at (0,1)  
+  5 at (–1,1)  
+  6 at (–1,0)  
+  7 at (–1,–1)  
+  8 at (0,–1)  
+  9 at (1,–1)  
+
+and so on. In general the spiral is built in “rings.” The ring with radius m (m = 0, 1, 2, …) is the one whose outermost numbers lie on the square with side‐length 2m+1. In fact, the largest number on the mth ring is (2m+1)² and it appears in the lower‐right corner at (m, –m).
+
+Below we describe step‐by‐step how to find the neighbors of 2026 and then sum their values.
+
+──────────────────────────────
+Step 1. Locate 2026 in the Spiral
+
+First notice that the numbers on the mth ring run from (2(m–1)+1)²+1 up to (2m+1)². For example, ring 1 consists of 2,...,9 (since 1² = 1 and 3² = 9) and ring 2 contains 10,...,25.
+
+Find the ring for 2026. We have:
+  For m = 22: (2·22+1)² = 45² = 2025.
+  For m = 23: (2·23+1)² = 47² = 2209.
+
+Since 2026 is greater than 2025 but less than or equal to 2209, it lies in the m = 23 ring. In this ring the “largest” number is 2209 at the coordinate (23, –23).
+
+We now define the “offset” from the maximum:
+  offset = 2209 – 2026 = 183.
+
+It turns out that the numbers in a ring are arranged along four sides of the square. (It is standard that if you “unwind” the spiral from the maximum, you move along the perimeter.) For ring m the total number of numbers on the ring is
+  8m    (here, 8·23 = 184).
+We now subdivide the ring into 4 segments, each of length 2m (here 46). The segments (writing “backwards” from the maximum) are:
+
+Segment 0 (bottom row): starting at the maximum (m, –m) and moving left.
+  Coordinates on this segment: (m – d, –m) for d from 0 to 2m–1.
+Segment 1 (left column): going upward along x = –m.
+  Coordinates: (–m, –m + d) for d from 1 to 2m.
+Segment 2 (top row): moving right along y = m.
+  Coordinates: (–m + d, m) for d from 1 to 2m.
+Segment 3 (right column): going downward along x = m.
+  Coordinates: (m, m – d) for d from 1 to 2m.
+
+Now, determine in which segment the offset 183 falls. For m = 23:
+  2m = 46, 4m = 92, 6m = 138, 8m = 184.
+Since 183 lies in the fourth segment (because 183 ≥ 138 and < 184), we set
+  r = offset – 6m = 183 – 138 = 45.
+Then the coordinates of 2026 are given by the formula for segment 3:
+  (x, y) = (m, m – r) = (23, 23 – 45) = (23, –22).
+
+Thus 2026 is placed at (23, –22).
+
+──────────────────────────────
+Step 2. Determine the Coordinates of the 8 Neighbors
+
+The neighbors of (23, –22) are the points with coordinates (x + dx, y + dy) where dx, dy ∈ {–1, 0, 1} except (0, 0). They are:
+
+  (22, –23), (23, –23), (24, –23),
+  (22, –22),      (24, –22),
+  (22, –21), (23, –21), (24, –21).
+
+──────────────────────────────
+Step 3. Figure Out the Spiral Number at a Given Coordinate
+
+A standard way to “invert” the spiral construction is as follows. For any grid coordinate (a, b), let
+  m = max(|a|, |b|).
+Then the number at the “extremal” position—that is, at (m, –m)—is 
+  n = (2m+1)².
+Depending on which “side” (a, b) lies on, one obtains its value as follows:
+
+1. If the point is on the bottom row (y = –m):
+  value = n – (m – a).
+
+2. If it is on the left column (x = –m):
+  value = n – 2m – (b + m).  
+    (Notice: when b is –m the result gives the bottom‐left corner.)
+
+3. If it is on the top row (y = m):
+  value = n – 4m – (a + m).
+
+4. If it is on the right column (x = m):
+  value = n – 6m – (m – b).
+
+It can be checked that these formulas work—for example, for ring 1: the maximum n = 3² = 9 is at (1, –1).
+
+──────────────────────────────
+Step 4. Compute the Values at Each of the 8 Neighbors
+
+Now we compute neighbor by neighbor.
+
+1. For (22, –23):
+ • m = max(|22|, |–23|) = 23.
+ • Here y = –23 equals –m, so it is on the bottom row.
+ • n = (2·23+1)² = 47² = 2209.
+ • value = n – (23 – 22) = 2209 – 1 = 2208.
+
+2. For (23, –23):
+ • m = 23 (since |23| = 23, |–23| = 23).
+ • y = –23, so bottom row.
+ • value = 2209 – (23 – 23) = 2209.
+
+3. For (24, –23):
+ • m = max(|24|, |–23|) = 24.
+ • Now m = 24 so n = (2·24+1)² = 49² = 2401.
+ • Check the coordinate: (24, –23) does not have y = –24, but x = 24 equals m so it is on the right column.
+ • Use the right column formula:
+  value = n – 7·m + y = 2401 – 7·24 + (–23).
+  7·24 = 168, so value = 2401 – 168 – 23 = 2210.
+
+4. For (22, –22):
+ • m = max(|22|, |–22|) = 22.
+ • Then n = (2·22+1)² = 45² = 2025.
+ • Here y = –22 equals –m so bottom row.
+  value = n – (22 – 22) = 2025.
+
+  (Note: In fact, (22, –22) is the maximum of ring 22.)
+
+5. For (24, –22):
+ • m = max(|24|, |–22|) = 24.
+ • n = 49² = 2401.
+ • Since x = 24 (which equals m) the point is on the right column.
+  value = 2401 – 7·24 + (–22) = 2401 – 168 – 22 = 2211.
+
+6. For (22, –21):
+ • m = max(|22|, |–21|) = 22.
+ • n = 45² = 2025.
+ • Here x = 22 equals m, so the point is on the right column.
+  value = n – 7·22 + (–21) = 2025 – 154 – 21.
+  7·22 = 154, so value = 2025 – 175 = 1850.
+
+7. For (23, –21):
+ • m = max(|23|, |–21|) = 23.
+ • n = 47² = 2209.
+ • Since x = 23 equals m this is on the right column.
+  value = 2209 – 7·23 + (–21) = 2209 – 161 – 21.
+  7·23 = 161, so value = 2209 – 182 = 2027.
+
+8. For (24, –21):
+ • m = max(|24|, |–21|) = 24.
+ • n = 2401.
+ • x = 24 so right column.
+  value = 2401 – 7·24 + (–21) = 2401 – 168 – 21 = 2212.
+
+──────────────────────────────
+Step 5. Add the 8 Values
+
+Now add them:
+
+ (22, –23): 2208  
+ (23, –23): 2209  
+ (24, –23): 2210  
+ (22, –22): 2025  
+ (24, –22): 2211  
+ (22, –21): 1850  
+ (23, –21): 2027  
+ (24, –21): 2212
+
+Let’s sum them step‐by‐step:
+
+ 2208 + 2209 = 4417  
+ 4417 + 2210 = 6627  
+ 6627 + 2025 = 8652  
+ 8652 + 2211 = 10863  
+ 10863 + 1850 = 12713  
+ 12713 + 2027 = 14740  
+ 14740 + 2212 = 16952
+
+──────────────────────────────
+Answer
+
+Thus, the sum of all 8 neighbors of the number 2026 is 16952.
+----
+Usage(input=61, output=8775, details={'completion_tokens_details': {'reasoning_tokens': 6336}})

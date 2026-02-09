@@ -1,0 +1,302 @@
+Alright, let's tackle this problem step by step. We're dealing with numbers arranged in a spiral on a square grid, and we need to find the sum of all eight neighbors of the number 2026 in this arrangement.
+
+### Understanding the Spiral Structure
+
+First, let's visualize how the numbers are arranged in the spiral. The given example shows a small portion of the spiral:
+
+```
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+```
+
+From this, we can see that:
+- The number 1 is at the center.
+- The numbers increase as we move outward in a counter-clockwise direction: 1, 2, 3, ..., up to the edges.
+
+This is similar to the "Ulam spiral," where numbers are arranged in a square spiral with 1 at the center.
+
+### Determining the Position of a Number in the Spiral
+
+To find the neighbors of 2026, we first need to determine its position in the spiral. That is, we need to find out which "ring" or "layer" of the spiral 2026 is in and its exact coordinates relative to the center.
+
+**Defining Rings:**
+- The center (number 1) is ring 0.
+- The numbers 2 to 9 form ring 1.
+- The next layer (numbers 10 to 25) form ring 2, and so on.
+
+In general, ring `k` starts at `(2k - 1)^2 + 1` and ends at `(2k + 1)^2`. The number of numbers in ring `k` is `8k` (since each side of the square ring has `2k + 1` numbers, but the corners are shared, leading to `4*(2k + 1) - 4 = 8k`).
+
+**Finding the Ring for 2026:**
+Let's find the smallest `k` such that `(2k + 1)^2 >= 2026`.
+
+Calculate squares:
+- `(2*1 + 1)^2 = 9`
+- `(2*2 + 1)^2 = 25`
+- `(2*3 + 1)^2 = 49`
+- ...
+- `(2*22 + 1)^2 = 49^2 = 2401`
+- `(2*21 + 1)^2 = 43^2 = 1849`
+
+2026 is between 1849 and 2401, so it's in ring `k = 22` (since `(2*22 + 1)^2 = 45^2 = 2025`, and `(2*22 - 1)^2 = 43^2 = 1849`).
+
+Wait, let's clarify the ring numbering:
+- Ring 0: 1 (center)
+- Ring 1: 2 to 9 (8 numbers)
+- Ring 2: 10 to 25 (16 numbers)
+- ...
+- Ring k: starts at `(2k - 1)^2 + 1`, ends at `(2k + 1)^2`
+
+So, ring `k` starts at `(2k - 1)^2 + 1` and has `8k` numbers.
+
+Let's find `k` such that `(2k - 1)^2 + 1 <= 2026 <= (2k + 1)^2`.
+
+Compute `(2k - 1)^2`:
+- For k=22: (43)^2 = 1849
+- Then (2*22 + 1)^2 = 45^2 = 2025
+So, ring 22: starts at 1849 + 1 = 1850, ends at 2025.
+
+2026 is just after 2025, so it's the first number in ring 23.
+
+Wait, no: ring k starts at `(2k - 1)^2 + 1` and ends at `(2k + 1)^2`.
+
+For k=22:
+- starts at (43)^2 + 1 = 1849 + 1 = 1850
+- ends at (45)^2 = 2025
+
+So, 2026 is the first number in ring 23:
+- starts at (45)^2 + 1 = 2025 + 1 = 2026
+- ends at (47)^2 = 2209
+
+Thus, 2026 is in ring 23, and it's the first number in that ring.
+
+### Position of the First Number in a Ring
+
+The first number in ring `k` is `(2k - 1)^2 + 1`, and it's located at the position `(k, -(k - 1))` if we consider the center at `(0,0)`.
+
+For ring 23:
+First number is 2026, at position (23, -22).
+
+The spiral moves counter-clockwise:
+1. Right (east)
+2. Up (north)
+3. Left (west)
+4. Down (south)
+
+Each side of the ring has `2k` numbers (except the first side which has `2k + 1` because it starts the ring).
+
+But since 2026 is the first number in the ring, it's at the start of the first side (east side).
+
+### Neighbors of 2026
+
+The eight neighbors of a number are the numbers immediately adjacent to it horizontally, vertically, and diagonally.
+
+Given that 2026 is at (23, -22), its neighbors are at:
+- (23+1, -22) = (24, -22)
+- (23+1, -22+1) = (24, -21)
+- (23, -22+1) = (23, -21)
+- (23-1, -22+1) = (22, -21)
+- (23-1, -22) = (22, -22)
+- (23-1, -22-1) = (22, -23)
+- (23, -22-1) = (23, -23)
+- (23+1, -22-1) = (24, -23)
+
+Now, let's find the numbers at these positions.
+
+**Number at (23, -22):** 2026 (itself)
+
+**Number at (24, -22):**
+This is the next number in the spiral after 2026. Since 2026 is the first in ring 23, the next number is 2027.
+
+**Number at (24, -21):**
+This is the number after 2027 in the spiral. The east side of ring 23 has `2*23 = 46` numbers (from (23, -22) to (23, 23)), but since it's the first side, it's `2k + 1 = 47` numbers (from (23, -22) to (23, 24)).
+
+Wait, let's clarify the side lengths:
+For ring `k`, the sides are:
+1. East: `2k + 1` numbers (from (k, -(k-1)) to (k, k))
+2. North: `2k` numbers (from (k-1, k) to (-k, k))
+3. West: `2k` numbers (from (-k, k-1) to (-k, -k))
+4. South: `2k` numbers (from -(k-1), -k to (k, -k))
+
+So, east side of ring 23 has `2*23 + 1 = 47` numbers: 2026 to 2072.
+
+Thus, (24, -21) is the second number in the east side, which is 2027 (at (24, -22)), then 2028 at (24, -21), etc.
+
+Wait, no: the first number is at (23, -22), then next is (23, -21), then (23, -20), ..., up to (23, 23), then (22, 23), etc.
+
+So, (24, -22) is not a valid position; the next after (23, -22) is (23, -21).
+
+I think I made a mistake in assigning coordinates. Let me redefine the coordinate system.
+
+### Re-defining the Coordinate System
+
+Let's define the center (1) at (0,0). Then:
+- Right is +x, up is +y.
+- The spiral goes: right, up, left, down, right, etc.
+
+For ring `k`:
+- The bottom-right corner is at (k, -k).
+- The first number in the ring is at (k, -(k-1)).
+
+For ring 23:
+- First number is at (23, -22): 2026
+- Then (23, -21): 2027
+- ...
+- (23, 23): 2026 + (23 - (-22)) = 2026 + 45 = 2071
+- Then (22, 23): 2072
+- ...
+- (-23, 23): 2072 + (23 - 22) + (23 - (-23)) = 2072 + 1 + 46 = 2119
+- Then (-23, 22): 2120
+- ...
+- (-23, -23): 2120 + 45 = 2165
+- Then (-22, -23): 2166
+- ...
+- (23, -23): 2166 + 45 = 2211
+
+But (2*23 + 1)^2 = 47^2 = 2209, so the last number in ring 23 is 2209 at (23, -23).
+
+Wait, the sequence seems off. Maybe it's better to calculate the number at a given position.
+
+### Calculating the Number at a Given Position
+
+Given a position (x, y), we can find the ring `k = max(|x|, |y|)`.
+
+The number at (k, -(k-1)) is `(2k - 1)^2 + 1`.
+
+Then, the numbers proceed:
+1. Up along x=k: from y=-(k-1) to y=k: `2k` numbers (but first is already counted)
+2. Left along y=k: from x=k-1 to x=-k: `2k` numbers
+3. Down along x=-k: from y=k-1 to y=-k: `2k` numbers
+4. Right along y=-k: from x=-(k-1) to x=k: `2k` numbers
+
+Total numbers in ring `k`: `1 + 2k + 2k + 2k + 2k - 1 = 8k` (since the first is shared).
+
+For (x,y), find `k = max(|x|, |y|)`.
+
+Then, the starting number is `(2k - 1)^2 + 1`.
+
+Then, depending on which side (x,y) is on:
+1. Right side (x = k, y from -(k-1) to k): number = starting + (y + (k - 1))
+2. Top side (y = k, x from k-1 down to -k): number = starting + 2k - 1 + (k - 1 - x)
+3. Left side (x = -k, y from k-1 down to -k): number = starting + 4k - 1 + (k - 1 - y)
+4. Bottom side (y = -k, x from -(k-1) to k): number = starting + 6k - 1 + (x + (k - 1))
+
+Now, let's find the neighbors of 2026 at (23, -22).
+
+Neighbors are at:
+1. (24, -22): but k = max(24,22) = 24, which is outside our ring. Actually, (24, -22) is not a valid neighbor since 2026 is at the edge of ring 23. Wait, no: the neighbors are adjacent cells, which may be in the same or previous ring.
+
+Actually, the neighbors are:
+- (23, -21)
+- (22, -21)
+- (22, -22)
+- (22, -23)
+- (23, -23)
+- (24, -23)
+- (24, -22)
+- (24, -21)
+
+But (24, -22) and (24, -21) are in ring 24, which starts at (2*24 - 1)^2 + 1 = 47^2 + 1 = 2209 + 1 = 2210.
+
+Similarly, (23, -23) is in ring 23, which goes up to (2*23 + 1)^2 = 47^2 = 2209.
+
+So, let's find the numbers at these positions.
+
+**Neighbor at (23, -21):**
+Same ring, right side: number = starting + (y + (k - 1)) = 2026 + (-21 + 22) = 2026 + 1 = 2027.
+
+**Neighbor at (22, -21):**
+k = max(22,21) = 22.
+Starting number for ring 22: (43)^2 + 1 = 1849 + 1 = 1850.
+This is on the top side (y = 22, x from 21 down to -22).
+Number = starting + 2k - 1 + (k - 1 - x) = 1850 + 43 + (21 - 22) = 1850 + 43 - 1 = 1892.
+
+Wait, let's re-express the top side formula:
+Top side: y = k, x from k-1 down to -k.
+Number = starting + 2k - 1 + (k - 1 - x)
+Here, x = 22, but k=22, so x goes from 21 to -22. So x=22 is not on the top side; it's the corner between right and top.
+
+Actually, (22, -21) is on the right side of ring 22 (x=22, y=-21), but k=22, so x=22 is the right side (x=k), y from -(k-1) to k: -21 to 22.
+Number = starting + (y + (k - 1)) = 1850 + (-21 + 21) = 1850.
+
+Wait, no: for right side, x=k, y from -(k-1) to k.
+Number = starting + (y + (k - 1)) = 1850 + (-21 + 21) = 1850.
+
+But (22, -21) is the first in the right side of ring 22, so it's 1850.
+
+**Neighbor at (22, -22):**
+k = max(22,22) = 22.
+This is the corner between right and bottom.
+Right side: x=22, y from -21 to 22.
+Bottom side: y=-22, x from -21 to 22.
+So (22, -22) is the last in the right side or first in the bottom side.
+Right side: y=-22 is outside (y from -21 to 22), so it's the first in the bottom side.
+Bottom side: y=-22, x from -21 to 22.
+Number = starting + 6k - 1 + (x + (k - 1)) = 1850 + 132 - 1 + (22 + 21) = 1850 + 131 + 43 = 2024.
+
+**Neighbor at (22, -23):**
+k = max(22,23) = 23.
+This is in ring 23, bottom side: y=-23, x from -22 to 23.
+Number = starting + 6k - 1 + (x + (k - 1)) = 2026 + 138 - 1 + (22 + 22) = 2026 + 137 + 44 = 2207.
+
+Wait, but ring 23 ends at 2209, so 2207 is valid.
+
+**Neighbor at (23, -23):**
+k = max(23,23) = 23.
+This is the corner between bottom and left.
+Bottom side: y=-23, x from -22 to 23.
+So (23, -23) is the last in the bottom side.
+Number = starting + 6k - 1 + (x + (k - 1)) = 2026 + 138 - 1 + (23 + 22) = 2026 + 137 + 45 = 2208.
+
+**Neighbor at (24, -23):**
+k = max(24,23) = 24.
+This is in ring 24, which starts at (47)^2 + 1 = 2209 + 1 = 2210.
+It's on the right side: x=24, y from -23 to 24.
+Number = starting + (y + (k - 1)) = 2210 + (-23 + 23) = 2210.
+
+**Neighbor at (24, -22):**
+k = 24.
+Right side: x=24, y from -23 to 24.
+Number = starting + (y + (k - 1)) = 2210 + (-22 + 23) = 2210 + 1 = 2211.
+
+**Neighbor at (24, -21):**
+k = 24.
+Right side: number = 2210 + (-21 + 23) = 2210 + 2 = 2212.
+
+### Summing the Neighbors
+
+Now, let's list all eight neighbors and their numbers:
+1. (23, -21): 2027
+2. (22, -21): 1850
+3. (22, -22): 2024
+4. (22, -23): 2207
+5. (23, -23): 2208
+6. (24, -23): 2210
+7. (24, -22): 2211
+8. (24, -21): 2212
+
+Now, sum them up:
+2027 + 1850 = 3877
+3877 + 2024 = 5901
+5901 + 2207 = 8108
+8108 + 2208 = 10316
+10316 + 2210 = 12526
+12526 + 2211 = 14737
+14737 + 2212 = 16949
+
+### Verifying the Calculations
+
+Let me double-check some of the neighbor numbers to ensure accuracy.
+
+- (22, -21): ring 22, right side, first number: should be (43)^2 + 1 = 1850. Correct.
+- (22, -22): ring 22, bottom side, first number: 1850 + 6*22 - 1 + (22 + 21) = 1850 + 132 - 1 + 43 = 2024. Correct.
+- (23, -23): ring 23, bottom side, last number: 2026 + 6*23 - 1 + (23 + 22) = 2026 + 138 - 1 + 45 = 2208. Correct.
+- (24, -23): ring 24, right side, first number: 2210. Correct.
+
+Other numbers seem consistent with the spiral's progression.
+
+### Final Answer
+
+The sum of all eight neighbors of the number 2026 is **16,949**.
+----
+Usage(input=60, output=4830, details=None)

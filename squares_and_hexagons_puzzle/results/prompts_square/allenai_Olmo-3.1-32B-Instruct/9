@@ -1,0 +1,1268 @@
+Let’s break down the problem step by step.
+
+First, we are given a spiral of natural numbers laid out on a square grid, with 1 at the center, and the numbers increasing as you spiral outward. The sample shows:
+
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+
+But this is just a partial view. The standard Ulam spiral starts at 1 (center), and spirals outward in layers.
+
+We are to find the sum of all 8 neighbors of the number 2026 in this spiral grid.
+
+Let’s proceed methodically:
+
+---
+
+### **Step 1: Determine the layer of 2026 in the spiral**
+
+The Ulam spiral is organized in layers (rings) around the center.
+
+- Layer 0 (center): just 1 (1 number)
+- Layer 1: numbers from 2 to 9 (8 numbers, forms a 3x3 square minus center)
+- Layer 2: numbers from 10 to 25 (16 numbers, forms a 5x5 square minus previous 3x3)
+- Layer n: forms a (2n+1)x(2n+1) square, numbers from \( (2n-1)^2 + 1 \) to \( (2n+1)^2 \)
+
+Let’s generalize:
+- The largest number in layer n is \( (2n+1)^2 \)
+- The smallest number in layer n is \( (2n-1)^2 + 1 \)
+
+Let’s find n such that \( (2n-1)^2 < 2026 \leq (2n+1)^2 \)
+
+Let’s try n=31:
+- (2*31-1)^2 = (62-1)^2 = 61^2 = 3721
+Wait, that's too big.
+
+Let’s try smaller n.
+
+Let’s solve for n in \( (2n+1)^2 \geq 2026 \)
+
+Let’s compute square roots:
+- sqrt(2026) ≈ 45.01
+
+So, the side length of the square containing 2026 is the smallest odd integer greater than or equal to 45, which is 45 or 47.
+
+But the spiral grid at layer n has side length (2n+1).
+
+Let’s solve for (2n+1) such that (2n+1)^2 ≥ 2026 > (2n-1)^2
+
+Let’s try n=22:
+- (2*22+1)=45, 45^2=2025
+- (2*22-1)=43, 43^2=1849
+
+So:
+- Layer 22: numbers from 1850 to 2025
+- Layer 23: numbers from 2026 to 2209
+
+Therefore, 2026 is the first number in layer 23.
+
+---
+
+### **Step 2: Find the coordinates of 2026 in the spiral**
+
+Let’s define the coordinate system with 1 at (0,0).
+
+In the Ulam spiral, the numbering proceeds as follows:
+- Start at (0,0) = 1
+- Move right along the x-axis to (1,0), then up to (1,1), left to (-1,1), left to (-1,-1), down to (1,-1), then right to (1,0)+, and repeat, increasing the "step size" each time you turn right.
+
+But there's a more systematic way to compute coordinates for a given number in the Ulam spiral.
+
+#### **A standard method:**
+
+Let’s use the following approach (adapted from known algorithms):
+
+1. Find the "ring" (layer) n, as above. For 2026, n = 23 (since it's the first number in layer 23, which has side length 47).
+2. The starting number of layer n is \( (2n-1)^2 + 1 \)
+   - For n=23: (46-1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026
+   - So 2026 is the very first number in layer 23.
+3. The layer starts at the coordinate to the right of the bottom right of the previous layer.
+   - Let's recall the movement pattern:
+     - Start at (0,0)
+     - Move right along the bottom row to (n,0)
+     - Move up to (n,n)
+     - Move left to (-n,n)
+     - Move down to (-n,-n)
+     - Move right to (n,-n)
+     - Then next layer starts by moving right from (n,-n+1) to (n+1,-n+1), etc.
+
+But for the first number of a new layer, it's at (n, -n+1) or similar.
+
+Let’s find a general formula or a pattern.
+
+Alternatively, let's recall that for the Ulam spiral, the bottom right corner of layer n is at (n, -n), and contains the number (2n+1)^2.
+
+But for our spiral, let's look at the movement:
+
+Let’s define the starting point of each layer.
+
+Let’s try to map out the positions for small n:
+
+Let’s make a table for the start of each layer:
+
+Layer 0:
+- (0,0) = 1
+
+Layer 1 (n=1):
+- Starts at (1,0) = 2
+- Moves up to (1,1) = 3
+- Moves left to (-1,1) = 4
+- Moves left to (-1,0) = 5
+- Moves left to (-1,-1) = 6
+- Moves down to (1,-1) = 7
+- Moves right to (1,0) [already occupied], so next is (0,-1) = 8
+- Moves up to (0,0) [already occupied], so next is (0,1) = 9
+
+But in the sample given:
+
+... 5 4 3 ...
+... 6 1 2 ...
+... 7 8 9 ...
+
+But that's a different orientation. Let's align with the standard Ulam spiral (right, up, left, down):
+
+Let’s define movement as:
+- Start at (0,0) = 1
+- Move right to (1,0) = 2
+- Move up to (1,1) = 3
+- Move left to (0,1) = 4, (-1,1) = 5
+- Move left to (-1,0) = 6, (-1,-1) = 7
+- Move down to (0,-1) = 8, (1,-1) = 9
+- Next layer starts at (2,-1) = 10
+
+So, the bottom right corner of each layer is at (n,-n), and contains (2n+1)^2.
+
+For n=1:
+- (1,-1) = 9 = 3^2
+
+For n=2:
+- (2,-2) = 25 = 5^2
+
+So, for layer n, the bottom right is at (n,-n), value (2n+1)^2.
+
+Now, the first number of layer n is at (n, -n + 1), and is equal to (2n-1)^2 + 1
+
+Let’s verify for n=2:
+- (2,-1) should be (2*2-1)^2 + 1 = 3^2 + 1 = 9 + 1 = 10
+
+Let’s check:
+Layer 2 starts at (2,-1) = 10
+
+From (2,-1), we move up to fill the rightmost column, then left along the top row, then down the leftmost column, then right along the bottom row (except the corner already filled).
+
+So for n=23, the first number is at (23, -22) = 2026
+
+Thus:
+- (23, -22) = 2026
+
+Now, let's confirm with a smaller n:
+
+For n=1:
+- (1, -0) = (1,0) = 2
+But according to our previous, (1,-1+1) = (1,0) = 2
+But we said first number of layer 1 is 2, at (1,0). But above we had (n, -n+1) = (1,0) for n=1, which is correct.
+
+Wait, for n=2:
+- (2, -2+1) = (2, -1) = 10
+Which matches above.
+
+Thus, the formula for the first number in layer n is at (n, -n+1)
+
+Therefore, for n=23:
+- 2026 is at (23, -21)
+
+Wait, let's check the calculation:
+- For n=23:
+  - (n, -n+1) = (23, -23+1) = (23, -22)
+
+Yes, so 2026 is at (23, -22)
+
+---
+
+### **Step 3: Find the 8 neighbors of (23, -22)**
+
+The 8 neighbors are all positions (x±1, y±1), (x±1, y), (x, y±1)
+
+So the neighbors are:
+- (24, -22)
+- (24, -21)
+- (24, -23)
+- (23, -21)
+- (23, -23)
+- (22, -21)
+- (22, -22)
+- (22, -23)
+
+Let’s list them explicitly:
+
+|     | y = -23 | y = -22 | y = -21 |
+|-----|---------|---------|---------|
+| x=22| (22,-23)| (22,-22)| (22,-21)|
+| x=23| (23,-23)| (23,-22)| (23,-21)|
+| x=24| (24,-23)| (24,-22)| (24,-21)|
+
+But (23, -22) is 2026, so the neighbors are all the above except the center.
+
+So the 8 neighbors are:
+- (24, -22)
+- (24, -21)
+- (24, -23)
+- (23, -21)
+- (23, -23)
+- (22, -21)
+- (22, -22)
+- (22, -23)
+
+---
+
+### **Step 4: Find the numbers at those positions**
+
+We need to map coordinates to numbers in the spiral.
+
+There is a known method to compute the number at a given coordinate in the Ulam spiral.
+
+Let’s recall the formula (see [Wikipedia: Ulam spiral](https://en.wikipedia.org/wiki/Ulam_spiral#Number_at_a_given_coordinate)):
+
+But let's derive the number at (x, y):
+
+Let n = max(|x|, |y|)  (the layer)
+Let m = (2n+1)^2  (the largest number in this layer)
+
+Then, depending on which "side" of the square the coordinate is on, we can compute the offset.
+
+Let’s define the four sides:
+- Right edge: x = n, y from -n to n
+- Top edge: y = n, x from n-1 down to -n
+- Left edge: x = -n, y from n-1 down to -n
+- Bottom edge: y = -n, x from -n+1 to n
+
+But let's use a more systematic approach.
+
+Let’s use the following steps (from OEIS and various references):
+
+Let n = max(|x|, |y|)
+
+Let bl = (2n-1)^2 + 1   // bottom left of layer n, i.e., ( -n, -n + 1 )
+
+Let ring_max = (2n+1)^2  // top right of layer n, (n, n)
+
+Depending on which "side" the point is on:
+
+- If x == n and y >= -n and y <= n:  // rightmost column
+  offset = y + n
+  num = ring_max - (n - y)
+- If y == n and x <= n and x >= -n:  // top row
+  offset = (n - x) + n
+  num = ring_max - 3*n + (x + n)
+But let's use a more direct formula.
+
+Alternatively, let's use the following algorithm (from [this reference](https://math.stackexchange.com/a/1694328)):
+
+Let n = max(|x|, |y|)
+
+Let L = 2n + 1  (side length)
+
+Let base = (L - 2)^2 + 1   // first number in the layer
+
+Now, depending on the side:
+
+Case 1: x == n and y >= -n and y <= n   // rightmost column
+    num = base + (y + n)
+
+Case 2: y == n and x <= n and x >= -n   // top row
+    num = base + 2n + (n - x)
+
+Case 3: x == -n and y <= n and y >= -n // leftmost column
+    num = base + 4n + (n - y)
+
+Case 4: y == -n and x >= -n and x < n   // bottom row
+    num = base + 6n + (n + x)
+
+But let's check with an example.
+
+Let’s test with (1,0):
+
+n = max(1,0) = 1
+L = 3
+base = (3-2)^2 + 1 = 1^2 + 1 = 2
+
+Now, (1,0): x == n and y >= -n and y <= n → case 1
+num = base + (y + n) = 2 + (0 + 1) = 3
+
+But (1,0) should be 2.
+
+Hmm, maybe the formula needs adjustment.
+
+Alternatively, let's use the following code-like approach (from Rosetta Code):
+
+def ulam_spiral(x, y):
+    n = max(abs(x), abs(y))
+    if n == 0:
+        return 1
+    # side length of the square
+    L = 2 * n + 1
+    # last number of previous layer
+    prev = (L - 2) ** 2
+    # offset from prev
+    if x == n and y >= -n and y <= n:
+        # right side
+        return prev + y + n + 1
+    elif y == n and x <= n and x >= -n:
+        # top side
+        return prev + 3 * n + (n - x)
+    elif x == -n and y <= n and y >= -n:
+        # left side
+        return prev + 5 * n + (n - y)
+    elif y == -n and x >= -n and x < n:
+        # bottom side
+        return prev + 7 * n + (n + x)
+    else:
+        raise ValueError("Coordinate not in spiral")
+
+Let’s test this with (1,0):
+
+n = max(1,0) = 1
+L = 3
+prev = (3-2)^2 = 1
+(1,0): x==n and y>=-n and y<=n → right side
+return prev + y + n + 1 = 1 + 0 + 1 + 1 = 3
+
+But (1,0) should be 2.
+
+Wait, perhaps the offset is off by one.
+
+Let’s look at the actual coordinates for small n:
+
+Let’s manually build the coordinates for n=1 (3x3):
+
+Let’s make a grid:
+
+   y=1   y=0   y=-1
+x=-1 [5] [4] [3]
+x= 0 [6] [1] [2]
+x= 1 [7] [8] [9]
+
+But in standard Ulam spiral, starting at (0,0)=1, move right to (1,0)=2, up to (1,1)=3, left to (0,1)=4, (-1,1)=5, down to (-1,0)=6, (-1,-1)=7, right to (0,-1)=8, (1,-1)=9.
+
+So the coordinates:
+
+(0,0)=1
+(1,0)=2
+(1,1)=3
+(0,1)=4
+(-1,1)=5
+(-1,0)=6
+(-1,-1)=7
+(0,-1)=8
+(1,-1)=9
+
+Let’s check (1,0): should be 2
+
+n = 1
+prev = (3-2)^2 = 1
+x==n and y>=-n and y<=n → right side
+return prev + y + n + 1 = 1 + 0 + 1 + 1 = 3
+
+But should be 2.
+
+Alternatively, perhaps the formula is:
+
+right side: prev + (y + n)
+(1,0): prev + (0 + 1) = 1 + 1 = 2
+
+Let’s try that.
+
+So adjust the formula for right side to:
+
+return prev + (y + n)
+
+Let’s test:
+
+(1,0): prev=1, y=0, n=1 → 1 + (0 + 1) = 2 ✔️
+
+(1,1): prev + (1 + 1) = 1 + 2 = 3 ✔️
+
+(1,-1): prev + (-1 + 1) = 1 + 0 = 1, but (1,-1) should be 9
+
+Wait, (1,-1) is on the bottom row.
+
+Let’s check which side (1,-1) is on:
+
+n=1
+x==n and y>=-n and y<=n → x==1, y==-1, y in [-1,1] → yes, right side
+But in the grid above, (1,-1)=9
+
+But with prev + (y + n) = 1 + (-1 + 1) = 1 + 0 = 1, which is not 9.
+
+So perhaps the sides are not as simple as that.
+
+Alternatively, let's use the following approach (from [this reference](https://stackoverflow.com/a/37298658)):
+
+Let’s define a function:
+
+def number_at(x, y):
+    if x == 0 and y == 0:
+        return 1
+    n = max(abs(x), abs(y))
+    # The largest number in the previous layer
+    corner = (2*n - 1)**2
+    # How far we are from the start of the current layer
+    if x == n:
+        # right edge
+        return corner + y + n
+    elif y == n:
+        # top edge
+        return corner + 3*n + (n - x)
+    elif x == -n:
+        # left edge
+        return corner + 5*n + (n - y)
+    elif y == -n:
+        # bottom edge
+        return corner + 7*n + (n + x)
+    else:
+        raise ValueError("Not on the edge")
+
+Let’s test with (1,0):
+
+n = 1
+corner = (2*1-1)^2 = 1^2 = 1
+
+x==n (1==1) → right edge
+return corner + y + n = 1 + 0 + 1 = 2 ✔️
+
+(1,1): x==n → right edge, y=1
+return 1 + 1 + 1 = 3 ✔️
+
+(1,-1): x==n → right edge, y=-1
+return 1 + (-1) + 1 = 1 ✔️ but should be 9
+
+Wait, (1,-1) is not on the right edge of the layer? Wait, in a 3x3 grid, (1,-1) is at the bottom right, which is the end of the bottom row, not the right edge.
+
+But according to the movement, after filling the right edge (from (1,-1) up to (1,1)), we move left along the top row, then down the left edge, then right along the bottom row.
+
+But the right edge is from (1,-1) to (1,1): that's three points.
+
+But in our coordinate system, (1,-1) is bottom right, (1,0) is middle right, (1,1) is top right.
+
+So yes, (1,-1) is on the right edge.
+
+But in the spiral, (1,-1) is the last number of the layer, which is 9.
+
+But according to the formula, for (1,-1):
+
+x==n (1==1), y==-1, n=1
+return corner + y + n = 1 + (-1) + 1 = 1
+
+But that's not 9.
+
+Wait, perhaps the "right edge" is from (1,-1) to (1,1), but the numbering starts at (1,0)=2, then (1,1)=3, then (-1,1)=4, ..., then (1,-1)=9.
+
+But (1,-1) is actually the last number in the layer, not the first on the right edge.
+
+So perhaps the "right edge" is traversed from bottom to top: starting at (1,-1), then (1,0), then (1,1)
+
+But in our spiral, we start at (1,0), then (1,1), then go left.
+
+Wait, let's reconstruct the numbering step by step for n=1 (layer 1):
+
+Start at (0,0)=1
+
+Move right to (1,0)=2
+
+Move up to (1,1)=3
+
+Move left to (0,1)=4, (-1,1)=5
+
+Move left to (-1,0)=6, (-1,-1)=7
+
+Move down to (0,-1)=8
+
+Move right to (1,-1)=9
+
+So (1,-1)=9
+
+But in terms of the right edge, we only visited (1,0) and (1,1) when moving right and up, but (1,-1) is filled last, after moving down and right.
+
+Thus, the right edge is only (1,0) and (1,1), not (1,-1).
+
+So the four sides are:
+
+- Right edge: (1,0), (1,1)
+- Top edge: (0,1), (-1,1)
+- Left edge: (-1,0), (-1,-1)
+- Bottom edge: (0,-1), (1,-1)
+
+But for a general n, the right edge is from (n,-n+1) to (n,n): that's 2n+1 points, but only the first and last are corners.
+
+But perhaps it's better to use a function that computes the number at (x,y) by simulating the spiral up to that point, but that's computationally intensive for large n.
+
+Alternatively, let's use the approach from [this reference](https://oeis.org/A174344), or use the following code (Python-like pseudocode):
+
+But since we can't run code, let's use a more mathematical approach.
+
+Let’s use the following known formula from the Wikipedia talk page and references:
+
+Let n = max(|x|, |y|)
+
+Let L = 2n + 1
+
+Let ring_start = (L - 2)^2 + 1
+
+Let offset = 0
+
+If x == n:
+    # right edge
+    offset = y + n
+elif y == n:
+    # top edge
+    offset = 3*n + (n - x)
+elif x == -n:
+    # left edge
+    offset = 5*n + (n - y)
+elif y == -n:
+    # bottom edge
+    offset = 7*n + (n + x)
+
+num = ring_start + offset
+
+But let's test with (1,0):
+
+n = 1
+L = 3
+ring_start = (3-2)^2 + 1 = 1 + 1 = 2
+x==n: offset = y + n = 0 + 1 = 1
+num = 2 + 1 = 3
+
+But (1,0) should be 2.
+
+Hmm, so perhaps ring_start should be (L-2)^2
+
+Let’s try ring_start = (L-2)^2
+
+For (1,0):
+
+ring_start = (3-2)^2 = 1
+offset = 1
+num = 1 + 1 = 2 ✔️
+
+Now try (1,1):
+
+x==n, y=1
+offset = 1 + 1 = 2
+num = 1 + 2 = 3 ✔️
+
+Now try (1,-1):
+
+x==n, y=-1
+offset = -1 + 1 = 0
+num = 1 + 0 = 1, but should be 9
+
+But (1,-1) is not on the right edge as per the movement, but let's see in the 3x3 grid, (1,-1) is bottom right.
+
+But according to this, it's being considered as right edge.
+
+But in the spiral, (1,-1) is filled last, after the rest of the bottom row.
+
+So perhaps the bottom edge is not included in the right edge.
+
+Alternatively, let's list the order in which the coordinates are filled for n=1:
+
+Start at (0,0)=1
+
+(1,0)=2
+(1,1)=3
+(0,1)=4
+(-1,1)=5
+(-1,0)=6
+(-1,-1)=7
+(0,-1)=8
+(1,-1)=9
+
+So the right edge is only (1,0) and (1,1)
+
+Top edge: (0,1), (-1,1)
+
+Left edge: (-1,0), (-1,-1)
+
+Bottom edge: (0,-1), (1,-1)
+
+So for (1,-1), it's on the bottom edge.
+
+Thus, for (1,-1):
+
+y == -n and x >= -n and x < n
+
+y == -1, x == 1, n=1
+
+So y == -n and x >= -n and x < n → x < n, but x=1, n=1, so x < n is false.
+
+But x should be from -n+1 to n-1 for the bottom edge, except the corner already used.
+
+But in our list, (1,-1) is filled last.
+
+So perhaps for the bottom edge, x from -n+1 to n-1
+
+But in our case, n=1, -n+1 = 0, n-1 = 0, so only x=0
+
+But in our spiral, (0,-1)=8, then (1,-1)=9
+
+So (1,-1) is after the bottom edge.
+
+So perhaps the formula needs to be more nuanced.
+
+Alternatively, let's use the following approach:
+
+For a given (x, y), let n = max(|x|, |y|)
+
+Let L = 2n + 1
+
+Let ring_start = (L - 2)^2 + 1
+
+Now, the numbers are filled in this order:
+
+1. Right vertical edge: (n, -n+1) to (n, n)   [upwards]
+2. Top horizontal edge: (n-1, n) to (-n, n)     [leftwards]
+3. Left vertical edge: (-n, n-1) to (-n, -n)    [downwards]
+4. Bottom horizontal edge: (-n+1, -n) to (n-1, -n) [rightwards]
+5. Then next layer
+
+But in our spiral, after filling the left edge down to (-n,-n), we fill the bottom row from (-n+1,-n) to (n-1,-n), then (n,-n)
+
+But in the 3x3 example, after (-1,-1)=7, we go to (0,-1)=8, then (1,-1)=9
+
+So for bottom edge, x from -n+1 to n
+
+But (n,-n) is the last number of the layer, (2n+1)^2
+
+So let's formalize:
+
+Let’s define the four segments for layer n:
+
+A. Right vertical: (n, -n+1) to (n, n): 2n+1 points
+But actually only from (n, -n+1) to (n, n), but in the spiral, we start at (n, -n+1), go up to (n, n)
+
+But in our earlier example, for n=1:
+- (1,0) to (1,1): (1,0)=2, (1,1)=3
+
+But (1,-1) is not included in this segment in the initial step.
+
+Wait, in our spiral, we start at (1,0), not (1,-1).
+
+So for layer n, the first point is (n, -n+1)
+
+Let’s list for n=1:
+- (1,0) = 2
+- (1,1) = 3
+Then top edge:
+- (0,1) = 4
+- (-1,1) = 5
+Then left edge:
+- (-1,0) = 6
+- (-1,-1) = 7
+Then bottom edge:
+- (0,-1) = 8
+- (1,-1) = 9
+
+So the right edge is from (n, -n+1) to (n, n): for n=1, (1,0) to (1,1)
+Then top edge: (n-1, n) to (-n, n): (0,1) to (-1,1)
+Then left edge: (-n, n-1) to (-n, -n): (-1,0) to (-1,-1)
+Then bottom edge: (-n+1, -n) to (n-1, -n): (0,-1)
+Then finally (n, -n): (1,-1)
+
+So (n, -n) is the last number of the layer, (2n+1)^2
+
+Thus, to find the number at (x, y):
+
+Let n = max(|x|, |y|)
+
+If n == 0:
+    return 1
+
+Let ring_start = (2n-1)^2 + 1   # first number in layer n
+
+Let ring_end = (2n+1)^2        # last number in layer n
+
+Now, determine which segment (x, y) is in:
+
+Segment 1: Right edge, x == n, y from -n+1 to n
+    offset = y - (-n + 1)
+    num = ring_start + offset
+
+Segment 2: Top edge, y == n, x from n-1 down to -n
+    offset = (n - x) + (2n)   # right edge has 2n+1 elements
+    num = ring_start + (2n) + (n - x)
+
+But right edge has (n - (-n+1) + 1) = (n + n - 1 + 1) = 2n points? Wait, from y = -n+1 to n, that's (n - (-n+1) + 1) = (n + n - 1 + 1) = 2n points.
+
+But in our example, from (1,0) to (1,1): y=0,1 → 2 points for n=1.
+
+So right edge: y from -n+1 to n, x = n
+
+Number of points: n - (-n+1) + 1 = n + n - 1 + 1 = 2n
+
+But in n=1, 2*1=2 points: (1,0), (1,1)
+
+Then top edge: x from n-1 down to -n, y = n
+
+Number of points: (n-1) - (-n) + 1 = n-1 + n + 1 = 2n
+
+But in n=1: x from 0 to -1, that's 2 points: (0,1), (-1,1)
+
+Then left edge: x = -n, y from n-1 down to -n
+
+Number of points: (n-1) - (-n) + 1 = 2n
+
+But in n=1: y from 0 to -1: ( -1,0), (-1,-1): 2 points
+
+Then bottom edge: y = -n, x from -n+1 to n-1
+
+Number of points: (n-1) - (-n+1) + 1 = n-1 + n - 1 + 1 = 2n - 1
+
+But in n=1: x from 0 to 0: 1 point (0,-1)
+
+Then finally (n,-n): 1 point
+
+Let’s check total numbers in layer n: (2n+1)^2 - (2n-1)^2 = (4n^2 + 4n + 1) - (4n^2 - 4n + 1) = 8n
+
+But the center is 1, so layer n has 8n numbers
+
+For n=1: 8*1=8 numbers, which matches (2 to 9)
+
+Now, let's assign the offsets:
+
+Let’s define cumulative counts:
+
+- Right edge: 2n numbers
+- Top edge: 2n numbers
+- Left edge: 2n numbers
+- Bottom edge (excluding corner): 2n-1 numbers
+- Corner (n,-n): 1 number
+
+But in our construction above, after right edge (2n numbers), top edge (2n numbers), left edge (2n numbers), then bottom edge from x=-n+1 to n-1 (2n-1 numbers), then corner (n,-n) (1 number)
+
+But in our 3x3 example:
+
+Right edge: (1,0), (1,1) → 2
+Top edge: (0,1), (-1,1) → 2
+Left edge: (-1,0), (-1,-1) → 2
+Bottom edge: (0,-1) → 1
+Corner: (1,-1) → 1
+
+Total: 2+2+2+1+1 = 8
+
+But bottom edge should be from x=-n+1 to n-1, so for n=1: x=0 to 0, i.e., (0,-1)
+
+Then corner (1,-1)
+
+So the formulas:
+
+Let n = max(|x|, |y|)
+
+If n == 0:
+    return 1
+
+ring_start = (2n-1)^2 + 1
+
+# right edge: x == n, y from -n+1 to n
+if x == n and y >= -n+1 and y <= n:
+    offset = y - (-n+1)
+    num = ring_start + offset
+
+# top edge: y == n, x from n-1 down to -n
+elif y == n and x >= -n and x <= n-1:
+    offset = (n - x) + 2*n   # right edge has 2n elements
+    num = ring_start + 2*n + (n - x)
+
+# left edge: x == -n, y from n-1 down to -n
+elif x == -n and y >= -n and y <= n-1:
+    offset = (n-1 - y) + 4*n   # right + top + left so far
+    num = ring_start + 4*n + (n-1 - y)
+
+# bottom edge: y == -n, x from -n+1 to n-1
+elif y == -n and x >= -n+1 and x <= n-1:
+    offset = (n-1 - x) + 6*n   # right+top+left+bottom (excluding corner)
+    num = ring_start + 6*n + (n-1 - x)
+
+# corner: (n, -n)
+elif x == n and y == -n:
+    num = ring_end   # (2n+1)^2
+
+Let’s test this with some points for n=1:
+
+(1,0): x==n, y=0, -n+1 = 0, y in [0,1] → right edge
+offset = 0 - 0 = 0
+num = ring_start + 0 = (1)^2 + 1 + 0 = 1 + 1 + 0 = 2? Wait, ring_start = (2*1-1)^2 + 1 = 1 + 1 = 2
+So num = 2 + 0 = 2 ✔️
+
+(1,1): x==n, y=1
+offset = 1 - 0 = 1
+num = 2 + 1 = 3 ✔️
+
+(0,1): y==n, x=0, x in [-1,0]
+offset = (1 - 0) + 2*1 = 1 + 2 = 3
+num = 2 + 3 = 5, but should be 4
+
+Wait, let's check offset calculation:
+
+For top edge:
+offset = (n - x) + 2*n
+
+n=1, x=0
+(n - x) = 1 - 0 = 1
+2*n = 2
+sum = 1 + 2 = 3
+num = ring_start + 3 = 2 + 3 = 5
+
+But should be 4.
+
+Hmm, perhaps the offset should be (n - x) + (number of right edge elements) 
+
+Right edge has 2n elements (from y=-n+1 to y=n)
+
+For n=1: y=0,1 → 2 elements
+
+So offset for top edge should start at 2n
+
+So offset = 2n + (n - x)
+
+But (n - x) for x=0 is 1
+
+So offset = 2 + 1 = 3
+
+But the first top edge point should be at offset 2 (since right edge took 2 numbers: 2 and 3), so top edge starts at offset 2
+
+But ring_start is the first number in the layer, which is 2
+
+So (0,1) should be ring_start + 2 = 2 + 2 = 4 ✔️
+
+But according to above, offset = 2n + (n - x) = 2 + 1 = 3
+
+But we want offset = 2n + (n - x - 1)? Or perhaps the formula should be offset = 2n + (n-1 - x)
+
+Let’s see the sequence:
+
+Right edge: (1,0)=2 (offset 0), (1,1)=3 (offset 1)
+Top edge: (0,1)=4 (offset 2), (-1,1)=5 (offset 3)
+Left edge: (-1,0)=6 (offset 4), (-1,-1)=7 (offset 5)
+Bottom edge: (0,-1)=8 (offset 6)
+Corner: (1,-1)=9 (offset 7)
+
+So for (0,1): offset=2
+
+How to compute offset for top edge:
+
+For x going from n-1 down to -n
+
+For x = n-1, offset = 2n + 0
+For x = n-2, offset = 2n + 1
+...
+For x = -n, offset = 2n + (2n - 1)
+
+But in n=1:
+x goes from 0 to -1
+
+For x=0: offset = 2*1 + (1 - 0 - 1)? Let's see
+
+If we let offset = 2n + (n-1 - x)
+
+For x=0: 2 + (1-1-0) = 2 + 0 = 2 ✔️
+
+For x=-1: 2 + (1-1 - (-1)) = 2 + (0 + 1) = 3 ✔️
+
+So offset = 2n + (n-1 - x)
+
+Similarly for left edge:
+
+Left edge: x=-n, y from n-1 down to -n
+
+First left edge point is after right and top: offset = 4n
+
+For y = n-1 to -n
+
+For y = n-1: offset = 4n + 0
+For y = n-2: offset = 4n + 1
+...
+For y = -n: offset = 4n + (2n - 1)
+
+But let’s check for n=1:
+
+Left edge points:
+(-1,0): should be offset 4
+(-1,-1): offset 5
+
+y from 0 down to -1
+
+For y=0: offset = 4*1 + (1-1 - 0) = 4 + 0 = 4 ✔️
+For y=-1: offset = 4 + (1-1 - (-1)) = 4 + 1 = 5 ✔️
+
+So offset = 4n + (n-1 - y)
+
+Bottom edge:
+
+Bottom edge: y = -n, x from -n+1 to n-1
+
+Starts after left edge, which ends at offset = 4n + (2n - 1) = 6n - 1
+
+But for n=1: left edge ends at offset 5
+
+Bottom edge: x from 0 to 0 (since -n+1=0, n-1=0)
+
+For x=0: offset = (6n - 1) + (n-1 - x)
+
+But let's see the sequence:
+
+After left edge (offset 5), next is bottom edge: (0,-1)=8 (offset 6)
+
+Then corner: (1,-1)=9 (offset 7)
+
+So bottom edge offset = 6n + (n-1 - x)
+
+For n=1, x=0:
+offset = 6*1 + (1-1 - 0) = 6 + 0 = 6 ✔️
+
+Corner: (n,-n) = offset = 8n - 1
+
+For n=1: 8*1 - 1 = 7 ✔️
+
+So the formulas are:
+
+Let n = max(|x|, |y|)
+
+If n == 0:
+    return 1
+
+ring_start = (2n - 1) ** 2 + 1
+
+if x == n and y >= -n + 1 and y <= n:
+    offset = y - (-n + 1)
+    num = ring_start + offset
+
+elif y == n and x >= -n and x <= n - 1:
+    offset = 2 * n + (n - 1 - x)
+    num = ring_start + offset
+
+elif x == -n and y >= -n and y <= n - 1:
+    offset = 4 * n + (n - 1 - y)
+    num = ring_start + offset
+
+elif y == -n and x >= -n + 1 and x <= n - 1:
+    offset = 6 * n + (n - 1 - x)
+    num = ring_start + offset
+
+elif x == n and y == -n:
+    num = (2 * n + 1) ** 2
+
+else:
+    raise Exception("Coordinate not in spiral")
+
+Let’s test with (0,-1) for n=1:
+
+y == -n (y=-1), x=0, x in [0,0] (since -n+1=0, n-1=0)
+offset = 6*1 + (1-1 - 0) = 6 + 0 = 6
+num = ring_start + 6 = 2 + 6 = 8 ✔️
+
+(1,-1): x==n, y==-n → num = (2*1+1)^2 = 9 ✔️
+
+(0,1): y==n, x=0
+offset = 2*1 + (1-1 - 0) = 2 + 0 = 2
+num = 2 + 2 = 4 ✔️
+
+(-1,1): y==n, x=-1
+offset = 2 + (1-1 - (-1)) = 2 + 1 = 3
+num = 2 + 3 = 5 ✔️
+
+(-1,0): x==-n, y=0
+offset = 4*1 + (1-1 - 0) = 4 + 0 = 4
+num = 2 + 4 = 6 ✔️
+
+(-1,-1): x==-n, y=-1
+offset = 4 + (1-1 - (-1)) = 4 + 1 = 5
+num = 2 + 5 = 7 ✔️
+
+Perfect.
+
+Now let's apply this to our problem.
+
+We have 2026 at (23, -22)
+
+Let’s find the 8 neighbors:
+
+Neighbors are:
+(24, -22)
+(24, -21)
+(24, -23)
+(23, -21)
+(23, -23)
+(22, -21)
+(22, -22)
+(22, -23)
+
+For each, compute n = max(|x|, |y|), then use the above formula.
+
+Let’s compute each one:
+
+---
+
+### Neighbor 1: (24, -22)
+
+n = max(24, 22) = 24
+
+But wait, our point is in layer 23, neighbors may be in layer 24.
+
+But let's compute n for each coordinate.
+
+For (24, -22):
+
+n = max(|24|, |-22|) = max(24, 22) = 24
+
+ring_start = (2*24 - 1)^2 + 1 = (48-1)^2 + 1 = 47^2 + 1 = 2209 + 1 = 2210
+
+Now, which segment?
+
+x == n (24 == 24), y = -22
+
+Check if y >= -n + 1 and y <= n
+
+-n + 1 = -24 + 1 = -23
+
+n = 24
+
+So y = -22 >= -23 and <= 24 → yes
+
+So right edge
+
+offset = y - (-n + 1) = -22 - (-23) = -22 + 23 = 1
+
+num = ring_start + offset = 2210 + 1 = 2211
+
+So (24, -22) = 2211
+
+---
+
+### Neighbor 2: (24, -21)
+
+n = max(24, 21) = 24
+
+x == 24, y = -21
+
+y >= -23 and <= 24 → yes
+
+offset = y - (-23) = -21 + 23 = 2
+
+num = 2210 + 2 = 2212
+
+So (24, -21) = 2212
+
+---
+
+### Neighbor 3: (24, -23)
+
+n = max(24, 23) = 24
+
+x == 24, y = -23
+
+y >= -23 and <= 24 → yes
+
+offset = -23 - (-23) = 0
+
+num = 2210 + 0 = 2210
+
+So (24, -23) = 2210
+
+---
+
+### Neighbor 4: (23, -21)
+
+n = max(23, 21) = 23
+
+x = 23, y = -21
+
+Check segments for n=23
+
+ring_start = (2*23 - 1)^2 + 1 = (46-1)^2 + 1 = 45^2 + 1 = 2025 + 1 = 2026
+
+Now, which segment?
+
+x == n (23==23), y = -21
+
+Check if y >= -n+1 and y <= n
+
+-n+1 = -23+1 = -22
+
+n = 23
+
+Is -21 >= -22 and <= 23? Yes
+
+So right edge
+
+offset = y - (-22) = -21 + 22 = 1
+
+num = 2026 + 1 = 2027
+
+So (23, -21) = 2027
+
+---
+
+### Neighbor 5: (23, -23)
+
+n = max(23, 23) = 23
+
+x = 23, y = -23
+
+Check segments:
+
+x == n, y == -n → corner
+
+So num = (2*23 + 1)^2 = (46+1)^2 = 47^2 = 2209
+
+But wait, for layer n=23, the corner is (23, -23), and its value is (2*23+1)^2 = 47^2 = 2209
+
+But let's check: For n=23, ring_end = (2*23+1)^2 = 47^2 = 2209
+
+But our 2026 is at the start of layer 23, and (23, -23) is at the end of layer 23.
+
+So yes, (23, -23) = 2209
+
+But let's check with the formula:
+
+x==n, y==-n → num = (2n+1)^2 = 47^2 = 2209
+
+So (23, -23) = 2209
+
+---
+
+### Neighbor 6: (22, -21)
+
+n = max(22, 21) = 22
+
+x = 22, y = -21
+
+ring_start = (2*22 - 1)^2 + 1 = (44-1)^2 + 1 = 43^2 + 1 = 1849 + 1 = 1850
+
+Now, x==n (22==22), y=-21
+
+Check if y >= -n+1 and y <= n
+
+-n+1 = -22+1 = -21
+
+n = 22
+
+Is -21 >= -21 and <= 22? Yes
+
+So right edge
+
+offset = y - (-21) = -21 + 21 = 0
+
+num = 1850 + 0 = 1850
+
+So (22, -21) = 1850
+
+---
+
+### Neighbor 7: (22, -22)
+
+n = max(22, 22) = 22
+
+x=22, y=-22
+
+Check segments:
+
+x==n, y==-n → corner
+
+num = (2*22+1)^2 = (44+1)^2 = 45^2 = 2025
+
+So (22, -22) = 2025
+
+---
+
+### Neighbor 8: (22, -23)
+
+n = max(22, 23) = 23
+
+x=22, y=-23
+
+Check segments for n=23
+
+ring_start = 2026
+
+Now, y==-n (-23==-23), x=22
+
+Check if x >= -n+1 and x <= n-1
+
+-n+1 = -23+1 = -22
+
+n-1 = 22
+
+x=22 >= -22 and <=22 → yes
+
+So bottom edge
+
+offset = 6*n + (n-1 - x) = 6*23 + (23-1 - 22) = 138 + (22 - 22) = 138 + 0 = 138
+
+num = 2026 + 138 = 2164
+
+Let’s double-check the offset formula for bottom edge:
+
+offset = 6n + (n-1 - x)
+
+n=23, x=22
+
+n-1 - x = 22 - 22 = 0
+
+6*23 = 138
+
+num = 2026 + 138 = 2164
+
+So (22, -23) = 2164
+
+---
+
+Now, let’s list all 8 neighbors and their numbers:
+
+1. (24, -22): 2211
+2. (24, -21): 2212
+3. (24, -23): 2210
+4. (23, -21): 2027
+5. (23, -23): 2209
+6. (22, -21): 1850
+7. (22, -22): 2025
+8. (22, -23): 2164
+
+Now, sum them up:
+
+Let’s add step by step:
+
+2211 + 2212 = 4423
+
+4423 + 2210 = 6633
+
+6633 + 2027 = 8660
+
+8660 + 2209 = 10869
+
+10869 + 1850 = 12719
+
+12719 + 2025 = 14744
+
+14744 + 2164 = 16908
+
+So the sum is 16,908
+
+But let’s double-check the arithmetic:
+
+2211
++2212 = 4423
++2210 = 6633
++2027 = 8660
++2209 = 10869
++1850 = 12719
++2025 = 14744
++2164 = 16908
+
+Yes.
+
+Therefore, the sum of all 8 neighbors of 2026 is:
+
+\boxed{16908}
+----
+Usage(input=121, output=11581, details={'estimated_cost': 0.0069728})

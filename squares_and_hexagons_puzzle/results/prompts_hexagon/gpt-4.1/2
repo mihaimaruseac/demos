@@ -1,0 +1,260 @@
+Let's solve the problem step by step:
+
+### Problem Recap
+
+You are given a **hexagonal grid** spiral with natural numbers arranged as such:
+```
+      ... 14   4   3  10 ...
+      .. 15   5   1   2   9 ...
+      ... 16   6   7   8 ...
+```
+You are to **find the sum of all 6 neighbors of the number 2026**.
+
+---
+
+## Step 1: Understanding the Spiral
+
+A **hex spiral** grows ring-by-ring around the center. Let's mark out first few numbers and their arrangement:
+
+- Ring 0: 1 (center)
+- Ring 1: 2 3 4 5 6 7 (6 numbers, in a hexagon around 1)
+- Ring 2: 8 9 10 11 12 13 14 15 16 17 18 19
+
+Let’s see the formula for how many numbers until each ring:
+
+- \( n \)-th ring contains \( 6n \) numbers (except for ring 0 which only has 1)
+- The last number in ring \( k \) is:
+  - \( 1 + 6 \times (1 + 2 + \cdots + k) \)
+  - \( 1 + 6 \times \frac{k(k+1)}{2} = 1 + 3k(k+1) \)
+
+For example:
+- \( k = 0 \): \( 1 \)
+- \( k = 1 \): \( 1 + 3 \cdot 1 \cdot 2 = 1 + 6 = 7 \)
+- \( k = 2 \): \( 1 + 3 \cdot 2 \cdot 3 = 1 + 18 = 19 \)
+
+So, ring \( k \) contains the numbers from \( 1+3(k-1)k \) (first in the ring) to \( 1+3k(k+1) \) (last in the ring, inclusive).
+
+---
+
+## Step 2: Finding the Ring for 2026
+
+Set \( 1 + 3k(k+1) \geq 2026 \):
+
+\[
+1 + 3k^2 + 3k \geq 2026 \\
+3k^2 + 3k \geq 2025 \\
+k^2 + k \geq 675
+\]
+
+Solve for \( k \):
+
+\[
+k^2 + k - 675 \geq 0 \\
+k = \frac{-1 + \sqrt{1 + 4 \times 675}}{2}
+  = \frac{-1 + \sqrt{2701}}{2}
+\]
+
+\(\sqrt{2701} \approx 52\). 
+So
+\[
+k \approx \frac{51}{2} = 25.5
+\]
+So \( k = 25 \) is the last full ring before 2026.
+
+Plug in \( k = 25 \):
+
+- \( 1 + 3\times 25 \times 26 = 1 + 3 \times 650 = 1 + 1950 = 1951 \) (last number in ring 25)
+- For \( k = 26 \):
+  - \( 1 + 3 \times 26 \times 27 = 1 + 2106 = 2107\) (last in 26th ring)
+
+So, **numbers from 1952 to 2107 form the 26th ring**.
+
+---
+
+## Step 3: Position of 2026 within the Ring
+
+The ring starts at: \( 1952 \)
+So 2026 is the \( (2026 - 1952 + 1) = 75\)-th number in the 26th ring.
+
+Each ring has \( 6k \) numbers.
+For ring 26, \( 6 \times 26 = 156 \) numbers.
+
+So, the 156 numbers are grouped around the hex in **6 sides, each being 26 numbers**.
+
+- Side 1: numbers 1 to 26
+- Side 2: 27 to 52
+- Side 3: 53 to 78
+- Side 4: 79 to 104
+- Side 5: 105 to 130
+- Side 6: 131 to 156
+
+2026 is number \( 75 \) in the ring, so it's on **side 3** (\(53\) to \(78\)), and it's number \( 75 - 52 = 23\) on side 3.
+
+---
+
+## Step 4: Structure of Neighbors
+
+Each cell (except special cases at the "corners") has 6 neighbors: (on the hex grid)
+
+Of these, the structure of the spiral means, **the order in the ring maps to specific neighbors in previous and next rings, as well as adjacent in same ring**.
+
+Let's define:
+- **Current ring**: \(k\)
+- **Previous ring**: \(k-1\)
+- **Next ring**: \(k+1\)
+
+If your position on the ring is \(n\) (from 1 to \(6k\)), your neighbors are:
+- The two adjacent numbers in the same ring: \(n-1\) and \(n+1\) (modulo \(6k\))
+- The number in previous ring at same position and at \(n-1\) (since inner rings have proportionally fewer numbers, at corners there's overlap)
+- The number in next ring at matching and matching+1 position
+
+But—let's make it simpler!
+
+If you're not on a corner, **the 6 neighbors are:**
+- Previous and next in the same ring: \(2025\), \(2027\)
+- Two numbers from inner ring: matching position and matching position + 1
+- Two from outer ring: matching position and matching position + 1
+
+First, we need to confirm the "position" within the side.
+
+### Ring Summary for 2026:
+- Ring: 26
+- First number: 1952
+- Position \( = 2026 - 1952 + 1 = 75 \)
+- Which side: \( \lceil 75/26 \rceil = 3 \)
+  - Side 1:  1-26
+  - Side 2: 27-52
+  - Side 3: 53-78
+
+So, within side 3, position = \(75 - 52 = 23\) (on side 3, position 23).
+
+#### Identify the mapping to inner and outer ring
+- Inner ring: ring 25, with 150 numbers
+- Outer ring: ring 27, with \( 162 \) numbers
+
+Each side of inner ring: \(150/6 = 25\)
+2026's position on side 3: 23 (we count from 1, so the position is 23 out of 26 on the side.)
+
+**So, for step \(j\) on side in ring \(k\), the corresponding step on ring \(k-1\) is roughly:**
+\[
+position_{k-1} = start_{k-1, side} + floor((j-1) \times (numbers\ per\ side\ in\ k-1)/(numbers\ per\ side\ in\ k))
+\]
+Numbers per side in ring 26: 26
+Numbers per side in ring 25: 25
+
+So for position \( j = 23 \) (positions 1-based),
+\[
+matching\_pos_{25} = start_{side3,25} + floor((23-1)\times25/26)
+ = start_{side3,25} + floor(22 \times 25 / 26)
+ = start_{side3,25} + floor(21.15) = start_{side3,25} + 21
+\]
+Similarly, position+1 would be 22.
+
+Let's map out the actual numbers.
+
+## Step 5: Explicit Values
+
+### Get the first number on each side.
+
+For ring, the numbers go as:
+
+- First on ring \(k\): \( a = 1 + 3(k-1)k \)
+- Each side of ring \(k\): \( L = k \)
+So
+- Side 1: \( a \) through \(a+k-1\)
+- Side 2: \( a+k \) through \(a+2k-1\)
+- etc.
+
+For ring 26:
+- \( a_{26} = 1 + 3 \times 25 \times 26 = 1 + 1950 = 1951 \)
+- Sides:
+  - Side 1: 1952 to 1977
+  - Side 2: 1978 to 2003
+  - Side 3: 2004 to 2029
+  - Side 4: 2030 ...
+So:
+- Side 3 starts at 2004, ends at 2029
+
+So 2026 is the \(2026 - 2004 + 1 = 23\)th position on Side 3 (matches above).
+
+Similarly, ring 25:
+- \( a_{25} = 1 + 3 \times 24 \times 25 = 1 + 1800 = 1801 \)
+- Each side: \(25\) numbers
+  - Side 3: 1851 to 1875
+
+So the first number in Side 3 of ring 25 is 1851.
+
+Now, which position on side 3 of ring 25 corresponds to position 23 of 26 on side 3?
+- Matching position = \( floor((23-1) \times 25 / 26 ) = floor(22 \times 25 / 26) = floor(21.15) = 21 \)
+- So, it's \(1851 + 21 = 1872\)
+- Next position is \(1851 + 22 = 1873\)
+
+So, the two inner neighbors are **1872** and **1873**.
+
+### For the outer ring
+
+Ring 27:
+- \( a_{27} = 1 + 3 \times 26 \times 27 = 1 + 2106 = 2107 \)
+- Each side: \(27\) numbers
+  - Side 3: \(2107 + 2 \times 27 = 2107 + 54 = 2161\), so sides:
+    - Side 1: 2107 to 2133
+    - Side 2: 2134 to 2160
+    - Side 3: 2161 to 2187
+
+Within Side 3:
+- 2026 corresponds to position 23 on the side (positions #22 counting from zero-based)
+  
+So, \(2161 + 22 = 2183\)
+Next position: \(2161 + 23 = 2184\)
+
+So, the outer neighbors are **2183** and **2184**.
+
+### Next/Previous in same ring:
+
+2026's immediate neighbors (before and after) in same ring:
+
+- **2025** and **2027**.
+
+Let's check if 2026 is at a corner. If it's the first or last number in the side, it connects to corners. But position 23 of 26 is *not* at a corner, so our logic holds.
+
+---
+
+## Step 6: Sum the Neighbors
+
+Now, add up:
+
+- 2025 (left)
+- 2027 (right)
+- 1872 (inner, same step)
+- 1873 (inner, next step)
+- 2183 (outer, same step)
+- 2184 (outer, next step)
+
+Sum:
+
+\[
+2025 + 2027 + 1872 + 1873 + 2183 + 2184
+\]
+
+Let's add:
+
+- 2025 + 2027 = 4052
+- 1872 + 1873 = 3745
+- 2183 + 2184 = 4367
+
+Total:
+
+\[
+4052 + 3745 + 4367 = 12164
+\]
+
+---
+
+### **Final Answer**
+\[
+\boxed{12164}
+\]
+
+**The sum of all 6 neighbors of 2026 is \(\boxed{12164}\).**
+----
+Usage(input=71, output=2641, details={})

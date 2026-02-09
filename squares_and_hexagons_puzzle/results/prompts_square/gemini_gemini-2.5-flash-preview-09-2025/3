@@ -1,0 +1,695 @@
+Here is a step-by-step solution to find the sum of the 8 neighbors of the number 2026 in the Ulam spiral layout.
+
+## 1. Analyze the Spiral Layout and Identify Corner Numbers
+
+The spiral starts at 1 and moves outwards. Key numbers are found on the corners of the expanding squares.
+
+We define $C(k)$ as the number that is the top-right corner of the $k$-th layer square (where $k$ is the side length of the square minus 1, or $2n$ where $n$ is the layer number).
+
+Let $L$ be the side length of the square being completed. The numbers on the corners are perfect squares of odd numbers.
+
+| Layer (n) | Side Length (L = 2n+1) | Corner (TR) Value $C$ | Formula ($L^2$) |
+| :---: | :---: | :---: | :---: |
+| 1 | 3 | 9 | $3^2$ |
+| 2 | 5 | 25 | $5^2$ |
+| 3 | 7 | 49 | $7^2$ |
+| k | 2k+1 | $(2k+1)^2$ | $(2k+1)^2$ |
+
+The key observation is that numbers that are perfect squares of *odd* numbers are located at the bottom-right position of their respective squares, which corresponds to the location of the number 9 in the provided diagram.
+Wait, let's re-examine the provided diagram and coordinate system.
+
+\begin{matrix}
+... & 5 & 4 & 3 & ... \\
+... & 6 & 1 & 2 & ... \\
+... & 7 & 8 & 9 & ... \\
+\end{matrix}
+
+The number 9 is the **Bottom-Right** corner of the $3 \times 3$ square.
+
+The square numbers we care about are $L^2$: $3^2=9$, $5^2=25$, $7^2=49$, etc. These define the end of each layer (moving counter-clockwise).
+
+## 2. Locate 2026 in the Spiral
+
+We need to find the perfect odd square closest to 2026.
+
+$\sqrt{2026} \approx 45.01$
+
+The nearest odd square is $45^2$.
+$45^2 = 2025$.
+
+Since $45^2 = 2025$, the number 2025 is the corner number for the square of side length 45. This corner is the **Bottom-Right (BR)** position.
+
+$$
+\begin{array}{|c|c|c|c|c|}
+\hline
+\dots & \dots & \dots & \dots & \dots \\
+\hline
+\dots & \text{Previous Layer} & \dots & \dots & \dots \\
+\hline
+\dots & \dots & \mathbf{2025} & \mathbf{2026} & \dots \\
+\hline
+\end{array}
+$$
+(This visualization might be tricky; let's rely on the structure relative to the center 1.)
+
+**Position of 2025:**
+The center of the square grid is (0, 0), occupied by 1.
+The side length $L=45$. The coordinates of 2025 are $(n, -n)$, where $n = (L-1)/2 = 22$.
+So, 2025 is located at $(22, -22)$.
+
+**Position of 2026:**
+The spiral moves counter-clockwise from 2025 (BR).
+2026 must be directly to the left of 2025, starting the move up the left edge of the $45 \times 45$ square.
+Wait, let's check the direction of movement near 9:
+$9 \to 8 \to 7$ (Moving Left).
+Since 2025 is a $45^2$ number, it is located at the $BR$ corner. The numbers decrease as we move left (e.g., $9 \to 8$).
+Numbers increase as we move counter-clockwise.
+
+The spiral movement:
+1. $1 \to 2$ (Right)
+2. $2 \to 3$ (Up)
+3. $3 \to 4 \to 5$ (Left)
+4. $5 \to 6$ (Down)
+5. $6 \to 7 \to 8$ (Right)
+6. $8 \to 9$ (Down) <-- ERROR IN PROVIDED DIAGRAM
+
+Let's re-examine the provided diagram:
+\begin{align*}
+& \dots & 5 & 4 & 3 \\
+& \dots & 6 & 1 & 2 \\
+& \dots & 7 & 8 & 9
+\end{align*}
+Movement: $1 \to 2$ (R), $2 \to 3$ (U), $3 \to 4$ (L), $4 \to 5$ (L), $5 \to 6$ (D), $6 \to 7$ (D), $7 \to 8$ (R), $8 \to 9$ (R).
+
+Ah, $9$ is the **Bottom-Right** (BR) corner. The numbers *increase* in this direction.
+
+$2025 = 45^2$. This is the BR corner.
+$2026$ must be the number that immediately follows 2025 in the spiral sequence.
+
+The path sequence near 2025:
+... (Previous number $P$) $\to 2025$ (BR) $\to 2026 \to 2027 \dots$
+
+Based on the $8 \to 9$ movement (Right), the spiral moves Right along the bottom row, completing the square at the BR corner (9, 25, 49, ..., 2025).
+
+If 2025 is at the BR corner, the next layer starts by moving **Up** from 2025.
+
+If 2025 is at $(22, -22)$:
+$2026$ is at $(22, -21)$. (Moving Up)
+
+**2026 is located on the Right Edge of the grid, one cell above the Bottom-Right corner.**
+
+## 3. Identify the Neighbors of 2026
+
+Since 2026 is at $(22, -21)$, we can identify its 8 neighbors relative to coordinates $(x, y)$:
+
+| Neighbor | Coordinates (x, y) | Position relative to 2026 | Value (N) |
+| :---: | :---: | :---: | :---: |
+| N1 | (22, -20) | Above (U) | $N_{U}$ |
+| N2 | (23, -20) | Up-Right (UR) | $N_{UR}$ |
+| N3 | (23, -21) | Right (R) | $N_{R}$ |
+| N4 | (23, -22) | Down-Right (DR) | $N_{DR}$ |
+| N5 | (22, -22) | Below (D) | $N_{D}$ |
+| N6 | (21, -22) | Down-Left (DL) | $N_{DL}$ |
+| N7 | (21, -21) | Left (L) | $N_{L}$ |
+| N8 | (21, -20) | Up-Left (UL) | $N_{UL}$ |
+
+We know $N_5 = 2025$ (The BR corner).
+We need to determine the layer structure for the remaining neighbors.
+
+The number 2026 is on the right edge of the $45 \times 45$ square (where the numbers range up to $45^2=2025$) or near the starting edge of the $47 \times 47$ square ($47^2=2209$).
+
+Since 2026 is at $x=22$, it is on the boundary of the layer $n=22$.
+
+### Neighbor Values Calculation
+
+**A. Neighbors within the $45 \times 45$ boundary (x=21 or y=-22)**
+
+We use $L=45$.
+The center of the sides are defined by $L^2 - (L-1)/2$.
+$2025 - 22 = 2003$.
+2003 is the center of the right side (R). This means 2003 is at $(22, 0)$.
+
+Wait, $45^2=2025$ is the BR corner $(22, -22)$.
+The right edge consists of numbers moving from top (small number) to bottom (2025).
+
+Let's find the values of the four corners (CCW starting from 2025):
+$C_{BR} = 45^2 = 2025$ (At (22, -22))
+$C_{BL} = 2025 - 44 = 1981$ (At (-22, -22))
+$C_{TL} = 1981 - 44 = 1937$ (At (-22, 22))
+$C_{TR} = 1937 - 44 = 1893$ (At (22, 22))
+
+Now we trace the previous layer values ($L=43$, ending at $43^2=1849$).
+$1849$ is at $(21, -21)$.
+
+$L=45$. The coordinates of the grid are $-22 \le x, y \le 22$.
+
+**$N_5$ (D): (22, -22)**
+$N_5 = 2025$
+
+**$N_6$ (DL): (21, -22)**
+This is on the bottom edge, one step left of 2025.
+Since the bottom edge moves Right ($7 \to 8 \to 9$), the numbers increase rightward.
+$N_6$ is one cell left of 2025.
+$N_6 = 2025 - 1 = 2024$.
+
+**$N_7$ (L): (21, -21)**
+This is the TR corner of the $43 \times 43$ square.
+$N_7 = 43^2 = 1849$.
+(This conclusion depends on the starting point of the spiral. Let's verify.)
+$1849$ is located at $(21, 21)$ if we use the same corner definition.
+$43^2 = 1849$. For $L=43$, $n=21$. The $L^2$ number is always at $(n, -n)$ = $(21, -21)$.
+$N_7 = 1849$.
+
+**$N_8$ (UL): (21, -20)**
+This position is one cell above $N_7$ (1849) and is part of the move outward from the previous layer.
+The move from $L^2$ to $(L+2)^2$ happens generally Up (from BR) then Left (from TR).
+Since 1849 is at $(21, -21)$, and it is the BR corner of the $43 \times 43$ square, the number $1850$ is at $(21, -20)$.
+$N_8 = 1850$.
+
+**B. Neighbors outside the $45 \times 45$ boundary (x=23 or y=-20)**
+
+The number 2026 is $(22, -21)$. It belongs to the current layer $n=22$.
+The next square is $47 \times 47$. $47^2 = 2209$. This square defines coordinates $x, y \in [-23, 23]$.
+
+**$N_1$ (U): (22, -20)**
+2026 is $2025+1$. Since 2025 is BR, the spiral moves Upward.
+$N_1$ is the number immediately following 2026.
+$N_1 = 2027$.
+
+**$N_2$ (UR): (23, -20)**
+This is located on the right edge of the $47 \times 47$ square. This side is currently being filled.
+The full length of the right side is $L+1 = 46$ steps (from $y=-22$ to $y=23$).
+The numbers $2026, 2027, \dots$ fill this side, moving up.
+The right edge ends at the TR corner $C_{TR}$ (of the $47 \times 47$ square), which is $47^2 - (47-1)/2 - 46\times 2 - 46 = 2209 - 23 - 92 - 46 = 2048$.
+Wait, calculating the corners of the $47 \times 47$ square:
+$C_{BR} = 47^2 = 2209$. (At (23, -23))
+$C_{BL} = 2209 - 46 = 2163$.
+$C_{TL} = 2163 - 46 = 2117$.
+$C_{TR} = 2117 - 46 = 2071$. (At (23, 23))
+
+The path starts at 2025 (BR of $45^2$ square).
+The path moves Up: $2026, 2027, \dots$ up the side $x=22$.
+The side length $L_{side}$ of the new layer is $L=47$. The distance from $(22, -22)$ to $(22, 23)$ is $45$ steps.
+2025 is at $(22, -22)$.
+$2026$ is at $(22, -21)$.
+$2027$ is at $(22, -20)$. ($N_1$)
+...
+The sequence continues until $y=22$. $2025 + (22 - (-22)) = 2025 + 44 = 2069$.
+$2069$ is at $(22, 22)$.
+
+$N_1 = 2027$.
+
+$N_2$ (UR) = (23, -20). This location will be filled when the spiral reaches the edge $x=23$.
+The number 2070 is at $(22, 23)$. (This is the top neighbor of 2069).
+The spiral then moves Left.
+
+The numbers $2026, 2027, \dots, 2070$ fill the column $x=22$. This is the Right side of the $45 \times 45$ square.
+
+Now we need to consider the structure shown in the initial diagram around 1:
+\begin{matrix}
+5 & 4 & 3 \\
+6 & 1 & 2 \\
+7 & 8 & 9
+\end{matrix}
+The location (22, -21) corresponds to the location of 2.
+Neighbors of 2: 1, 3, 9. (And 4, 8, L1, L2, L3)
+
+Neighbors of 2:
+1 (L), 3 (U), 9 (D).
+Wait, 2 is at (1, 0).
+L (0, 0) = 1
+U (1, 1) = 3
+D (1, -1) = 9
+
+Let's adjust coordinates based on the $L^2$ position (BR):
+9 is at (1, -1). 2025 is at (22, -22).
+8 is at (0, -1). 2024 is at (21, -22). ($N_6$)
+7 is at (-1, -1). 2023 is at (20, -22).
+...
+
+2 is at (1, 0). 2026 is at (22, -21).
+Neighbors of 2026 (22, -21):
+
+| Pos | Coords | Value | Name |
+| :---: | :---: | :---: | :---: |
+| D | (22, -22) | 2025 | $N_5$ |
+| DL | (21, -22) | 2024 | $N_6$ |
+| L | (21, -21) | 1849 | $N_7$ |
+| UL | (21, -20) | 1850 | $N_8$ |
+| U | (22, -20) | 2027 | $N_1$ |
+
+We still need $N_2, N_3, N_4$. These are outside the $x=22$ column, at $x=23$.
+The numbers $2026, 2027, \dots, 2070$ fill the $x=22$ column.
+After $2070$ (at $(22, 23)$), the spiral moves Left, filling $y=23$.
+$2071$ is at $(21, 23)$.
+
+$N_2$ (UR): (23, -20).
+$N_3$ (R): (23, -21).
+$N_4$ (DR): (23, -22).
+
+These positions will be filled much later when the spiral reaches the boundary $x=23$.
+
+The $47 \times 47$ square boundary starts at $2070+1 = 2071$ if we follow standard Ulam spirals (which move CCW around the origin).
+
+Let's confirm the coordinates of the start of the next layer based on the $9 \to 10$ transition (if $L=3$ square is $9$, $L=5$ square starts at $10$).
+$9$ is at $(1, -1)$.
+$10$ is at $(2, -1)$. (Moving Right, $9 \to 10$)
+
+Wait, my coordinates or direction of spiral flow are inconsistent with the standard Ulam spiral. Let's strictly follow the provided sequence:
+
+\begin{matrix}
+\dots & 5 & 4 & 3 \\
+\dots & 6 & 1 & 2 \\
+\dots & 7 & 8 & 9
+\end{matrix}
+$1 \to 2$ (R), $2 \to 3$ (U), $3 \to 4$ (L), $4 \to 5$ (L), $5 \to 6$ (D), $6 \to 7$ (D), $7 \to 8$ (R), $8 \to 9$ (R).
+
+The spiral moves CCW, except for the last step $8 \to 9$ which moves R. This completes a square of odd side length $L$.
+The next number, 10, starts the next layer.
+$9$ is at BR. $10$ must start the next layer, either up or left/down.
+If 10 follows the CCW movement, $9 \to 10$ should be Down, completing the structure. But the layout suggests 9 is the terminus.
+
+Let's assume the spiral continues CCW:
+$9 \to 10$ must be down (if 9 is BR) or left (if 9 is TL). Since 9 is BR, the square is complete.
+The next number must be $L+2$ away from the center (L=5 side length).
+If we follow $5 \to 6 \to 7$, the square expands downwards and rightwards.
+
+If 9 is $(1, -1)$. 10 must be the start of the next layer.
+If we examine standard Ulam spirals, the numbers $L^2$ are often found on the diagonal $(n, -n)$ or $(-n, n)$. Here, $9$ is at $(1, -1)$.
+
+If 10 is at $(2, -1)$ (Continuing Right), this means the bottom row continues right, and then the $5 \times 5$ square starts building around that.
+
+If $9 \to 10$ is R:
+$1, 2, 3, 4, 5$
+$6, \dots$
+$7, 8, 9, 10$
+
+If 10 is at $(2, -1)$:
+$10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25$.
+$25$ is $5^2$.
+If $9$ is at $(1, -1)$, $25$ is at $(2, -2)$. This confirms $L^2$ numbers are at $(-n, -n)$ or $(n, n)$ for even $L$.
+Since $L=5$ is odd, $n=2$. $25$ is at $(2, -2)$.
+
+Wait, $9$ is $L=3$, $n=1$. Coordinates $(1, -1)$.
+$25$ is $L=5$, $n=2$. Coordinates $(2, -2)$.
+
+The BR corner of layer $n$ is at $(n, -n)$.
+2025 is $45^2$. $n=22$. 2025 is at $(22, -22)$.
+
+The sequence is: $L^2, L^2+1, L^2+2, \dots$ along the bottom edge, moving Right.
+$9 \to 10 \to 11 \to \dots \to 25$.
+
+$2025$ is at $(22, -22)$.
+$2026$ is at $(23, -22)$. (Moving Right from 2025)
+
+This means 2026 is starting the next layer ($L=47$). It is located on the **Bottom Edge**.
+
+## 4. Re-evaluate Position of 2026
+
+If $2026$ is at $(23, -22)$, it is one step right of the corner 2025.
+
+**The location of 2026 is $N_4$ (DR) in the previous calculation.**
+$N_4 = 2026$.
+
+We must find the 8 neighbors of $X=2026$ located at $(23, -22)$.
+
+| Neighbor | Coordinates (x, y) | Position relative to X | Value (N) |
+| :---: | :---: | :---: | :---: |
+| N1 | (23, -21) | Above (U) | $N_{U}$ |
+| N2 | (24, -21) | Up-Right (UR) | $N_{UR}$ |
+| N3 | (24, -22) | Right (R) | $N_{R}$ |
+| N4 | (24, -23) | Down-Right (DR) | $N_{DR}$ |
+| N5 | (23, -23) | Below (D) | $N_{D}$ |
+| N6 | (22, -23) | Down-Left (DL) | $N_{DL}$ |
+| N7 | (22, -22) | Left (L) | $N_{L}$ |
+| N8 | (22, -21) | Up-Left (UL) | $N_{UL}$ |
+
+$L=45$. $n=22$. $45^2 = 2025$.
+$L=47$. $n=23$. $47^2 = 2209$.
+
+**A. Neighbors in the $45 \times 45$ square (x=22, y=-22):**
+
+$N_7$ (L): (22, -22). This is the corner $45^2$.
+$N_7 = 2025$.
+
+$N_8$ (UL): (22, -21). This position is on the Right edge of the $45 \times 45$ square.
+$C_{BR} = 2025$ (at (22, -22)).
+Since the spiral fills the right edge from TR (1893) downwards to BR (2025), the numbers decrease moving Up.
+$2025$ is $45^2$. The side length is 44 steps.
+$2025 - 1 = 2024$ must be at $(22, -21)$.
+$N_8 = 2024$.
+
+**B. Neighbors in the expanding layer (x=23 or y=-23):**
+
+2026 is on the bottom row, moving R.
+$2026 \to 2027 \to \dots \to 2209$.
+
+$N_3$ (R): (24, -22). $2026$ is at $x=23$. $N_3$ is two steps right of 2025.
+$N_3 = 2027$.
+
+$N_4$ (DR): (24, -23).
+$N_5$ (D): (23, -23).
+$N_6$ (DL): (22, -23).
+
+These three positions belong to the $47 \times 47$ square edge ($n=23$).
+The maximum $x, y$ coordinates are 23.
+Since $N_4, N_5, N_6$ have $y=-23$, they must be on the bottom edge of the $47 \times 47$ square.
+The bottom edge ranges from $x=-23$ to $x=23$.
+The BR corner $47^2 = 2209$ is at $(23, -23)$.
+
+$N_5$: (23, -23). This is $2209$.
+$N_4$: (24, -23). This is outside the $47 \times 47$ square range.
+
+Wait, if $N_7 = 2025$ is at $(22, -22)$, and $X=2026$ is at $(23, -22)$, then the layer $n=22$ spans $x \in [-22, 22]$, $y \in [-22, 22]$.
+The $L=47$ layer spans $x \in [-23, 23]$, $y \in [-23, 23]$.
+
+If 2026 is at $(23, -22)$, it is on the outer boundary $x=23$.
+The bottom row of this layer is $y=-23$.
+
+If 2026 is at $x=23$, it must be part of the sequence filling the $x=23$ column, moving downwards, or $y=-22$ row, moving rightwards.
+
+Let's re-examine the movement $9 \to 10$.
+9 is at $(1, -1)$. The bottom row goes $7, 8, 9$.
+10 is at $(2, -1)$. The spiral continues to the right. $10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24$.
+$25$ is at $(2, -2)$. This confirms the spiral moves Right until it reaches the edge, then turns Down.
+
+$45^2 = 2025$ is at $(22, -22)$. This is the BR corner of the $45 \times 45$ square.
+The bottom edge of the $47 \times 47$ square is $y=-23$.
+The right edge of the $47 \times 47$ square is $x=23$.
+
+$2026$ starts the expansion of the $47 \times 47$ square.
+$2025$ is at $(22, -22)$.
+If the spiral moves R, $2026$ is at $(23, -22)$.
+If the spiral moves D, $2026$ is at $(22, -23)$.
+
+If $9 \to 10$ is Right:
+$9(1,-1) \to 10(2,-1)$.
+The sequence $L^2, L^2+1, \dots$ moves Right along the row $y=-1$.
+$2025$ is at $(22, -22)$.
+The numbers filling the new layer $n=23$ are $2026, 2027, \dots, 2209$.
+$2026$ is located at $(23, -22)$. (Moving Right).
+
+This means 2026 is on the **Right Edge** of the $L=47$ structure, $y=-22$ row.
+
+Let $X=2026$. $X$ is at $(23, -22)$.
+
+$N_7 (L): (22, -22) = 2025$. (Correct)
+$N_8 (UL): (22, -21)$. This is part of the inner square's right edge.
+As calculated earlier: the right edge of $L=45$ decreases upwards: $2025, 2024, 2023, \dots, 1893$.
+$N_8 = 2024$. (Correct)
+
+$N_6 (DL): (22, -23)$. This is on the bottom edge of the $L=47$ square.
+The bottom edge is filled by moving Down (from 2209, the BR corner) or Left (from BL corner).
+Since $47^2=2209$ is at $(23, -23)$, this is $N_5$.
+$N_6$ is one step left of $N_5$.
+Since the bottom edge moves $L^2 \to L^2+1 \to \dots$ Right, the numbers increase rightward.
+$C_{BL} = 2209 - 46 = 2163$. (At $(-23, -23)$).
+If we follow $7, 8, 9, 10, \dots$, the bottom row increases moving Right.
+The path must fill the $y=-23$ row from $x=-23$ (2163) to $x=23$ (2209).
+$N_6 = (22, -23)$. This is $2209 - 1 = 2208$.
+
+$N_5 (D): (23, -23)$. This is $47^2$.
+$N_5 = 2209$.
+
+$N_4 (DR): (24, -23)$. This is outside the $L=47$ grid boundary. This position is filled later, in the $L=49$ layer.
+$49^2 = 2401$. $n=24$. $2401$ is at $(24, -24)$.
+The sequence starts $2209 + 1 = 2210$.
+$2210$ is at $(23, -24)$.
+The square $L=47$ completes at $2209$. The next layer $L=49$ starts at $2210$.
+Since 2026 is at $(23, -22)$, and 2210 is at $(23, -24)$, these are too far apart for $N_4$ to be filled by $2210$.
+
+Let's look at the movement sequence defining the coordinates:
+$L^2$ (BR) is at $(n, -n)$.
+The next sequence fills $x=n+1$ from $y=-n$ to $y=-n-1$.
+Example: $9$ at $(1, -1)$. $10$ at $(2, -1)$. $11$ at $(3, -1)$? No.
+$9 \to 10 \to \dots \to 25$. $25$ is at $(2, -2)$.
+$9(1, -1)$. $10(2, -1)$. $11(2, 0)$. $12(2, 1)$. $13(2, 2)$. $14(1, 2)$. $15(0, 2)$. $16(-1, 2)$. $17(-2, 2)$. $18(-2, 1)$. $19(-2, 0)$. $20(-2, -1)$. $21(-2, -2)$. $22(-1, -2)$. $23(0, -2)$. $24(1, -2)$. $25(2, -2)$.
+
+Wait, this spiral definition is different from the provided example $1..9$.
+The provided diagram: $7, 8, 9$ are on $y=-1$. 9 is $(1, -1)$. 8 is $(0, -1)$. 7 is $(-1, -1)$.
+The full $3 \times 3$ square goes from $x, y \in [-1, 1]$.
+$9 \to 10$ must be outside this square.
+
+If 10 is at $(2, -1)$, then $10, 11, 12, \dots$ fills the $5 \times 5$ square boundary.
+$9(1, -1) \to 10(2, -1)$. R
+$10 \to 11(2, 0)$. U
+$11 \to 12(2, 1)$. U
+$12 \to 13(2, 2)$. TR corner. U
+$13 \to 14(1, 2)$. L
+...
+$25(2, -2)$. BR corner.
+
+**This confirms the coordinates and movement flow for odd squares.**
+$45^2 = 2025$ at $(22, -22)$. $n=22$.
+$47^2 = 2209$ at $(23, -23)$. $n=23$.
+
+$X=2026$ is at $(23, -22)$. It is the first number in the $L=47$ layer sequence.
+The sequence moves $2026 \to 2027 \to \dots$ (Right) along $y=-22$, until $x=23$.
+
+$X=2026$ is at $(23, -22)$.
+$N_7$ (L): (22, -22). $N_7 = 2025$. (Correct, $45^2$)
+
+**Remaining calculation for $x=23$ or $y=-23$ positions:**
+
+$N_1$ (U): (23, -21). Since $2026$ is the first number in the $L=47$ layer, it moves Right along $y=-22$.
+$N_1$ is located in the middle of this path, later.
+
+$2026$ (at $(23, -22)$) $\to 2027$ (at $(24, -22)$). $N_3$.
+$N_3$: (24, -22). $2026+1 = 2027$.
+
+$N_2$ (UR): (24, -21). Filled by $2027+1 = 2028$.
+
+$N_4$ (DR): (24, -23). Filled later.
+$N_5$ (D): (23, -23). Filled later.
+$N_6$ (DL): (22, -23). Filled later.
+
+We need to know the structure of numbers around $X$.
+
+Let $P$ be the number of steps along the current layer edge. $L=47$.
+$P=0$ at 2026.
+Edge 1 (Right): $y=-22$. $x=23 \to 45$. Wait, $x$ goes up to $n=23$. $x=23$.
+
+$X=2026$ is at $(23, -22)$.
+The next corner is $C_{TR}$ (of the $45 \times 45$ square) $1893$ at $(22, 22)$.
+
+Let's check the coordinates for small numbers again:
+$9(1, -1)$. $10(2, -1)$. $11(2, 0)$. $12(2, 1)$. $13(2, 2)$.
+$13$ is $3^2+4$. $L=5$. $13$ is the TR center.
+
+$25$ at $(2, -2)$. $L=5$.
+$2025$ at $(22, -22)$. $L=45$.
+
+$2026$ starts the $L=47$ layer. $n=23$.
+The new layer boundary is $x=23$ and $y=-23$.
+
+The $45 \times 45$ square ends at $x=22, y=22$.
+The $47 \times 47$ square starts filling the gap $x=23, y=23$.
+
+Where is $2026$?
+It starts the counter-clockwise turn. $2025$ is the BR corner $(22, -22)$.
+The sequence must fill the bottom row $y=-22$ (going right) or the right column $x=22$ (going down).
+
+If the spiral followed $8 \to 9$ (R) and $9 \to 10$ (R), then $2025 \to 2026$ is Right.
+$2026$ at $(23, -22)$.
+
+The sequence $2026, 2027, \dots$ goes Right until it hits the boundary $x=23$.
+Wait, $X=2026$ is already at $x=23$. This cannot be Right movement unless $2025$ was at $x=21$.
+
+Let's re-examine $45^2=2025$.
+$L=45$. $n=22$. The boundary is $x=22$.
+$2025$ is at $(22, -22)$.
+
+If $9$ is at $(1, -1)$, $10$ is at $(2, -1)$.
+The sequence starts $L^2+1$ at $(n+1, -n)$.
+$2026$ is at $(23, -22)$. Correct.
+
+The path continues right along $y=-22$ until $x=23$ is reached. Wait, $2026$ IS $x=23$.
+$2026$ is the first cell in the $x=23$ column.
+
+$10$ is at $(2, -1)$. $9$ is at $(1, -1)$.
+$25$ is at $(2, -2)$. $24$ is at $(1, -2)$.
+$L=5$. $n=2$. $x \in [-2, 2]$.
+
+If $2026$ is at $(23, -22)$, it means the sequence $2026, 2027, \dots$ moves Right beyond $x=23$.
+This means $L^2$ is not the true corner, but the end of the previous side.
+
+The BR corner of $L=45$ is $2025$ at $(22, -22)$.
+The total length of the $L=47$ perimeter is $4 \times 46 = 184$.
+$2025 + 184 = 2209 = 47^2$.
+
+The new layer starts by extending the bottom row (Right) until $x=23$ is reached, then turning Down.
+No, that's not CCW. CCW should be Up, then Left, then Down, then Right.
+
+Let's stick to the $1 \to 9$ movement pattern:
+R, U, L, L, D, D, R, R.
+This structure repeats:
+$L^2-2$: (-1, -1). $L^2-1$: (0, -1). $L^2$: (1, -1). (Rightward movement on bottom edge)
+
+$2023, 2024, 2025$ are on the bottom row $y=-22$, $x=20, 21, 22$.
+$2025$ is the BR corner $(22, -22)$.
+
+$2026$ must be the first step Up (R $\to$ U).
+$X=2026$ is at $(22, -21)$. (This was the assumption in Step 2, $N_1$ position).
+
+If $X=2026$ is at $(22, -21)$:
+$N_5$ (D): (22, -22). $N_5 = 2025$.
+$N_6$ (DL): (21, -22). $N_6 = 2024$.
+$N_7$ (L): (21, -21). This is the corner of the $43^2$ square. $N_7 = 1849$.
+$N_8$ (UL): (21, -20). $N_8 = 1850$.
+
+Now for the outside numbers ($x=23$ or $y=-20$).
+$2026$ starts the $L=47$ boundary path.
+
+The path moves Up from $2025(22, -22)$.
+$2026$ (22, -21).
+$2027$ (22, -20). $N_1$.
+$2028$ (22, -19).
+This path continues UP until $y=23$.
+
+The Right edge is defined by $x=22$ (for $L=45$ square) or $x=23$ (for $L=47$ square).
+
+Since $2025$ is at $(22, -22)$, the numbers $1893, \dots, 2025$ already filled the right edge $x=22$.
+The spiral must move outwards to $x=23$.
+
+Let's re-examine $9 \to 10$.
+If $9 (1, -1)$ is BR. The square boundary is $x \in [-1, 1], y \in [-1, 1]$.
+$10$ must be $(2, -1)$ or $(1, -2)$ or $(2, -2)$.
+
+If $10$ starts the $L=5$ layer, it must be the start of the spiral movement R, D, L, U (CW) or U, L, D, R (CCW).
+Since the inner loop was CCW (R, U, L, D... Wait, it was R, U, L, D then R, R for $7, 8, 9$).
+
+If $10$ is the start of the next layer, it should usually expand outward.
+If $9 \to 10$ is R: $10(2, -1)$. Sequence fills $y=-1$ rightward.
+If $9 \to 10$ is D: $10(1, -2)$. Sequence fills $x=1$ downward.
+
+If we assume the established pattern $7, 8, 9$ (R) leads to $9, 10, 11, \dots$ continuing R along $y=-1$:
+$2025$ at $(22, -22)$.
+$2026$ at $(23, -22)$. (This is $N_4$ from the calculation in Step 4).
+
+If $X=2026$ is at $(23, -22)$, we must calculate $N_1, N_2, N_3, N_4, N_5, N_6$.
+
+$2026$ is followed by $2027, 2028, \dots$. This sequence moves R along $y=-22$.
+$2027$ is at $(24, -22)$. $N_3$.
+$2028$ is at $(25, -22)$.
+
+The side length $L=47$ ($n=23$) spans $x \in [-23, 23]$.
+$2026$ is at $x=23$. It is the corner of the new square $L=47$.
+
+Let's confirm the coordinates of 25: $25(2, -2)$. $24(1, -2)$. $23(0, -2)$. $\dots$
+$9(1, -1) \to 10(2, -1)$. R. $11(3, -1)$? No, the square size is $5 \times 5$, $x \in [-2, 2]$.
+
+If $9(1, -1)$ is BR corner of $3 \times 3$.
+$10$ starts the $5 \times 5$ square. The spiral must fill $x=2$ and $y=-2$.
+
+Path $10 \to 25$:
+$10$ must be at $(2, -1)$. $11(2, 0)$. $12(2, 1)$. $13(2, 2)$. U
+$14(1, 2)$. L
+$15(0, 2)$. L
+$16(-1, 2)$. L
+$17(-2, 2)$. TL corner. L
+$18(-2, 1)$. D
+$19(-2, 0)$. D
+$20(-2, -1)$. D
+$21(-2, -2)$. BL corner. D
+$22(-1, -2)$. R
+$23(0, -2)$. R
+$24(1, -2)$. R
+$25(2, -2)$. BR corner. R
+
+**This is a standard Ulam spiral movement pattern (CCW, but the orientation of the coordinates is shifted).**
+
+$45^2 = 2025$ at $(22, -22)$.
+$47^2 = 2209$ at $(23, -23)$. $n=23$.
+
+$2026$ is the first number in the $L=47$ loop. It starts the Up movement from $2025$.
+$2026$ must be at $(22, -21)$. (As initially assumed).
+
+**Recalculating Neighbors based on $X=2026$ at $(22, -21)$**
+
+$X=2026$. Neighbors $N_1$ (U) to $N_8$ (UL).
+
+Known internal values ($x=21$ or $y=-22$):
+$N_5 (D) = 2025$.
+$N_6 (DL) = 2024$.
+$N_7 (L) = 1849$.
+$N_8 (UL) = 1850$.
+
+**A. Right column (x=23)**
+
+These positions are outside the current structure and are filled later by numbers starting $49^2=2401$.
+$N_3$ (R): $(23, -21)$.
+$N_4$ (DR): $(23, -22)$. This position is $2025+1=2026$? No, 2026 is $X$.
+
+Let $C_{47} = 47^2 = 2209$. $C_{47}$ is at $(23, -23)$.
+$C_{49} = 49^2 = 2401$. $C_{49}$ is at $(24, -24)$.
+The layer $L=49$ starts $2210$.
+
+$2209$ is at $(23, -23)$.
+The spiral moves Up from 2209: $2210(23, -22)$, $2211(23, -21)$, $2212(23, -20)$, etc.
+$N_4$: $(23, -22)$. This is $2210$.
+$N_3$: $(23, -21)$. This is $2211$.
+
+**B. Up positions ($y=-20$ or $x=22$)**
+
+$N_1$ (U): (22, -20).
+Since $2025 \to 2026 \to 2027 \to \dots$ moves Up:
+$N_1 = 2027$.
+
+$N_2$ (UR): (23, -20).
+This position is reached by the $49^2$ sequence moving Up.
+$2210(23, -22)$, $2211(23, -21)$, $2212(23, -20)$.
+$N_2 = 2212$.
+
+## 5. Summary of Neighbor Values
+
+$X = 2026$.
+1. $N_1$ (U): 2027
+2. $N_2$ (UR): 2212
+3. $N_3$ (R): 2211
+4. $N_4$ (DR): 2210
+5. $N_5$ (D): 2025
+6. $N_6$ (DL): 2024
+7. $N_7$ (L): 1849
+8. $N_8$ (UL): 1850
+
+## 6. Calculate the Sum (S)
+
+$$S = 2027 + 2212 + 2211 + 2210 + 2025 + 2024 + 1849 + 1850$$
+
+Group terms:
+$S = (2027 + 2025) + (2024) + (1849 + 1850) + (2212 + 2211 + 2210)$
+$S = 4052 + 2024 + 3699 + 6633$
+
+$4052 + 2024 = 6076$
+$3699 + 6633 = 10332$
+$S = 6076 + 10332 = 16408$
+
+Alternatively, use $X=2026$.
+
+$S = (X+1) + (X + 186) + (X + 185) + (X + 184) + (X-1) + (X-2) + (X-177) + (X-176)$
+
+Where:
+$X = 2026$.
+$2212 = 2026 + 186$.
+$2211 = 2026 + 185$.
+$2210 = 2026 + 184$.
+$2025 = 2026 - 1$.
+$2024 = 2026 - 2$.
+$1849 = 2026 - 177$.
+$1850 = 2026 - 176$.
+
+$S = 8X + (1 + 186 + 185 + 184 - 1 - 2 - 177 - 176)$
+$S = 8X + (184 + 185 + 186 + 1) - (1 + 2 + 177 + 176)$
+$S = 8X + (556) - (356)$
+$S = 8X + 200$.
+
+$S = 8 \times 2026 + 200$
+$8 \times 2026 = 16208$
+$S = 16208 + 200 = 16408$.
+
+---
+*(Self-Correction check: The difference terms 177 and 176 relate to $45^2 - 43^2 = 2025 - 1849 = 176$. $2026 - 1849 = 177$. $2026 - 1850 = 176$. This matches the calculated difference terms.)*
+
+The sum of all 8 neighbors of the number 2026 is 16408.
+----
+Usage(input=62, output=12525, details={'candidatesTokenCount': 12525, 'promptTokensDetails': [{'modality': 'TEXT', 'tokenCount': 62}]})
